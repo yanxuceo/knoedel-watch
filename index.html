@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Knödel Watch – install</title>
+<meta name="description" content="Install Deutsch mit Knödel on an M5Stack StopWatch from your browser.">
+<script type="module" src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"></script>
+<style>
+  :root {
+    --bg: #f8efdf; --card: #fffaf2; --ink: #2b2230; --soft: #6b6170; --line: #e7d8bd;
+    --accent: #c8862b; --accent-ink: #ffffff; --cat: #f3a25a; --ok: #3e8e2f;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #17141a; --card: #221e26; --ink: #f2eee8; --soft: #b3aab5; --line: #3a3340; --accent: #e0a24a; --accent-ink: #1b1508; }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 17px/1.55 system-ui, -apple-system, "Segoe UI", "PingFang SC", "Noto Sans SC", sans-serif;
+  }
+  main { max-width: 760px; margin: 0 auto; padding: 28px 16px 64px; }
+  header { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .brand { font-weight: 800; font-size: 15px; letter-spacing: .02em; color: var(--accent); }
+  .lang button {
+    border: 1px solid var(--line); background: var(--card); color: var(--soft);
+    padding: 4px 12px; border-radius: 999px; font: inherit; font-size: 14px; cursor: pointer;
+  }
+  .lang button[aria-pressed="true"] { color: var(--ink); border-color: var(--accent); }
+  h1 { font-size: clamp(30px, 6vw, 44px); line-height: 1.15; margin: 28px 0 10px; }
+  .lead { color: var(--soft); margin: 0 0 26px; }
+  .gallery {
+    display: flex; gap: 14px; overflow-x: auto; padding: 6px 2px 14px; margin: 0 -2px 18px;
+    scroll-snap-type: x mandatory;
+  }
+  .gallery img {
+    width: 150px; height: 150px; flex: none; scroll-snap-align: start;
+    border-radius: 50%; box-shadow: 0 6px 18px rgba(0,0,0,.18); background: #000;
+  }
+  .install {
+    background: var(--card); border: 1px solid var(--line); border-radius: 20px;
+    padding: 22px; margin: 8px 0 28px; display: flex; flex-wrap: wrap; align-items: center; gap: 14px 22px;
+  }
+  .install p { margin: 0; flex: 1 1 260px; color: var(--soft); font-size: 15px; }
+  .button {
+    border: 0; border-radius: 999px; padding: 14px 28px; cursor: pointer;
+    background: var(--accent); color: var(--accent-ink); font: inherit; font-weight: 700; font-size: 18px;
+  }
+  .button:hover { filter: brightness(1.06); }
+  .warn { color: #b8323a; font-weight: 600; }
+  h2 { font-size: 20px; margin: 30px 0 10px; }
+  ol { padding-left: 22px; margin: 0; }
+  ol li { margin: 0 0 10px; }
+  .note { border-left: 3px solid var(--accent); padding: 2px 0 2px 14px; color: var(--soft); font-size: 15px; }
+  details { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 12px 16px; margin: 0 0 10px; }
+  summary { cursor: pointer; font-weight: 600; }
+  details p { margin: 10px 0 2px; color: var(--soft); font-size: 15px; }
+  code { background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; font-size: 14px; }
+  footer { margin-top: 40px; color: var(--soft); font-size: 13px; }
+  a { color: var(--accent); }
+  [data-lang="zh"] .en, [data-lang="en"] .zh { display: none; }
+</style>
+</head>
+<body data-lang="en">
+<main>
+  <header>
+    <div class="brand">DEUTSCH MIT KNÖDEL · v0.1.0</div>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">English</button>
+      <button type="button" data-set="zh" aria-pressed="false">中文</button>
+    </div>
+  </header>
+
+  <h1>
+    <span class="en">Learn German on your wrist</span>
+    <span class="zh">把德语戴在手腕上</span>
+  </h1>
+  <p class="lead">
+    <span class="en">Install Knödel Watch on an M5Stack StopWatch, right from this page: no software to install, about two minutes.</span>
+    <span class="zh">直接在这个网页上把 Knödel Watch 装进 M5Stack StopWatch：不用安装任何软件，大约两分钟。</span>
+  </p>
+
+  <div class="gallery" aria-label="Screens of the watch">
+    <img src="img/learn-menu.png" alt="Main menu: Learn German">
+    <img src="img/card-cat.png" alt="A card: Brezel the cat vacuums">
+    <img src="img/card-dialogue.png" alt="A card's example as a short dialogue">
+    <img src="img/clock-word.png" alt="The clock with a word of the day">
+    <img src="img/clock-menu.png" alt="Main menu: the clock">
+    <img src="img/timer.png" alt="The focus timer">
+  </div>
+
+  <div class="install">
+    <esp-web-install-button manifest="manifest.json">
+      <button slot="activate" class="button"><span class="en">Install</span><span class="zh">安装</span></button>
+      <span slot="unsupported" class="warn">
+        <span class="en">This browser cannot talk to USB devices. Please open this page in Chrome or Edge on a computer.</span>
+        <span class="zh">这个浏览器无法连接 USB 设备。请在电脑上用 Chrome 或 Edge 打开本页。</span>
+      </span>
+      <span slot="not-allowed" class="warn">
+        <span class="en">Installing needs a secure page (https).</span>
+        <span class="zh">安装需要通过安全连接（https）打开本页。</span>
+      </span>
+    </esp-web-install-button>
+    <p>
+      <span class="en">Firmware v0.1.0 and the content pack <code>a2-start</code>: eight A2 decks, 96 cards, English and Chinese.</span>
+      <span class="zh">固件 v0.1.0 和内容包 <code>a2-start</code>：八个 A2 卡组，96 张卡片，英文和中文翻译。</span>
+    </p>
+  </div>
+
+  <h2><span class="en">How it works</span><span class="zh">安装步骤</span></h2>
+  <ol>
+    <li>
+      <span class="en">Use <b>Chrome</b> or <b>Edge</b> on a computer (Windows, macOS, Linux or ChromeOS).</span>
+      <span class="zh">在电脑上用 <b>Chrome</b> 或 <b>Edge</b> 浏览器（Windows、macOS、Linux 或 ChromeOS 均可）。</span>
+    </li>
+    <li>
+      <span class="en">Connect the watch with a USB-C cable that carries data (some cables only charge).</span>
+      <span class="zh">用一根能传数据的 USB-C 线连接手表（有些线只能充电）。</span>
+    </li>
+    <li>
+      <span class="en">Press <b>Install</b>, choose the watch in the list (it shows as a USB serial or USB JTAG device) and confirm.</span>
+      <span class="zh">点 <b>安装</b>，在弹出的列表里选中手表（显示为 USB 串口或 USB JTAG 设备），然后确认。</span>
+    </li>
+    <li>
+      <span class="en">You are asked whether to erase the watch. <b>First install: yes.</b> Updating later: <b>no</b> keeps your progress and settings.</span>
+      <span class="zh">它会问是否清空手表。<b>第一次安装：选清空。</b>以后更新：选<b>不清空</b>，练习进度和设置都会保留。</span>
+    </li>
+    <li>
+      <span class="en">Wait until it says it is done (about two minutes). The watch restarts in English; <i>Settings → Language</i> switches to Chinese, <i>Settings → Time</i> sets the clock.</span>
+      <span class="zh">等待提示完成（大约两分钟）。手表会重启并显示英文界面；<i>Settings → Language</i> 可以切换成中文，<i>设置 → 时间</i> 可以设置时钟。</span>
+    </li>
+  </ol>
+
+  <h2><span class="en">If something goes wrong</span><span class="zh">遇到问题</span></h2>
+  <details>
+    <summary><span class="en">The watch is not in the list</span><span class="zh">列表里找不到手表</span></summary>
+    <p class="en">Try another cable or another USB port, and make sure no other program (a serial monitor, Arduino, another browser tab) is using the watch. On Linux your user may need to be in the <code>dialout</code> group.</p>
+    <p class="zh">换一根线或换一个 USB 口，并确认没有其他程序（串口监视器、Arduino、另一个浏览器标签页）正在占用手表。在 Linux 上，你的用户可能需要加入 <code>dialout</code> 组。</p>
+  </details>
+  <details>
+    <summary><span class="en">Installing stopped halfway</span><span class="zh">安装到一半中断了</span></summary>
+    <p class="en">Just install again. A content pack that was only partly written is detected by the watch, which then shows "No content" instead of starting.</p>
+    <p class="zh">重新安装一次就好。只写了一半的内容包会被手表识别出来，手表会显示 "No content"，而不会带着坏数据启动。</p>
+  </details>
+  <details>
+    <summary><span class="en">I prefer the command line</span><span class="zh">我更习惯用命令行</span></summary>
+    <p class="en">Download <code>knoedel-watch-0.1.0-full.bin</code> from the project's releases and run <code>python3 -m esptool --chip esp32s3 write-flash 0x0 knoedel-watch-0.1.0-full.bin</code> (<code>pip install esptool</code>). This is a fresh install: it erases progress and settings.</p>
+    <p class="zh">从项目的 Releases 下载 <code>knoedel-watch-0.1.0-full.bin</code>，然后运行 <code>python3 -m esptool --chip esp32s3 write-flash 0x0 knoedel-watch-0.1.0-full.bin</code>（先 <code>pip install esptool</code>）。这相当于全新安装，会清空练习进度和设置。</p>
+  </details>
+
+  <p class="note">
+    <span class="en">The cards were written by an AI and have not been proofread by a native speaker yet; the German audio is synthetic speech. Found a mistake? Please open an issue on the project page.</span>
+    <span class="zh">卡片内容由 AI 编写，尚未经母语者校对；德语配音是合成语音。发现错误？欢迎在项目页面提 issue。</span>
+  </p>
+
+  <footer>
+    <span class="en">Code: MIT · Learning content: CC BY-NC-SA 4.0 · The characters Knödel and Brezel: all rights reserved. Installer: ESP Web Tools.</span>
+    <span class="zh">代码：MIT · 学习内容：CC BY-NC-SA 4.0 · Knödel 和 Brezel 两个角色保留所有权利。安装工具：ESP Web Tools。</span>
+  </footer>
+</main>
+<script>
+  // Language of the page: the browser's first, then the visitor's choice (remembered on this device).
+  const buttons = document.querySelectorAll(".lang button");
+  function setLang(lang) {
+    document.body.dataset.lang = lang;
+    document.documentElement.lang = lang === "zh" ? "zh-Hans" : "en";
+    buttons.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.set === lang)));
+    try { localStorage.setItem("lang", lang); } catch (e) {}
+  }
+  let saved = null;
+  try { saved = localStorage.getItem("lang"); } catch (e) {}
+  setLang(saved || ((navigator.language || "").toLowerCase().startsWith("zh") ? "zh" : "en"));
+  buttons.forEach(b => b.addEventListener("click", () => setLang(b.dataset.set)));
+</script>
+</body>
+</html>
