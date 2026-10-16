@@ -538,10 +538,16 @@ static int clock_day()
     if (!board::get_time(d)) {
         // A clock that never ran, or lost power, holds no valid date. Any date
         // will do to start it: progress.cpp carries on from the last day it saw.
-        if (!board::set_time({2000, 1, 1, 0, 0, 0}) || !board::get_time(d)) {
+        // Starting it overwrites the time the user set, so the clock is first
+        // read once more, a moment later: one that only failed to answer keeps it.
+        sleep_ms(300);
+        if (board::get_time(d)) {
+            ESP_LOGW(TAG, "the clock answered only on a second look");
+        } else if (board::set_time({2000, 1, 1, 0, 0, 0}) && board::get_time(d)) {
+            ESP_LOGW(TAG, "the clock held no date and was started");
+        } else {
             return -1;
         }
-        ESP_LOGW(TAG, "the clock held no date and was started");
     }
     const int day = day_number(d.year, d.month, d.day);
     return day >= 0 && day < 36500 ? day : -1;

@@ -87,14 +87,32 @@ bool acceleration(float &x, float &y, float &z) { return M5.Imu.isEnabled() && M
 
 bool has_clock() { return M5.Rtc.isEnabled(); }
 
+// A read fails on a single bad byte from the shared I2C bus, so it is tried a
+// few times: the app takes a failure to mean that the clock lost its time.
 bool get_time(DateTime &t)
 {
-    m5::rtc_datetime_t dt;
-    if (!M5.Rtc.isEnabled() || !M5.Rtc.getDateTime(&dt)) {
+    if (!M5.Rtc.isEnabled()) {
         return false;
     }
-    t = {dt.date.year, dt.date.month, dt.date.date, dt.time.hours, dt.time.minutes, dt.time.seconds};
-    return true;
+    m5::rtc_datetime_t dt;
+    for (int attempt = 1; attempt <= 3; attempt++) {
+        if (M5.Rtc.getDateTime(&dt)) {
+            if (attempt > 1) {
+                ESP_LOGW(TAG, "clock read on attempt %d", attempt);
+            }
+            t = {dt.date.year, dt.date.month, dt.date.date, dt.time.hours, dt.time.minutes, dt.time.seconds};
+            return true;
+        }
+        vTaskDelay(pdMS_TO_TICKS(10));
+    }
+    // The RX8130's time registers (0x10..0x16) and flags (0x1D), to tell a
+    // stopped clock from a bus that keeps failing.
+    uint8_t regs[7] = {}, flags = 0;
+    const bool read = M5.In_I2C.readRegister(0x32, 0x10, regs, sizeof(regs), 400000) &&
+                      M5.In_I2C.readRegister(0x32, 0x1D, &flags, 1, 400000);
+    ESP_LOGW(TAG, "clock holds no valid time: %s %02x %02x %02x %02x %02x %02x %02x, flags %02x",
+             read ? "registers" : "unreadable", regs[0], regs[1], regs[2], regs[3], regs[4], regs[5], regs[6], flags);
+    return false;
 }
 
 bool set_time(const DateTime &t)
