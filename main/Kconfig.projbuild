@@ -10,6 +10,9 @@ choice KNOEDEL_BOARD
 config KNOEDEL_BOARD_M5_STOPWATCH
     bool "M5Stack StopWatch Dev Kit"
 
+config KNOEDEL_BOARD_WAVESHARE_175C
+    bool "Waveshare ESP32-S3-Touch-AMOLED-1.75C"
+
 endchoice
 
 endmenu

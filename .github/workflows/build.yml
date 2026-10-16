@@ -22,6 +22,8 @@ jobs:
           # board's sdkconfig.defaults.<board> after sdkconfig.defaults.
           - board: m5_stopwatch
             defaults: sdkconfig.defaults
+          - board: waveshare_175c
+            defaults: sdkconfig.defaults;sdkconfig.defaults.waveshare_175c
     steps:
       - uses: actions/checkout@v4
       - name: Build
