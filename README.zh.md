@@ -40,7 +40,14 @@
 
 ### 其他开发板
 
-固件只通过一层很薄的板级接口 [`main/board/board.h`](main/board/board.h) 访问硬件，所以可以移植到其他 ESP32-S3 开发板上，条件是有 460～480 像素左右的圆形触摸屏、两个按键和扬声器。目前只支持 M5Stack StopWatch。想移植到你的板子上，请看 [docs/PORTING.md](docs/PORTING.md)（英文）。
+固件只通过一层很薄的板级接口 [`main/board/board.h`](main/board/board.h) 访问硬件，所以能运行在其他 ESP32-S3 开发板上，条件是有 460～480 像素左右的圆形触摸屏、两个按键和扬声器。目前支持：
+
+| 开发板 | 状态 |
+|---|---|
+| M5Stack StopWatch Dev Kit | 主力板子，每次发布前都会测试 |
+| [微雪 ESP32-S3-Touch-AMOLED-1.75C](docs/boards/waveshare-175c.md) | 由 [@pockegar](https://github.com/pockegar) 移植和维护，有空时会在自己的板子上测试 |
+
+想移植到你的板子上，请看 [docs/PORTING.md](docs/PORTING.md)（英文）。
 
 ## 安装
 

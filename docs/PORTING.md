@@ -89,6 +89,8 @@ and wake it with one of the keys (ESP32-S3 ext0/ext1 wake-up).
 4. Put the board's settings (the Kconfig choice, flash size) in
    `sdkconfig.defaults.my_board`, and build with
    `idf.py -B build-my_board -D SDKCONFIG=sdkconfig.my_board -D "SDKCONFIG_DEFAULTS=sdkconfig.defaults;sdkconfig.defaults.my_board" build`.
+   Such a build keeps its components in `dependencies.lock.my_board`: commit
+   that file with the board.
 5. Add the board to the matrix in `.github/workflows/build.yml`, with
    `defaults: sdkconfig.defaults;sdkconfig.defaults.my_board`. Every push and
    pull request then builds it.

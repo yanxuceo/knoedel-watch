@@ -2,6 +2,10 @@ build/
 managed_components/
 sdkconfig
 sdkconfig.old
+# Builds for each board (docs/PORTING.md): build-<board>/, sdkconfig.<board>
+build-*/
+sdkconfig.*
+!sdkconfig.defaults*
 sim/build/
 sim/out/
 .DS_Store

@@ -40,7 +40,14 @@ That is an affiliate link: if you buy through it, the author of this project ear
 
 ### Other boards
 
-The firmware reaches the hardware through a small board layer, [`main/board/board.h`](main/board/board.h), so it can be ported to other ESP32-S3 boards with a round touch screen of about 460 to 480 px, two keys and a speaker. The M5Stack StopWatch is the only board supported so far. To port it to yours, see [docs/PORTING.md](docs/PORTING.md).
+The firmware reaches the hardware through a small board layer, [`main/board/board.h`](main/board/board.h), so it runs on other ESP32-S3 boards with a round touch screen of about 460 to 480 px, two keys and a speaker. Supported so far:
+
+| Board | Status |
+|---|---|
+| M5Stack StopWatch Dev Kit | the main board, tested before every release |
+| [Waveshare ESP32-S3-Touch-AMOLED-1.75C](docs/boards/waveshare-175c.md) | ported and maintained by [@pockegar](https://github.com/pockegar), tested on their board as time allows |
+
+To port it to yours, see [docs/PORTING.md](docs/PORTING.md).
 
 ## Install
 

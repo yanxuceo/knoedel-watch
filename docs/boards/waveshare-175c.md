@@ -1,5 +1,9 @@
 # Waveshare ESP32-S3-Touch-AMOLED-1.75C
 
+Ported by [@pockegar](https://github.com/pockegar), who also maintains it and
+tests it on their own board as free time allows. Please mention @pockegar in
+issues about this board, and in changes to `main/board/board.h`.
+
 ESP32-S3, 32 MB flash, 8 MB octal PSRAM, 466 × 466 CO5300 AMOLED,
 CST9217 touch, ES8311 speaker DAC, QMI8658 motion sensor and AXP2101 PMIC.
 The common 468 px canvas is centred on the display; its outermost pixel on
