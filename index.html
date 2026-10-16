@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Knödel Watch – install</title>
-<meta name="description" content="Install Deutsch mit Knödel on an M5Stack StopWatch from your browser.">
+<meta name="description" content="Install Knödel Watch on an M5Stack StopWatch or a Waveshare 1.75C from your browser.">
 <script type="module" src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"></script>
 <style>
   :root {
@@ -48,6 +48,19 @@
   }
   .button:hover { filter: brightness(1.06); }
   .warn { color: #b8323a; font-weight: 600; }
+  .boards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 0 0 14px; }
+  .board {
+    display: block; text-align: left; cursor: pointer; font: inherit; color: var(--ink);
+    background: var(--card); border: 2px solid var(--line); border-radius: 16px; padding: 14px 16px;
+  }
+  .board[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
+  .board b { display: block; font-size: 17px; }
+  .board small { display: block; color: var(--soft); font-size: 14px; margin-top: 4px; }
+  .board-note { display: none; }
+  .install[data-board="waveshare_175c"] ~ .board-note { display: block; }
+  .install:not([data-board]) esp-web-install-button { display: none; }
+  .install:not([data-board]) .choose { display: block; }
+  .choose { display: none; color: var(--soft); font-weight: 600; flex: 1 1 100%; margin: 0; }
   h2 { font-size: 20px; margin: 30px 0 10px; }
   ol { padding-left: 22px; margin: 0; }
   ol li { margin: 0 0 10px; }
@@ -64,7 +77,7 @@
 <body data-lang="en">
 <main>
   <header>
-    <div class="brand">KNÖDEL WATCH · v0.1.0</div>
+    <div class="brand">KNÖDEL WATCH · v0.1.1</div>
     <div class="lang" role="group" aria-label="Language">
       <button type="button" data-set="en" aria-pressed="true">English</button>
       <button type="button" data-set="zh" aria-pressed="false">中文</button>
@@ -76,8 +89,8 @@
     <span class="zh">把德语戴在手腕上</span>
   </h1>
   <p class="lead">
-    <span class="en">Install Knödel Watch on an M5Stack StopWatch, right from this page: no software to install, about two minutes.</span>
-    <span class="zh">直接在这个网页上把 Knödel Watch 装进 M5Stack StopWatch：不用安装任何软件，大约两分钟。</span>
+    <span class="en">Install Knödel Watch on your watch right from this page: no software to install, about two minutes.</span>
+    <span class="zh">直接在这个网页上把 Knödel Watch 装进你的手表：不用安装任何软件，大约两分钟。</span>
   </p>
 
   <div class="gallery" aria-label="Screens of the watch">
@@ -89,8 +102,24 @@
     <img src="img/timer.png" alt="The focus timer">
   </div>
 
+  <h2><span class="en">1. Which watch do you have?</span><span class="zh">1. 你的是哪一款手表？</span></h2>
+  <div class="boards" role="group" aria-label="Board">
+    <button type="button" class="board" data-board="m5_stopwatch" aria-pressed="false">
+      <b>M5Stack StopWatch</b>
+      <small class="en">Two keys, yellow and blue, beside a round screen</small>
+      <small class="zh">圆屏两侧各有一个按键（黄色和蓝色）</small>
+    </button>
+    <button type="button" class="board" data-board="waveshare_175c" aria-pressed="false">
+      <b>Waveshare ESP32-S3-Touch-AMOLED-1.75C</b>
+      <small class="en">Community port by @pockegar, being tested</small>
+      <small class="zh">社区移植，作者 @pockegar，测试中</small>
+    </button>
+  </div>
+
+  <h2><span class="en">2. Install</span><span class="zh">2. 安装</span></h2>
   <div class="install">
-    <esp-web-install-button manifest="manifest.json">
+    <p class="choose"><span class="en">Choose your watch above first.</span><span class="zh">请先在上面选择你的手表。</span></p>
+    <esp-web-install-button>
       <button slot="activate" class="button"><span class="en">Install</span><span class="zh">安装</span></button>
       <span slot="unsupported" class="warn">
         <span class="en">This browser cannot talk to USB devices. Please open this page in Chrome or Edge on a computer.</span>
@@ -102,13 +131,21 @@
       </span>
     </esp-web-install-button>
     <p>
-      <span class="en">Firmware v0.1.0 and the content pack <code>a2-start</code>: eight A2 decks, 96 cards, English and Chinese.</span>
-      <span class="zh">固件 v0.1.0 和内容包 <code>a2-start</code>：八个 A2 卡组，96 张卡片，英文和中文翻译。</span>
+      <span class="en">Firmware v0.1.1 and the content pack <code>a2-start</code>: eight A2 decks, 96 cards, English and Chinese.</span>
+      <span class="zh">固件 v0.1.1 和内容包 <code>a2-start</code>：八个 A2 卡组，96 张卡片，英文和中文翻译。</span>
     </p>
   </div>
+  <p class="note board-note">
+    <span class="en">On the Waveshare board, BOOT is previous (hold it to go back) and a short press of PWR is next. It has no clock that keeps running while it is off: after it was switched off, set the time again. If installing fails on this board, please tell <a href="https://github.com/pockegar">@pockegar</a> in an issue.</span>
+    <span class="zh">微雪板上，BOOT 键是上一个（长按返回），短按 PWR 键是下一个。它没有关机后还能继续走的时钟：每次关机再开机后，需要重新设置时间。如果在这块板子上安装失败，请在 issue 里告诉 <a href="https://github.com/pockegar">@pockegar</a>。</span>
+  </p>
 
   <h2><span class="en">How it works</span><span class="zh">安装步骤</span></h2>
   <ol>
+    <li>
+      <span class="en">Choose your watch above. A firmware for the other board does not start on yours, but harms nothing: install again with the right one.</span>
+      <span class="zh">在上面选择你的手表。装错了另一款的固件，手表不会启动，但也不会损坏：选对后重新安装即可。</span>
+    </li>
     <li>
       <span class="en">Use <b>Chrome</b> or <b>Edge</b> on a computer (Windows, macOS, Linux or ChromeOS).</span>
       <span class="zh">在电脑上用 <b>Chrome</b> 或 <b>Edge</b> 浏览器（Windows、macOS、Linux 或 ChromeOS 均可）。</span>
@@ -144,8 +181,8 @@
   </details>
   <details>
     <summary><span class="en">I prefer the command line</span><span class="zh">我更习惯用命令行</span></summary>
-    <p class="en">Download <code>knoedel-watch-0.1.0-full.bin</code> from the project's releases and run <code>python3 -m esptool --chip esp32s3 write-flash 0x0 knoedel-watch-0.1.0-full.bin</code> (<code>pip install esptool</code>). This is a fresh install: it erases progress and settings.</p>
-    <p class="zh">从项目的 Releases 下载 <code>knoedel-watch-0.1.0-full.bin</code>，然后运行 <code>python3 -m esptool --chip esp32s3 write-flash 0x0 knoedel-watch-0.1.0-full.bin</code>（先 <code>pip install esptool</code>）。这相当于全新安装，会清空练习进度和设置。</p>
+    <p class="en">Download the image for your watch from the project's releases, <code>knoedel-watch-0.1.1-m5_stopwatch-full.bin</code> or <code>knoedel-watch-0.1.1-waveshare_175c-full.bin</code>, and run <code>python3 -m esptool --chip esp32s3 write-flash 0x0 &lt;file&gt;</code> (<code>pip install esptool</code>). This is a fresh install: it erases progress and settings.</p>
+    <p class="zh">从项目的 Releases 下载你手表对应的镜像：<code>knoedel-watch-0.1.1-m5_stopwatch-full.bin</code> 或 <code>knoedel-watch-0.1.1-waveshare_175c-full.bin</code>，然后运行 <code>python3 -m esptool --chip esp32s3 write-flash 0x0 &lt;文件&gt;</code>（先 <code>pip install esptool</code>）。这相当于全新安装，会清空练习进度和设置。</p>
   </details>
 
   <p class="note">
@@ -154,8 +191,8 @@
   </p>
 
   <footer>
-    <span class="en">Code: MIT · Learning content: CC BY-NC-SA 4.0 · The characters Knödel and Brezel: all rights reserved. Installer: ESP Web Tools.</span>
-    <span class="zh">代码：MIT · 学习内容：CC BY-NC-SA 4.0 · Knödel 和 Brezel 两个角色保留所有权利。安装工具：ESP Web Tools。</span>
+    <span class="en">Code: MIT · Learning content: CC BY-NC-SA 4.0 · The characters Knödel and Brezel: all rights reserved. Waveshare port: <a href="https://github.com/pockegar">@pockegar</a>. Installer: ESP Web Tools.</span>
+    <span class="zh">代码：MIT · 学习内容：CC BY-NC-SA 4.0 · Knödel 和 Brezel 两个角色保留所有权利。微雪板移植：<a href="https://github.com/pockegar">@pockegar</a>。安装工具：ESP Web Tools。</span>
   </footer>
 </main>
 <script>
@@ -171,6 +208,22 @@
   try { saved = localStorage.getItem("lang"); } catch (e) {}
   setLang(saved || ((navigator.language || "").toLowerCase().startsWith("zh") ? "zh" : "en"));
   buttons.forEach(b => b.addEventListener("click", () => setLang(b.dataset.set)));
+
+  // The board decides which firmware the Install button writes (manifest-<board>.json).
+  const boards = document.querySelectorAll(".board");
+  const install = document.querySelector(".install");
+  const installButton = document.querySelector("esp-web-install-button");
+  function setBoard(board) {
+    install.dataset.board = board;
+    installButton.manifest = `manifest-${board}.json`;
+    installButton.setAttribute("manifest", `manifest-${board}.json`);
+    boards.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.board === board)));
+    try { localStorage.setItem("board", board); } catch (e) {}
+  }
+  let savedBoard = null;
+  try { savedBoard = localStorage.getItem("board"); } catch (e) {}
+  if ([...boards].some(b => b.dataset.board === savedBoard)) setBoard(savedBoard);
+  boards.forEach(b => b.addEventListener("click", () => setBoard(b.dataset.board)));
 </script>
 </body>
 </html>

@@ -1,0 +1,28 @@
+{
+  "name": "Knödel Watch for Waveshare ESP32-S3-Touch-AMOLED-1.75C",
+  "version": "0.1.1",
+  "new_install_prompt_erase": true,
+  "builds": [
+    {
+      "chipFamily": "ESP32-S3",
+      "parts": [
+        {
+          "path": "firmware/waveshare_175c/bootloader.bin",
+          "offset": 0
+        },
+        {
+          "path": "firmware/waveshare_175c/partition-table.bin",
+          "offset": 32768
+        },
+        {
+          "path": "firmware/waveshare_175c/knoedel_watch.bin",
+          "offset": 65536
+        },
+        {
+          "path": "firmware/content-a2-start.bin",
+          "offset": 3211264
+        }
+      ]
+    }
+  ]
+}
