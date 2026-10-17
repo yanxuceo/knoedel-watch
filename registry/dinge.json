@@ -1,0 +1,15 @@
+{
+  "character": "dinge",
+  "maintained_by": "firmware: list only what is implemented on the device",
+  "pose": {
+    
+  },
+  "motion": [],
+  "fx": [],
+  "prop": [
+    "sofa", "teppich", "lampe", "regal", "schrank", "spiegel",
+    "herd", "heizung", "steckdose", "arzt", "praxis", "krankenkasse",
+    "rezept", "apotheke", "medikament", "tablette"
+  ],
+  "bubble": []
+}

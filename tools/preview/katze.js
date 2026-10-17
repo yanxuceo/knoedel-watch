@@ -191,6 +191,9 @@ const MOTION = {
   'drop':  (p, c, w) => { const u = ease(clamp(Math.sin(c * 2) * 0.9 + 0.5)); p.hRy += u * 14 * w; p.hRx += u * 3 * w; p.lookY += u * 1.2 * w; },
   'knock': (p, c, w) => { const on = Math.sin(c * 1.6) > -0.2 ? 1 : 0; p.hRx += Math.max(0, Math.sin(c * 11)) * 4 * w * on; p.rot += Math.max(0, Math.sin(c * 11)) * 0.6 * w * on; },
   'write': (p, c, w) => { p.hRx += Math.sin(c * 12) * 2.5 * w; p.hRy += Math.sin(c * 6) * 1 * w; },
+  /* new in the noun decks */
+  'cough': (p, c, w) => { const u = (c % 1.8) / 1.8, k = u < 0.12 ? u / 0.12 : u < 0.3 ? 1 - (u - 0.12) / 0.18 : 0;
+    p.rot += 4 * k * w; p.shut = Math.max(p.shut, k * w); p.mopen = Math.max(p.mopen, 0.5 * k * w); p.jump -= 1.5 * k * w; },
 };
 
 const txt = (g, x, y, t, size, fill, anchor) => { const e = el('text', { x, y, 'font-size': size, 'font-weight': 800, fill, 'font-family': FONT, 'text-anchor': anchor || 'middle' }, g); e.textContent = t; return e; };
@@ -609,6 +612,34 @@ const PROP = {
     el('rect', { x: -16, y: -10, width: 32, height: 22, rx: 2, fill: '#4BA3D9', stroke: '#2F7DB8', 'stroke-width': 1.4 }, s);
     el('rect', { x: -6, y: -2, width: 12, height: 5, rx: 1, fill: '#FFFFFF' }, s);
     return s; }, tick: (s, P) => { const x = (P.L[0] + P.R[0]) / 2, y = (P.L[1] + P.R[1]) / 2; s.setAttribute('transform', `translate(${f1(x)} ${f1(y)})`); } },
+  /* new in the noun decks (cards drawn by the cat) */
+  'fridge': { layer: 'back', make: g => {
+    el('rect', { x: 44, y: -122, width: 58, height: 122, rx: 8, fill: '#F6F8FB', stroke: '#AEB6C4', 'stroke-width': 2.2 }, g);
+    el('rect', { x: 48, y: -78, width: 50, height: 74, rx: 3, fill: '#FFF4C2' }, g);
+    [-56, -32].forEach(y => el('line', { x1: 49, y1: y, x2: 97, y2: y, stroke: '#E9D58A', 'stroke-width': 2 }, g));
+    el('rect', { x: 54, y: -74, width: 10, height: 18, rx: 1.5, fill: '#FFFFFF', stroke: '#C9CED6' }, g); el('rect', { x: 54, y: -68, width: 10, height: 4, fill: '#4BA3D9' }, g);
+    el('circle', { cx: 86, cy: -61, r: 5, fill: '#E5484D' }, g); el('path', { d: 'M70 -32 L86 -32 L86 -42 Z', fill: '#F2C14E' }, g);
+    el('rect', { x: 44, y: -122, width: 58, height: 42, rx: 8, fill: '#F6F8FB', stroke: '#AEB6C4', 'stroke-width': 2.2 }, g);
+    el('path', { d: 'M102 -80 L118 -86 L118 -4 L102 -2 Z', fill: '#F6F8FB', stroke: '#AEB6C4', 'stroke-width': 2.2, 'stroke-linejoin': 'round' }, g);
+    return null; }, tick: () => {} },
+  'sofa-back': { layer: 'back', make: g => {
+    el('rect', { x: -58, y: -66, width: 170, height: 40, rx: 14, fill: '#9D8DF1', stroke: '#7C6BD6', 'stroke-width': 2 }, g);
+    el('rect', { x: -62, y: -36, width: 178, height: 28, rx: 10, fill: '#B3A6F5', stroke: '#7C6BD6', 'stroke-width': 2 }, g);
+    el('rect', { x: 96, y: -50, width: 22, height: 44, rx: 10, fill: '#9D8DF1', stroke: '#7C6BD6', 'stroke-width': 2 }, g);
+    [[-50, -8], [104, -8]].forEach(([x, y]) => el('rect', { x, y, width: 5, height: 8, fill: '#7A4A2E' }, g));
+    return null; }, tick: () => {} },
+  'pillow': { layer: 'hand', make: g => { const s = el('g', {}, g);
+    el('rect', { x: -14, y: -14, width: 28, height: 28, rx: 8, fill: '#F2C14E', stroke: '#C99227', 'stroke-width': 1.6 }, s); el('circle', { r: 2.4, fill: '#C99227' }, s); return s; },
+    tick: (s, P) => { const x = (P.L[0] + P.R[0]) / 2, y = (P.L[1] + P.R[1]) / 2; s.setAttribute('transform', `translate(${f1(x)} ${f1(y)}) rotate(-8)`); } },
+  'red-nose': { layer: 'wear', make: g => { el('ellipse', { cx: 0, cy: -77.5, rx: 4.6, ry: 3.6, fill: '#E5484D' }, g); el('circle', { cx: 1.4, cy: -78.8, r: 1.1, fill: '#FFB3B3' }, g); return null; }, tick: () => {} },
+  'tissue': { layer: 'hand', make: g => { const s = el('g', {}, g);
+    el('path', { d: 'M-9 -8 Q0 -12 9 -8 L8 8 Q0 11 -8 8 Z', fill: '#FFFFFF', stroke: '#C9CED6', 'stroke-width': 1.2, 'stroke-linejoin': 'round' }, s);
+    el('path', { d: 'M-4 -6 Q-2 0 -5 6 M3 -7 Q5 0 2 7', fill: 'none', stroke: '#E4E7EE', 'stroke-width': 1 }, s);
+    return s; }, tick: (s, P) => s.setAttribute('transform', `translate(${f1(P.R[0] - 2)} ${f1(P.R[1] - 4)}) rotate(-10)`) },
+  'plaster-cheek': { layer: 'wear', make: g => {
+    el('rect', { x: 12, y: -84, width: 15, height: 7, rx: 3, fill: '#F2D2A6', stroke: '#D9AE7E', 'stroke-width': 1, transform: 'rotate(-20 19 -80)' }, g);
+    el('rect', { x: 16.5, y: -83, width: 6, height: 5, rx: 1, fill: '#E9BF8E', transform: 'rotate(-20 19 -80)' }, g);
+    return null; }, tick: () => {} },
 };
 
 /* ---------- FX: { make(group, card) -> state, tick(state, clock, weight, anchors) } ----------
@@ -776,6 +807,18 @@ const FX = {
     tick: (e, c, w, h) => { const o = h.clip || [h.x + 10, h.by]; const k = (c * 0.45) % 1;
       e.setAttribute('transform', `translate(${f1(o[0])} ${f1(o[1] + 4)})`); e.setAttribute('stroke-dashoffset', f1(40 * (1 - clamp(k * 1.4)))); e.setAttribute('opacity', w.toFixed(2)); },
   },
+  /* new in the noun decks */
+  'cough-puffs': {
+    make: g => [0, 1, 2].map(() => el('circle', { r: 3, fill: '#D6DCE6', opacity: 0 }, g)),
+    tick: (s, c, w, h) => { const u = (c % 1.8) / 1.8; s.forEach((q, i) => { const k = clamp((u - 0.08 - i * 0.04) / 0.4);
+      q.setAttribute('cx', f1(h.x + 8 + k * 26 + i * 4)); q.setAttribute('cy', f1(h.my - 2 - k * 6 + i * 3)); q.setAttribute('r', f1(2 + k * 4));
+      q.setAttribute('opacity', (w * (k > 0 && k < 1 ? 1 - k : 0)).toFixed(2)); }); },
+  },
+  'pain': {
+    make: g => [0, 1, 2].map(() => el('path', { d: 'M0 0 l4 -4 l4 4 l4 -4', fill: 'none', stroke: '#E5484D', 'stroke-width': 2.2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', opacity: 0 }, g)),
+    tick: (s, c, w, h) => s.forEach((z, i) => { const k = (c * 1.2 + i / 3) % 1;
+      z.setAttribute('transform', `translate(${f1(h.x + 34 + k * 6)} ${f1(h.by - 14 + i * 12)})`); z.setAttribute('opacity', (w * Math.sin(Math.PI * k)).toFixed(2)); }),
+  },
 };
 
 const BUBBLE = {};
@@ -830,4 +873,4 @@ class KatzeScene {
     this.fx.forEach(f => f.def.tick(f.s, c, w, h));
   }
 }
-const Scene = KatzeScene; /* the player instantiates Scene */
+var Scene = KatzeScene; /* the player instantiates Scene */

@@ -1271,7 +1271,27 @@ void draw_stage(G *g, int deck, int index, float t, float clock)
         st.r = COVER_R;
         st.bg = COVER_BG;
         st.accent = COVER_COLOR;
-        anim = cover_anim(deck_info(deck).character);
+        const int who = deck_info(deck).character;
+        if (character::count(who, character::POSE) > 0) {
+            anim = cover_anim(who);
+        } else {
+            // A character without a body (the things of a noun deck) shows the
+            // deck's first card it draws itself.
+            static int cover_deck = -1;
+            static character::Anim first;
+            if (cover_deck != deck) {
+                character::anim_reset(first, who);
+                for (int i = 0; i < deck_info(deck).cards; i++) {
+                    const Card c = deck_card(deck, i);
+                    if (c.anim.who == who) {
+                        first = c.anim;
+                        break;
+                    }
+                }
+                cover_deck = deck;
+            }
+            anim = first;
+        }
     } else {
         // Looking a card up resolves its animation ids by name: once per card, not per frame.
         static Card card;

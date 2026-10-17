@@ -1,15 +1,15 @@
 {
   "description": "Fixed colours for grammar markup. 'light' is for light backgrounds (web), 'dark' for the black round screen. The card keyword uses card.style.color instead.",
   "light": {
-    "gender": { "der": "#2F6BD6", "die": "#D6435E", "das": "#22966A" },
-    "prefix": "#B4740A",
+    "gender": { "der": "#2F6BD6", "die": "#D6435E", "das": "#B7791F" },
+    "prefix": "#D9620F",
     "refl":   "#0E8C7E",
     "aux":    { "haben": "#2A5FC4", "sein": "#D2402A" },
     "case":   { "Akk": "#E1601A", "Dat": "#13946A", "Gen": "#7A4FD6" }
   },
   "dark": {
-    "gender": { "der": "#7FA6F5", "die": "#FF7E95", "das": "#4FD39E" },
-    "prefix": "#F0B341",
+    "gender": { "der": "#7FA6F5", "die": "#FF7E95", "das": "#FFC24A" },
+    "prefix": "#FF9F43",
     "refl":   "#4FD1BF",
     "aux":    { "haben": "#86A9F5", "sein": "#FF8468" },
     "case":   { "Akk": "#FF8A47", "Dat": "#3CCB98", "Gen": "#B394FF" }

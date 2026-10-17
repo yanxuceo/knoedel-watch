@@ -5,7 +5,7 @@
 namespace {
 
 // Layout written by tools/import_decks.py; all fields little-endian.
-constexpr uint32_t PACK_VERSION = 2;
+constexpr uint32_t PACK_VERSION = 3;
 constexpr int MAX_POSE = character::MAX_POSE;
 
 struct __attribute__((packed)) RawHeader {
@@ -27,6 +27,7 @@ struct __attribute__((packed)) RawCard {
         float value;
     } pose[MAX_POSE];
     Clip clips[4];
+    uint32_t character;  // empty: the deck's character
 };
 
 const uint8_t *s_pack;
@@ -73,7 +74,9 @@ const char *deck_card_id(int deck, int index)
 Card deck_card(int deck, int index)
 {
     const RawCard &r = ((const RawCard *)(s_pack + s_head->cards_off))[raw_deck(deck).first_card + index];
-    const int who = deck_info(deck).character;
+    // A card may be drawn by another character than its deck's (the cat on some noun cards).
+    const int own = r.character ? character::find(str(r.character)) : -1;
+    const int who = own >= 0 ? own : deck_info(deck).character;
     Card c;
     c.id = str(r.id);
     c.lead = str(r.lead);

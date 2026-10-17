@@ -5,7 +5,7 @@
 // an optional thought bubble, all referred to by the ids in
 // registry/<character>.json. The drawing reference for every id is
 // tools/preview/<character>.js. Each character's code is one file
-// (knoedel.cpp, katze.cpp) that provides an Impl.
+// (knoedel.cpp, katze.cpp, dinge.cpp) that provides an Impl.
 
 #include <M5GFX.h>
 

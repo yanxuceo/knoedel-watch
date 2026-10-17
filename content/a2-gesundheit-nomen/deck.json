@@ -1,0 +1,538 @@
+{
+  "format": 1,
+  "id": "a2-gesundheit-nomen",
+  "version": "0.1.0",
+  "episode": 14,
+  "title": {
+    "de": "Beim Arzt",
+    "zh-Hans": "看病",
+    "en": "At the doctor's"
+  },
+  "level": "A2",
+  "character": "dinge",
+  "locales": [
+    "zh-Hans",
+    "en"
+  ],
+  "license": "CC-BY-NC-SA-4.0",
+  "review": {
+    "status": "draft",
+    "notes": "Season 1 (A2), noun deck. Symptoms are acted by the cat, things (card, prescription, pills) are drawn alone. Please check every notes entry."
+  },
+  "cards": [
+    {
+      "id": "arzt",
+      "pos": "noun",
+      "headword": "Arzt",
+      "gloss": {
+        "zh-Hans": "医生",
+        "en": "doctor"
+      },
+      "noun": {
+        "article": "der",
+        "plural": "{{Ä|pl}}rzt{{e|pl}}"
+      },
+      "example": {
+        "de": "Morgen gehe ich zum {{Arzt}}.",
+        "translations": {
+          "zh-Hans": "我明天去看医生。",
+          "en": "I'm going to the doctor tomorrow."
+        }
+      },
+      "tip": {
+        "zh-Hans": "女医生：die Ärztin",
+        "en": "A female doctor: die Ärztin"
+      },
+      "style": {
+        "color": "#2F6BD6",
+        "background": "#DCE6F7"
+      },
+      "anim": {
+        "pose": {},
+        "tint": null,
+        "motion": [],
+        "fx": [],
+        "props": [
+          "arzt"
+        ],
+        "bubble": null
+      },
+      "notes": "zum = zu dem."
+    },
+    {
+      "id": "praxis",
+      "pos": "noun",
+      "headword": "Praxis",
+      "gloss": {
+        "zh-Hans": "诊所",
+        "en": "doctor's practice"
+      },
+      "noun": {
+        "article": "die",
+        "plural": "Prax{{en|pl}}"
+      },
+      "example": {
+        "de": "Die {{Praxis}} ist am Mittwochnachmittag geschlossen.",
+        "translations": {
+          "zh-Hans": "诊所周三下午不开门。",
+          "en": "The practice is closed on Wednesday afternoon."
+        }
+      },
+      "tip": {
+        "zh-Hans": "复数很特别：die Praxis → die {{Praxen}}",
+        "en": "Odd plural: die Praxis → die {{Praxen}}"
+      },
+      "style": {
+        "color": "#D6435E",
+        "background": "#FBE1E7"
+      },
+      "anim": {
+        "pose": {},
+        "tint": null,
+        "motion": [],
+        "fx": [],
+        "props": [
+          "praxis"
+        ],
+        "bubble": null
+      },
+      "notes": "Many practices in Germany close on Wednesday afternoons."
+    },
+    {
+      "id": "krankenkasse",
+      "pos": "noun",
+      "headword": "Krankenkasse",
+      "gloss": {
+        "zh-Hans": "医保公司",
+        "en": "health insurer"
+      },
+      "noun": {
+        "article": "die",
+        "plural": "Krankenkasse{{n|pl}}"
+      },
+      "example": {
+        "de": "Bei welcher {{Krankenkasse}} sind Sie versichert?",
+        "translations": {
+          "zh-Hans": "您的医保是哪家的？",
+          "en": "Which health insurer are you with?"
+        }
+      },
+      "tip": {
+        "zh-Hans": "看病要带医保卡：die {{Gesundheitskarte}}",
+        "en": "Bring your card: die {{Gesundheitskarte}}"
+      },
+      "style": {
+        "color": "#D6435E",
+        "background": "#FBE1E7"
+      },
+      "anim": {
+        "pose": {},
+        "tint": null,
+        "motion": [],
+        "fx": [],
+        "props": [
+          "krankenkasse"
+        ],
+        "bubble": null
+      }
+    },
+    {
+      "id": "fieber",
+      "pos": "noun",
+      "headword": "Fieber",
+      "gloss": {
+        "zh-Hans": "发烧",
+        "en": "fever"
+      },
+      "noun": {
+        "article": "das",
+        "plural": null
+      },
+      "example": {
+        "de": "Ich habe seit gestern {{Fieber}}.",
+        "translations": {
+          "zh-Hans": "我从昨天开始发烧。",
+          "en": "I've had a fever since yesterday."
+        }
+      },
+      "tip": {
+        "zh-Hans": "不加冠词：Ich habe {{Fieber}}.",
+        "en": "No article: Ich habe {{Fieber}}."
+      },
+      "style": {
+        "color": "#B7791F",
+        "background": "#FFF0C9"
+      },
+      "anim": {
+        "character": "katze",
+        "pose": {
+          "lid": 0.35,
+          "smile": -0.3,
+          "blush": 1,
+          "earL": -10,
+          "earR": -10
+        },
+        "tint": null,
+        "motion": [
+          "tremble"
+        ],
+        "fx": [
+          "sweat"
+        ],
+        "props": [
+          "thermometer"
+        ],
+        "bubble": null
+      },
+      "notes": "Plural (die Fieber) is rare, so none is shown."
+    },
+    {
+      "id": "husten",
+      "pos": "noun",
+      "headword": "Husten",
+      "gloss": {
+        "zh-Hans": "咳嗽",
+        "en": "cough"
+      },
+      "noun": {
+        "article": "der",
+        "plural": null
+      },
+      "example": {
+        "de": "Gegen meinen {{Husten}} trinke ich viel Tee.",
+        "translations": {
+          "zh-Hans": "为了止咳，我喝很多茶。",
+          "en": "For my cough, I drink lots of tea."
+        }
+      },
+      "tip": {
+        "zh-Hans": "动词 husten：Ich {{huste}} die ganze Nacht.",
+        "en": "The verb husten: Ich {{huste}} die ganze Nacht."
+      },
+      "style": {
+        "color": "#2F6BD6",
+        "background": "#DCE6F7"
+      },
+      "anim": {
+        "character": "katze",
+        "pose": {
+          "smile": -0.2,
+          "earL": -6,
+          "earR": -6,
+          "hLx": -4,
+          "hLy": -66
+        },
+        "tint": null,
+        "motion": [
+          "cough"
+        ],
+        "fx": [
+          "cough-puffs"
+        ],
+        "props": [],
+        "bubble": null
+      },
+      "notes": "gegen + Akk: gegen meinen Husten. Plural is rare, so none is shown."
+    },
+    {
+      "id": "schnupfen",
+      "pos": "noun",
+      "headword": "Schnupfen",
+      "gloss": {
+        "zh-Hans": "流鼻涕",
+        "en": "runny nose"
+      },
+      "noun": {
+        "article": "der",
+        "plural": null
+      },
+      "example": {
+        "de": "Ich habe {{Schnupfen}} und brauche Taschentücher.",
+        "translations": {
+          "zh-Hans": "我流鼻涕，需要纸巾。",
+          "en": "I've got a runny nose and need tissues."
+        }
+      },
+      "tip": {
+        "zh-Hans": "感冒 die Erkältung，流感 die Grippe",
+        "en": "A cold: die Erkältung. Flu: die Grippe."
+      },
+      "style": {
+        "color": "#2F6BD6",
+        "background": "#DCE6F7"
+      },
+      "anim": {
+        "character": "katze",
+        "pose": {
+          "lid": 0.3,
+          "smile": -0.2,
+          "hRx": 14,
+          "hRy": -64,
+          "lookX": -0.6
+        },
+        "tint": null,
+        "motion": [
+          "tremble"
+        ],
+        "fx": [],
+        "props": [
+          "red-nose",
+          "tissue"
+        ],
+        "bubble": null
+      },
+      "notes": "Plural is rare, so none is shown."
+    },
+    {
+      "id": "ruecken",
+      "pos": "noun",
+      "headword": "Rücken",
+      "gloss": {
+        "zh-Hans": "背",
+        "en": "back"
+      },
+      "noun": {
+        "article": "der",
+        "plural": "Rücken"
+      },
+      "example": {
+        "de": "Ich habe den ganzen Tag gesessen, jetzt tut mein {{Rücken}} weh.",
+        "translations": {
+          "zh-Hans": "坐了一整天，现在背好疼。",
+          "en": "I've been sitting all day, now my back hurts."
+        }
+      },
+      "tip": {
+        "zh-Hans": "哪儿疼都能这么说：Mein Kopf {{tut weh}}.",
+        "en": "Works for any pain: Mein Kopf {{tut weh}}."
+      },
+      "style": {
+        "color": "#2F6BD6",
+        "background": "#DCE6F7"
+      },
+      "anim": {
+        "character": "katze",
+        "pose": {
+          "rot": -6,
+          "hRx": 31,
+          "hRy": -30,
+          "shut": 0.7,
+          "smile": -0.5,
+          "earL": -12,
+          "earR": -12
+        },
+        "tint": null,
+        "motion": [
+          "tremble"
+        ],
+        "fx": [
+          "pain"
+        ],
+        "props": [],
+        "bubble": null
+      },
+      "notes": "hat gesessen; in southern Germany, Austria and Switzerland also ist gesessen."
+    },
+    {
+      "id": "pflaster",
+      "pos": "noun",
+      "headword": "Pflaster",
+      "gloss": {
+        "zh-Hans": "创可贴",
+        "en": "plaster"
+      },
+      "noun": {
+        "article": "das",
+        "plural": "Pflaster"
+      },
+      "example": {
+        "de": "Ich habe mich geschnitten – hast du ein {{Pflaster}}?",
+        "translations": {
+          "zh-Hans": "我划了个口子，你有创可贴吗？",
+          "en": "I've cut myself – have you got a plaster?"
+        }
+      },
+      "tip": {
+        "zh-Hans": "复数不变：ein Pflaster → zwei {{Pflaster}}",
+        "en": "Same plural: ein Pflaster → zwei {{Pflaster}}"
+      },
+      "style": {
+        "color": "#B7791F",
+        "background": "#FFF0C9"
+      },
+      "anim": {
+        "character": "katze",
+        "pose": {
+          "hRx": 24,
+          "hRy": -74,
+          "smile": 0.5,
+          "happy": 1
+        },
+        "tint": null,
+        "motion": [
+          "tail-wag"
+        ],
+        "fx": [
+          "sparkles"
+        ],
+        "props": [
+          "plaster-cheek"
+        ],
+        "bubble": null
+      }
+    },
+    {
+      "id": "rezept",
+      "pos": "noun",
+      "headword": "Rezept",
+      "gloss": {
+        "zh-Hans": "处方",
+        "en": "prescription"
+      },
+      "noun": {
+        "article": "das",
+        "plural": "Rezept{{e|pl}}"
+      },
+      "example": {
+        "de": "Für dieses Medikament brauchen Sie ein {{Rezept}}.",
+        "translations": {
+          "zh-Hans": "这种药需要处方。",
+          "en": "You need a prescription for this medicine."
+        }
+      },
+      "tip": {
+        "zh-Hans": "Rezept 也是“菜谱”！",
+        "en": "Rezept also means recipe!"
+      },
+      "style": {
+        "color": "#B7791F",
+        "background": "#FFF0C9"
+      },
+      "anim": {
+        "pose": {},
+        "tint": null,
+        "motion": [],
+        "fx": [],
+        "props": [
+          "rezept"
+        ],
+        "bubble": null
+      }
+    },
+    {
+      "id": "apotheke",
+      "pos": "noun",
+      "headword": "Apotheke",
+      "gloss": {
+        "zh-Hans": "药店",
+        "en": "pharmacy"
+      },
+      "noun": {
+        "article": "die",
+        "plural": "Apotheke{{n|pl}}"
+      },
+      "example": {
+        "de": "Die {{Apotheke}} ist gleich um die Ecke.",
+        "translations": {
+          "zh-Hans": "药店就在拐角。",
+          "en": "The pharmacy is just around the corner."
+        }
+      },
+      "tip": {
+        "zh-Hans": "认准红色的 A；卖日用品的是 die {{Drogerie}}",
+        "en": "Look for the red A. Toiletries: die {{Drogerie}}"
+      },
+      "style": {
+        "color": "#D6435E",
+        "background": "#FBE1E7"
+      },
+      "anim": {
+        "pose": {},
+        "tint": null,
+        "motion": [],
+        "fx": [],
+        "props": [
+          "apotheke"
+        ],
+        "bubble": null
+      }
+    },
+    {
+      "id": "medikament",
+      "pos": "noun",
+      "headword": "Medikament",
+      "gloss": {
+        "zh-Hans": "药",
+        "en": "medicine"
+      },
+      "noun": {
+        "article": "das",
+        "plural": "Medikament{{e|pl}}"
+      },
+      "example": {
+        "de": "Nehmen Sie regelmäßig {{Medikamente}}?",
+        "translations": {
+          "zh-Hans": "您有长期服用的药吗？",
+          "en": "Do you take any medication regularly?"
+        }
+      },
+      "tip": {
+        "zh-Hans": "-ment 结尾的词多是 {{das}}",
+        "en": "Nouns ending in -ment are mostly {{das}}"
+      },
+      "style": {
+        "color": "#B7791F",
+        "background": "#FFF0C9"
+      },
+      "anim": {
+        "pose": {},
+        "tint": null,
+        "motion": [],
+        "fx": [],
+        "props": [
+          "medikament"
+        ],
+        "bubble": null
+      },
+      "notes": "Exceptions to the -ment rule exist (der Moment, der Zement)."
+    },
+    {
+      "id": "tablette",
+      "pos": "noun",
+      "headword": "Tablette",
+      "gloss": {
+        "zh-Hans": "药片",
+        "en": "tablet, pill"
+      },
+      "noun": {
+        "article": "die",
+        "plural": "Tablette{{n|pl}}"
+      },
+      "example": {
+        "de": "Nehmen Sie dreimal täglich eine {{Tablette}}.",
+        "translations": {
+          "zh-Hans": "每天三次，每次一片。",
+          "en": "Take one tablet three times a day."
+        }
+      },
+      "tip": {
+        "zh-Hans": "吃药用 {{nehmen}}，不说 essen",
+        "en": "Pills are taken, not eaten: eine Tablette {{nehmen}}"
+      },
+      "style": {
+        "color": "#D6435E",
+        "background": "#FBE1E7"
+      },
+      "anim": {
+        "pose": {},
+        "tint": null,
+        "motion": [],
+        "fx": [],
+        "props": [
+          "tablette"
+        ],
+        "bubble": null
+      }
+    }
+  ]
+}

@@ -12,13 +12,14 @@
     "tail-wag", "breathe", "bounce", "hop", "walk", "scrub",
     "push", "sweep", "smooth", "reach-up", "pour", "watch-spin",
     "pedal", "run", "tap", "look-around", "tremble", "type",
-    "drop", "knock", "write", "dance"
+    "drop", "knock", "write", "dance", "cough"
   ],
   "fx": [
     "sparkles", "bubbles", "dust", "shine", "steam", "stink",
     "drops", "sun", "speed-lines", "sweat", "sigh-puffs", "question",
     "hearts", "rain", "contactless", "parcel", "swap", "coins",
-    "ring", "callback", "checkmark", "knock-lines", "signature"
+    "ring", "callback", "checkmark", "knock-lines", "signature", "cough-puffs",
+    "pain"
   ],
   "prop": [
     "bed", "window", "washing-machine", "drying-rack", "ironing-board", "plant",
@@ -30,7 +31,8 @@
     "shoe-small", "card", "gift", "phone", "sweater-small", "toaster",
     "wallet", "coin", "phone-ear", "calendar", "calendar-move", "calendar-x",
     "thermometer", "big-clock", "door", "number-display", "ticket", "clipboard",
-    "pen", "folder"
+    "pen", "folder", "fridge", "sofa-back", "pillow", "red-nose",
+    "tissue", "plaster-cheek"
   ],
   "bubble": []
 }

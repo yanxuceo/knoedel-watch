@@ -1,0 +1,517 @@
+{
+  "format": 1,
+  "id": "a2-wohnung-nomen",
+  "version": "0.1.0",
+  "episode": 13,
+  "title": {
+    "de": "Meine Wohnung",
+    "zh-Hans": "家里的东西",
+    "en": "At home"
+  },
+  "level": "A2",
+  "character": "dinge",
+  "locales": [
+    "zh-Hans",
+    "en"
+  ],
+  "license": "CC-BY-NC-SA-4.0",
+  "review": {
+    "status": "draft",
+    "notes": "Season 1 (A2), first noun deck. Thread: where things are, so the examples practise Wo? + Dativ (im, auf dem, über dem). Tips: gender and plural rules. Please check every notes entry."
+  },
+  "cards": [
+    {
+      "id": "sofa",
+      "pos": "noun",
+      "headword": "Sofa",
+      "gloss": {
+        "zh-Hans": "沙发",
+        "en": "sofa"
+      },
+      "noun": {
+        "article": "das",
+        "plural": "Sofa{{s|pl}}"
+      },
+      "example": {
+        "de": "Am Sonntag liege ich gern auf dem {{Sofa}}.",
+        "translations": {
+          "zh-Hans": "周日我喜欢躺在沙发上。",
+          "en": "On Sundays I like lying on the sofa."
+        }
+      },
+      "tip": {
+        "zh-Hans": "也常说 die Couch，意思一样",
+        "en": "Also common: die Couch – same thing"
+      },
+      "style": {
+        "color": "#B7791F",
+        "background": "#FFF0C9"
+      },
+      "anim": {
+        "pose": {},
+        "tint": null,
+        "motion": [],
+        "fx": [],
+        "props": [
+          "sofa"
+        ],
+        "bubble": null
+      }
+    },
+    {
+      "id": "kissen",
+      "pos": "noun",
+      "headword": "Kissen",
+      "gloss": {
+        "zh-Hans": "靠垫、枕头",
+        "en": "cushion, pillow"
+      },
+      "noun": {
+        "article": "das",
+        "plural": "Kissen"
+      },
+      "example": {
+        "de": "Auf dem Sofa liegen viele bunte {{Kissen}}.",
+        "translations": {
+          "zh-Hans": "沙发上放着好多彩色靠垫。",
+          "en": "There are lots of colourful cushions on the sofa."
+        }
+      },
+      "tip": {
+        "zh-Hans": "床上的枕头也叫 das {{Kopfkissen}}",
+        "en": "The pillow on your bed: das {{Kopfkissen}}"
+      },
+      "style": {
+        "color": "#B7791F",
+        "background": "#FFF0C9"
+      },
+      "anim": {
+        "character": "katze",
+        "pose": {
+          "hLx": -12,
+          "hLy": -50,
+          "hRx": 12,
+          "hRy": -50,
+          "happy": 1,
+          "smile": 0.9,
+          "blush": 0.6
+        },
+        "tint": null,
+        "motion": [
+          "tail-wag",
+          "hop"
+        ],
+        "fx": [],
+        "props": [
+          "sofa-back",
+          "pillow"
+        ],
+        "bubble": null
+      }
+    },
+    {
+      "id": "teppich",
+      "pos": "noun",
+      "headword": "Teppich",
+      "gloss": {
+        "zh-Hans": "地毯",
+        "en": "rug, carpet"
+      },
+      "noun": {
+        "article": "der",
+        "plural": "Teppich{{e|pl}}"
+      },
+      "example": {
+        "de": "Die Katze schläft auf dem {{Teppich}}.",
+        "translations": {
+          "zh-Hans": "猫在地毯上睡觉。",
+          "en": "The cat is sleeping on the rug."
+        }
+      },
+      "tip": {
+        "zh-Hans": "地毯 der Teppich，地板 der {{Boden}}",
+        "en": "Rug: der Teppich. Floor: der {{Boden}}"
+      },
+      "style": {
+        "color": "#2F6BD6",
+        "background": "#DCE6F7"
+      },
+      "anim": {
+        "pose": {},
+        "tint": null,
+        "motion": [],
+        "fx": [],
+        "props": [
+          "teppich"
+        ],
+        "bubble": null
+      }
+    },
+    {
+      "id": "lampe",
+      "pos": "noun",
+      "headword": "Lampe",
+      "gloss": {
+        "zh-Hans": "灯",
+        "en": "lamp"
+      },
+      "noun": {
+        "article": "die",
+        "plural": "Lampe{{n|pl}}"
+      },
+      "example": {
+        "de": "Die {{Lampe}} über dem Tisch ist kaputt.",
+        "translations": {
+          "zh-Hans": "桌子上方的灯坏了。",
+          "en": "The lamp above the table is broken."
+        }
+      },
+      "tip": {
+        "zh-Hans": "开灯 das Licht {{anmachen}}，关灯 ausmachen",
+        "en": "Lights on: das Licht {{anmachen}}. Off: ausmachen"
+      },
+      "style": {
+        "color": "#D6435E",
+        "background": "#FBE1E7"
+      },
+      "anim": {
+        "pose": {},
+        "tint": null,
+        "motion": [],
+        "fx": [],
+        "props": [
+          "lampe"
+        ],
+        "bubble": null
+      }
+    },
+    {
+      "id": "regal",
+      "pos": "noun",
+      "headword": "Regal",
+      "gloss": {
+        "zh-Hans": "书架、架子",
+        "en": "shelf"
+      },
+      "noun": {
+        "article": "das",
+        "plural": "Regal{{e|pl}}"
+      },
+      "example": {
+        "de": "Die Bücher stehen im {{Regal}}.",
+        "translations": {
+          "zh-Hans": "书放在书架上。",
+          "en": "The books are on the shelf."
+        }
+      },
+      "tip": {
+        "zh-Hans": "竖着放用 {{stehen}}：Bücher stehen im Regal.",
+        "en": "Upright things stehen: Die Bücher {{stehen}} im Regal."
+      },
+      "style": {
+        "color": "#B7791F",
+        "background": "#FFF0C9"
+      },
+      "anim": {
+        "pose": {},
+        "tint": null,
+        "motion": [],
+        "fx": [],
+        "props": [
+          "regal"
+        ],
+        "bubble": null
+      }
+    },
+    {
+      "id": "schrank",
+      "pos": "noun",
+      "headword": "Schrank",
+      "gloss": {
+        "zh-Hans": "柜子、衣柜",
+        "en": "cupboard, wardrobe"
+      },
+      "noun": {
+        "article": "der",
+        "plural": "Schr{{ä|pl}}nk{{e|pl}}"
+      },
+      "example": {
+        "de": "Deine Jacke hängt im {{Schrank}}.",
+        "translations": {
+          "zh-Hans": "你的夹克挂在衣柜里。",
+          "en": "Your jacket is hanging in the wardrobe."
+        }
+      },
+      "tip": {
+        "zh-Hans": "im = in dem：der Schrank → {{im}} Schrank",
+        "en": "im = in dem: der Schrank → {{im}} Schrank"
+      },
+      "style": {
+        "color": "#2F6BD6",
+        "background": "#DCE6F7"
+      },
+      "anim": {
+        "pose": {},
+        "tint": null,
+        "motion": [],
+        "fx": [],
+        "props": [
+          "schrank"
+        ],
+        "bubble": null
+      }
+    },
+    {
+      "id": "spiegel",
+      "pos": "noun",
+      "headword": "Spiegel",
+      "gloss": {
+        "zh-Hans": "镜子",
+        "en": "mirror"
+      },
+      "noun": {
+        "article": "der",
+        "plural": "Spiegel"
+      },
+      "example": {
+        "de": "Im Bad hängt ein großer {{Spiegel}}.",
+        "translations": {
+          "zh-Hans": "浴室里挂着一面大镜子。",
+          "en": "There's a big mirror in the bathroom."
+        }
+      },
+      "tip": {
+        "zh-Hans": "复数和单数一样：die {{Spiegel}}",
+        "en": "Same form in the plural: die {{Spiegel}}"
+      },
+      "style": {
+        "color": "#2F6BD6",
+        "background": "#DCE6F7"
+      },
+      "anim": {
+        "pose": {},
+        "tint": null,
+        "motion": [],
+        "fx": [],
+        "props": [
+          "spiegel"
+        ],
+        "bubble": null
+      }
+    },
+    {
+      "id": "kuehlschrank",
+      "pos": "noun",
+      "headword": "Kühlschrank",
+      "gloss": {
+        "zh-Hans": "冰箱",
+        "en": "fridge"
+      },
+      "noun": {
+        "article": "der",
+        "plural": "Kühlschr{{ä|pl}}nk{{e|pl}}"
+      },
+      "example": {
+        "de": "Die Milch steht im {{Kühlschrank}}.",
+        "translations": {
+          "zh-Hans": "牛奶在冰箱里。",
+          "en": "The milk is in the fridge."
+        }
+      },
+      "tip": {
+        "zh-Hans": "复合词看最后一个词：Schrank → {{der}} Kühlschrank",
+        "en": "Compounds take the last word's gender: der Schrank → {{der}} Kühlschrank"
+      },
+      "style": {
+        "color": "#2F6BD6",
+        "background": "#DCE6F7"
+      },
+      "anim": {
+        "character": "katze",
+        "pose": {
+          "hRx": 46,
+          "hRy": -62,
+          "lookX": 1.6,
+          "happy": 1,
+          "smile": 0.9
+        },
+        "tint": null,
+        "motion": [
+          "tail-wag"
+        ],
+        "fx": [
+          "sparkles"
+        ],
+        "props": [
+          "fridge"
+        ],
+        "bubble": null
+      }
+    },
+    {
+      "id": "herd",
+      "pos": "noun",
+      "headword": "Herd",
+      "gloss": {
+        "zh-Hans": "灶台、炉子",
+        "en": "cooker, stove"
+      },
+      "noun": {
+        "article": "der",
+        "plural": "Herd{{e|pl}}"
+      },
+      "example": {
+        "de": "Vorsicht, der {{Herd}} ist noch heiß!",
+        "translations": {
+          "zh-Hans": "小心，灶台还烫着！",
+          "en": "Careful, the stove is still hot!"
+        }
+      },
+      "tip": {
+        "zh-Hans": "烤箱是 der {{Backofen}}，常在 Herd 下面",
+        "en": "The oven is der {{Backofen}} – often under the Herd"
+      },
+      "style": {
+        "color": "#2F6BD6",
+        "background": "#DCE6F7"
+      },
+      "anim": {
+        "pose": {},
+        "tint": null,
+        "motion": [],
+        "fx": [],
+        "props": [
+          "herd"
+        ],
+        "bubble": null
+      }
+    },
+    {
+      "id": "waschmaschine",
+      "pos": "noun",
+      "headword": "Waschmaschine",
+      "gloss": {
+        "zh-Hans": "洗衣机",
+        "en": "washing machine"
+      },
+      "noun": {
+        "article": "die",
+        "plural": "Waschmaschine{{n|pl}}"
+      },
+      "example": {
+        "de": "Die {{Waschmaschine}} steht im Keller.",
+        "translations": {
+          "zh-Hans": "洗衣机在地下室。",
+          "en": "The washing machine is in the basement."
+        }
+      },
+      "tip": {
+        "zh-Hans": "-e 结尾的阴性词，复数多半加 -n",
+        "en": "Feminine nouns in -e mostly add -n: Waschmaschine{{n}}"
+      },
+      "style": {
+        "color": "#D6435E",
+        "background": "#FBE1E7"
+      },
+      "anim": {
+        "character": "katze",
+        "pose": {
+          "rot": 3,
+          "smile": 0.35,
+          "earL": 6,
+          "earR": 6
+        },
+        "tint": null,
+        "motion": [
+          "watch-spin",
+          "tail-wag"
+        ],
+        "fx": [
+          "bubbles"
+        ],
+        "props": [
+          "washing-machine"
+        ],
+        "bubble": null
+      },
+      "notes": "In many German blocks of flats the washing machines are in the cellar."
+    },
+    {
+      "id": "heizung",
+      "pos": "noun",
+      "headword": "Heizung",
+      "gloss": {
+        "zh-Hans": "暖气",
+        "en": "heating"
+      },
+      "noun": {
+        "article": "die",
+        "plural": "Heizung{{en|pl}}"
+      },
+      "example": {
+        "de": "Mir ist kalt – kannst du die {{Heizung}} anmachen?",
+        "translations": {
+          "zh-Hans": "我好冷，你能开一下暖气吗？",
+          "en": "I'm cold – can you turn the heating on?"
+        }
+      },
+      "tip": {
+        "zh-Hans": "-ung 结尾的词都是 {{die}}",
+        "en": "Nouns ending in -ung are always {{die}}"
+      },
+      "style": {
+        "color": "#D6435E",
+        "background": "#FBE1E7"
+      },
+      "anim": {
+        "pose": {},
+        "tint": null,
+        "motion": [],
+        "fx": [],
+        "props": [
+          "heizung"
+        ],
+        "bubble": null
+      },
+      "notes": "Also common: die Heizung aufdrehen."
+    },
+    {
+      "id": "steckdose",
+      "pos": "noun",
+      "headword": "Steckdose",
+      "gloss": {
+        "zh-Hans": "插座",
+        "en": "socket"
+      },
+      "noun": {
+        "article": "die",
+        "plural": "Steckdose{{n|pl}}"
+      },
+      "example": {
+        "de": "Gibt es hier eine {{Steckdose}}? Mein Handy ist fast leer.",
+        "translations": {
+          "zh-Hans": "这里有插座吗？我手机快没电了。",
+          "en": "Is there a socket here? My phone is almost dead."
+        }
+      },
+      "tip": {
+        "zh-Hans": "插头是 der Stecker",
+        "en": "The plug is der Stecker"
+      },
+      "style": {
+        "color": "#D6435E",
+        "background": "#FBE1E7"
+      },
+      "anim": {
+        "pose": {},
+        "tint": null,
+        "motion": [],
+        "fx": [],
+        "props": [
+          "steckdose"
+        ],
+        "bubble": null
+      }
+    }
+  ]
+}

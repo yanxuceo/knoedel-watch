@@ -14,7 +14,7 @@ tools/check_deck.py               validation, run by content authors and by the 
 tools/make_audio.py               German audio + audio/manifest.json
 tools/voices.json                 TTS provider, voice ids, speed, file format
 tools/build_preview.py            web preview of a deck (tools/preview/player.html is its template)
-tools/preview/<character>.js      drawing reference of each character (knoedel.js, katze.js)
+tools/preview/<character>.js      drawing reference of each character (knoedel.js, katze.js, dinge.js)
 tools/import_decks.py             firmware import: checks, audio, pixel fit, device assets
 content/library.json              the content pack: its name and its decks, in device order
 content/<deck-id>/deck.json       the deck: the only file content authors write
@@ -60,7 +60,7 @@ On face 1, nouns show the article in the gender colour before the headword: **di
 | `episode` | no | Number in the series. |
 | `title` | yes | Map, `de` required. |
 | `level` | yes | `A2`, `A2-B1`, … |
-| `character` | yes | Must have a `registry/<character>.json`: `knoedel` (adjectives, expressions) or `katze` (verbs; the cat's name is Brezel, her id stays `katze`). |
+| `character` | yes | Must have a `registry/<character>.json`: `knoedel` (adjectives, expressions), `katze` (verbs; the cat's name is Brezel, her id stays `katze`) or `dinge` (nouns: the thing alone). |
 | `locales` | yes | Locales that are complete in every card (`zh-Hans`, `en`). |
 | `license` | no | Content licence, default `CC-BY-NC-SA-4.0`. |
 | `review` | no | Notes for authors: `status` (`draft` → `in_review` → `reviewed`), reviewer, date. Nothing depends on it: decks are published as they are and corrected in a new pack when a mistake is found. |
@@ -76,7 +76,7 @@ On face 1, nouns show the article in the gender colour before the headword: **di
 | `headword` | yes | Markup allowed: `{{auf\|prefix}}stehen`. |
 | `gloss` | yes | Short meaning per locale. |
 | `pattern` | no | `{ "text": "stolz auf", "case": "Akk" }`, `case` is `Akk`, `Dat`, `Gen` or `null`. Must be visible in `example.de` (the checker warns otherwise). A related construction the example does not use, such as *sich erkälten* next to *Ich bin erkältet*, goes into `tip`. |
-| `noun` | nouns | `{ "article": "die", "plural": "Wolken" }`, plural without article, `null` if none. |
+| `noun` | nouns | `{ "article": "der", "plural": "Schr{{ä|pl}}nk{{e|pl}}" }`, plural without article, `null` if none or rare. Mark what changes in the plural with `{{…|pl}}` (umlaut, ending); players show it in the gender colour. |
 | `verb` | verbs | `reflexive` (`acc`, `dat`, `null`), `praeteritum` (3rd sg., markup allowed), `perfekt: { aux: "haben" \| "sein", rest }`. `aux` is never written into `rest`. |
 | `example` | yes | `de` (markup allowed) and `translations` per locale. A line break (`\n`) starts a new line, used for the two turns of a mini dialogue (`– Danke! \n– Gern geschehen!`); it is not spoken. |
 | `tip` | no | Pitfall per locale. Written for each audience, not translated. Markup allowed for German fragments. |
@@ -95,6 +95,7 @@ Allowed in `headword`, `verb.praeteritum`, `verb.perfekt.rest`, `example.de` and
 | `{{glücklich über}}` | keyword of the card, accent colour |
 | `{{auf\|prefix}}` | separable prefix |
 | `{{mir\|refl}}` | reflexive pronoun |
+| `{{ä\|pl}}` | the part of a noun plural that changes (only in `noun.plural`) |
 
 Unknown roles render as plain text. Glosses and translations contain no markup.
 
@@ -104,8 +105,8 @@ Grammar colours are fixed for the whole project and stored in `theme.json`, with
 
 | Role | Light | Dark |
 |---|---|---|
-| article der / die / das | `#2F6BD6` / `#D6435E` / `#22966A` | `#7FA6F5` / `#FF7E95` / `#4FD39E` |
-| separable prefix | `#B4740A` | `#F0B341` |
+| article der / die / das | `#2F6BD6` / `#D6435E` / `#B7791F` | `#7FA6F5` / `#FF7E95` / `#FFC24A` |
+| separable prefix | `#D9620F` | `#FF9F43` |
 | reflexive pronoun | `#0E8C7E` | `#4FD1BF` |
 | aux hat / ist | `#2A5FC4` / `#D2402A` | `#86A9F5` / `#FF8468` |
 | case chip Akk / Dat / Gen | `#E1601A` / `#13946A` / `#7A4FD6` | `#FF8A47` / `#3CCB98` / `#B394FF` |
@@ -122,7 +123,7 @@ Character counts after stripping markup. **They are guidance for authors**: `che
 
 | Field | Budget | Face |
 |---|---|---|
-| `headword` (+ article) | 12 | 1 |
+| `headword` | 12 (nouns with article: 16; players shrink longer headwords) | 1 |
 | `lead` | 16 | 1 |
 | `gloss` | zh-Hans 8, en 20 | 1 |
 | grammar line / `pattern.text` | 18 | 2 |
@@ -151,7 +152,14 @@ The firmware draws the character from data. A deck refers to ids from `registry/
 - `tint`: colour the body blends towards (by the `tint` pose value), or `null`.
 - `motion`, `fx`: lists of ids, freely combinable.
 - `props`: objects the character holds or that stand on the stage: a sponge in the paw, a vacuum whose head touches the floor, a washing machine next to the cat. Each prop id defines where it attaches (`hand`: drawn between arm and paw and moved by the paws; `back`: standing on the stage behind the character). Unlike the bubble, props are **required**: a verb card does not read without them.
+- `character`: optional, draws this card with another character than the deck's (needs that character's registry).
 - `bubble`: thought-bubble icon, or `null`. Optional for the player: a card must read well without it.
+
+### Noun cards
+
+Noun decks use the character `dinge`: the front face shows the thing alone, centred, with a small idle movement (a fridge door opens, a lamp flickers), on a background in the gender colour of the noun (`style.background`: der `#DCE6F7`, die `#FBE1E7`, das `#FFF0C9`; `style.color` is the light gender colour). The object is the card's only prop: `"anim": { "props": ["schrank"] }`. Some cards are better acted than drawn (symptoms, *Kissen* hugged by the cat): they set `"anim": { "character": "katze", … }` and are drawn by the cat with its pose, motions and props. Rule of thumb: the thing alone first, the cat now and then.
+
+On noun cards every highlight is drawn in the gender colour, so a tip highlights only words of the same gender (`der Schrank → {{im}} Schrank`, not `die {{Ärztin}}` on a der card); other nouns stay plain.
 
 ### Characters
 
@@ -161,6 +169,7 @@ Pose parameters belong to the character and are listed in its registry once impl
 |---|---|---|---|
 | `knoedel` | adjectives, expressions | `jump rot sx sy open lid happy shut lookX lookY browY browT smile mopen mw wob blush tint armL armR` | `tools/preview/knoedel.js` |
 | `katze` | verbs | `jump rot sx sy open lid happy shut lookX lookY smile mopen blush earL earR tail hLx hLy hRx hRy fLx fLy fRx fRy` | `tools/preview/katze.js` |
+| `dinge` | nouns | none: each object (`OBJ` entry) animates itself | `tools/preview/dinge.js` |
 
 The cat's paws are placed by target points (`hLx/hLy`, `hRx/hRy`, body coordinates, feet at y = 0) and reached with a two-bone arm, so a pose says where the paw is, not how the arm bends. Motions move the targets (`scrub`, `push`, `sweep`), and held props follow the paws.
 
@@ -207,6 +216,7 @@ Final audio is committed to the public repository only after confirming that the
 
 ## Changelog
 
+- **v1 rev. 12 (2026-10-17)**: das is gold (`#B7791F` / `#FFC24A`) instead of green, separable prefix orange (`#D9620F` / `#FF9F43`); `{{…|pl}}` marks the changing part of a noun plural; optional `anim.character` per card; third character `dinge` for noun decks (`tools/preview/dinge.js`, `registry/dinge.json`); noun headword budget 16 with the article; `check_deck.py` uses the card's own character registry (sent by the content side as "rev. 8"). Firmware side: the third renderer `main/dinge.cpp` draws all 16 objects; Brezel gained `cough`, the props `fridge`, `sofa-back`, `pillow`, `red-nose`, `tissue`, `plaster-cheek` and the effects `cough-puffs`, `pain`. The content pack (format 3) stores each card's `anim.character`; the importer writes the `{{…|pl}}` parts as the noun's article role, so the watch draws them in the gender colour. The cover of a noun deck shows its first object. On the device the surgery plate shows only *Praxis* and the opening hours are larger, for the watch's smallest font.
 - **v1 rev. 11 (2026-10-14)**: line breaks (`\n`) in `example.de` and `example.translations` for the turns of a mini dialogue; `deckfmt.spoken_lines()` joins them with a space (sent by the content side as "rev. 7"). Firmware side: the watch breaks the line there and balances each turn on its own; `make_audio.py` speaks a dialogue in two voices (Azure), the manifest records them as `voice1|voice2`; a headword that ends in `.`, `!` or `?` gets no extra full stop in its audio. Knödel gained `nod`, `shrug`, `wave`, `question` and the bubbles `lightbulb`, `soup`, `flowers`, `clover`; Brezel 4 motions, 28 props and 9 effects, and props can be worn (`wear`: drawn over the body, under the arms). On the device the surgery sign is larger, the waiting ticket shows a line instead of its number, and the coin's € is drawn, as the watch's smallest font is larger than the preview's text.
 - **v1 rev. 10 (2026-10-13, firmware side)**: the review step is gone. `review.status` no longer decides anything: the importer takes every deck (`--allow-draft` removed), the watch no longer marks decks with "Entwurf", and audio always comes from the final provider unless `--provider edge` is asked for.
 - **v1 rev. 9 (2026-10-13, firmware side)**: content is no longer compiled into the firmware. The importer writes a content pack (`packs/<name>.bin`) for the flash partition `content`, `tools/flash_content.py` puts it on the watch, and `content/library.json` gained `pack`, the pack's name. No change to `deck.json`.

@@ -13,10 +13,10 @@ Info: animation ids the firmware has not implemented yet.
 import argparse, re, sys
 from pathlib import Path
 from jsonschema import Draft202012Validator
-from deckfmt import ROOT, strip, load_json, spoken_lines, load_registry, missing_ids
+from deckfmt import ROOT, strip, load_json, spoken_lines, load_registry, missing_ids, card_character
 
 BUDGET = {
-    "headword": 12, "lead": 16, "pattern": 18, "example.de": 85,
+    "headword": 12, "headword_noun": 16, "lead": 16, "pattern": 18, "example.de": 85,
     "gloss": {"zh-Hans": 8, "en": 20},
     "translation": {"zh-Hans": 24, "en": 60},
     "tip": {"zh-Hans": 36, "en": 70},
@@ -60,7 +60,7 @@ def main():
                 warnings.append(f"{cid}: {name} {n} > {limit}")
 
         head = strip(c["headword"]) + (f" {c['noun']['article']}" if c.get("noun") else "")
-        budget("headword", head, BUDGET["headword"])
+        budget("headword", head, BUDGET["headword_noun"] if c.get("noun") else BUDGET["headword"])
         if c.get("lead"):
             budget("lead", c["lead"], BUDGET["lead"])
         if c.get("pattern"):
@@ -87,8 +87,11 @@ def main():
                     continue
                 budget(f"{field}.{loc}", src[loc], BUDGET[field].get(loc, DEFAULT[field]))
 
-        if registry:
-            for kind, x in missing_ids(c, registry):
+        reg = registry if card_character(c, deck) == deck["character"] else load_registry(card_character(c, deck))
+        if reg is None:
+            errors.append(f"{cid}: no registry/{card_character(c, deck)}.json")
+        if reg:
+            for kind, x in missing_ids(c, reg):
                 todo.setdefault(f"{kind}:{x}", []).append(cid)
 
     if todo:

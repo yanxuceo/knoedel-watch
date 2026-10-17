@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "gfx_util.h"
+#include "dinge.h"
 #include "katze.h"
 #include "knoedel.h"
 
@@ -12,7 +13,7 @@ namespace character {
 
 namespace {
 
-const Impl *const IMPLS[] = {&knoedel::IMPL, &katze::IMPL};
+const Impl *const IMPLS[] = {&knoedel::IMPL, &katze::IMPL, &dinge::IMPL};
 constexpr int IMPL_COUNT = sizeof(IMPLS) / sizeof(IMPLS[0]);
 
 int lookup(int who, Kind kind, const char *id)

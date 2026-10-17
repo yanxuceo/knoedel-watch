@@ -28,7 +28,8 @@ from pathlib import Path
 import contentpack
 from PIL import Image, ImageDraw, ImageFont
 from fontTools.ttLib import TTFont
-from deckfmt import ROOT, strip, load_json, grammar_line, face3_pattern, spoken_lines, load_registry, missing_ids, AUX_3SG
+from deckfmt import (ROOT, strip, load_json, grammar_line, face3_pattern, spoken_lines, load_registry, missing_ids,
+                     card_character, AUX_3SG)
 
 TOOLS = ROOT / "tools"
 FONTS = TOOLS / "fonts"
@@ -140,6 +141,10 @@ def card_fields(card, locale):
             v = card["verb"]
             aux = v["perfekt"]["aux"]
             grammar = "%s · {{%s|%s}} %s" % (v["praeteritum"], AUX_3SG[aux], aux, v["perfekt"]["rest"])
+        elif g[0] == "noun":
+            # What changes in the plural ({{ä|pl}}) is drawn in the colour of the noun's gender.
+            art = card["noun"]["article"]
+            grammar = "die " + re.sub(r"\{\{([^}|]*)\|pl\}\}", r"{{\1|%s}}" % art, card["noun"]["plural"])
         else:
             grammar = g[1]
     pattern = card.get("pattern") or {}
@@ -190,12 +195,13 @@ def build_pack(decks, locale, clips):
             rec += b"".join(struct.pack("<If", st.add(k), v) for k, v in pose) + b"\0" * 8 * (MAX_POSE - len(pose))
             for off, size in (clips or {}).get((deck["id"], card["id"]), [(0, 0)] * 4):
                 rec += struct.pack("<2I", off, size)
+            rec += struct.pack("<I", st.add(a.get("character") or ""))  # empty: the deck's character
             card_recs.append(rec)
     head_size = 8 * 4 + 10 * 4
     decks_off = head_size
     cards_off = decks_off + sum(map(len, deck_recs))
     strings_off = cards_off + sum(map(len, card_recs))
-    head = b"KDP1" + struct.pack("<7I", 2, len(deck_recs), len(card_recs), decks_off, cards_off, strings_off, st.add(locale))
+    head = b"KDP1" + struct.pack("<7I", 3, len(deck_recs), len(card_recs), decks_off, cards_off, strings_off, st.add(locale))
     head += struct.pack("<10I", *map(rgb, colours))
     return head + b"".join(deck_recs) + b"".join(card_recs) + bytes(st.blob), texts
 
@@ -309,8 +315,8 @@ def update_registry():
 
 def check_registry(decks):
     """registry/<character>.json must list exactly what the code implements."""
-    problems, notes = [], []
-    for who, code in firmware_ids().items():
+    problems, notes, ids = [], [], firmware_ids()
+    for who, code in ids.items():
         reg = load_registry(who)
         if reg is None:
             problems.append(f"registry/{who}.json is missing (run with --update-registry)")
@@ -325,11 +331,13 @@ def check_registry(decks):
             if x in reg["pose"] and abs(reg["pose"][x] - v) > 1e-6:
                 problems.append(f"registry/{who}.json: neutral value of pose:{x} is {reg['pose'][x]}, the firmware uses {v}")
     for deck, _ in decks:
-        reg, todo = load_registry(deck["character"]), {}
-        if reg is None or deck["character"] not in firmware_ids():
-            problems.append(f"{deck['id']}: the firmware has no character '{deck['character']}'")
-            continue
+        todo = {}
         for card in deck["cards"]:
+            who = card_character(card, deck)
+            reg = load_registry(who)
+            if reg is None or who not in ids:
+                problems.append(f"{deck['id']}/{card['id']}: the firmware has no character '{who}'")
+                continue
             for kind, x in missing_ids(card, reg):
                 todo.setdefault(f"{kind}:{x}", []).append(card["id"])
         for k, v in sorted(todo.items()):

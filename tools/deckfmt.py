@@ -27,7 +27,7 @@ def grammar_line(card):
         return "verb", f"{strip(v['praeteritum'])} · {AUX_3SG[v['perfekt']['aux']]} {strip(v['perfekt']['rest'])}"
     if card.get("noun"):
         plural = card["noun"].get("plural")
-        return ("noun", f"die {plural}") if plural else None
+        return ("noun", f"die {strip(plural)}") if plural else None
     if card.get("pattern"):
         return "pattern", card["pattern"]["text"]
     return None
@@ -58,6 +58,11 @@ def spoken_lines(card):
     if p3:
         lines[3] = p3 + "."
     return lines
+
+
+def card_character(card, deck):
+    """The character that draws this card: anim.character, else the deck's."""
+    return card.get("anim", {}).get("character") or deck["character"]
 
 
 def load_registry(character):

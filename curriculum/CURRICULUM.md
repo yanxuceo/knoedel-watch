@@ -43,11 +43,11 @@ Every deck is one **level × topic × kind**. Deck id: `<level>-<topic>-<subject
 |---|---|---|
 | Adjective decks | feelings, physical states, character | Knödel |
 | Verb decks | actions | Brezel (the ginger cat, id `katze`, with props) |
-| Noun decks | objects, places, word groups (numbers, colours, days) | flat illustration, gender-coloured article |
+| Noun decks | objects, places, word groups (numbers, colours, days) | `dinge`: the thing alone on a gender-coloured disc; the cat on some cards |
 | Expression decks (Redemittel) | reactions and phrases for situations | Knödel or Katze acting the situation |
 | Grammar animations | one rule per deck (Wechselpräpositionen, *mich* or *mir*, verb to the end) | web and social media first; device later |
 
-Only three visual systems, so the firmware has three renderers to maintain, not one per episode.
+Only three visual systems (Knödel, Brezel, Dinge), so the firmware has three renderers to maintain, not one per episode.
 
 ## No repeats
 
@@ -84,8 +84,8 @@ Ordered so the device always has something to play. Phase A uses what the firmwa
 | 6 | `a2-einkaufen-verben` | verbs | Katze | draft 0.1.0: aussuchen, anprobieren, passen, stehen, gefallen, bezahlen, einpacken, bestellen, umtauschen, zurückgeben, ausgeben, sparen (theme: verbs with a dative person) |
 | 7 | `a2-termine-verben` | verbs | Katze | draft 0.1.0: anrufen, zurückrufen, einen Termin vereinbaren, bestätigen, verschieben, absagen, sich verspäten, vorbeikommen, sich anmelden, ausfüllen, unterschreiben, abgeben (theme: separable vs inseparable prefixes) |
 | 8 | `a2-morgen-verben` | verbs | Katze | rebuild of web Ep.5 at A2, without the *aufstehen* duplicate |
-| 9 | `a2-wohnung-nomen` | nouns | illustration | Schrank, Regal, Sofa, Teppich, Spiegel, Kühlschrank, Herd, Waschmaschine, Heizung, Steckdose, … |
-| 10 | `a2-gesundheit-nomen` | nouns | illustration | Fieber, Husten, Schnupfen, Tablette, Rezept, Apotheke, Praxis, Krankenkasse, Pflaster, … |
+| 9 | `a2-wohnung-nomen` | nouns | dinge | draft 0.1.0: Sofa, Kissen, Teppich, Lampe, Regal, Schrank, Spiegel, Kühlschrank, Herd, Waschmaschine, Heizung, Steckdose (thread: Wo? + Dativ; gender and plural rules) |
+| 10 | `a2-gesundheit-nomen` | nouns | dinge | draft 0.1.0: Arzt, Praxis, Krankenkasse, Fieber, Husten, Schnupfen, Rücken, Pflaster, Rezept, Apotheke, Medikament, Tablette |
 | 11 | `a2-wetter` | nouns + *es*-sentences | illustration | rebuild of web Ep.3 at A2 |
 | 12 | `sich-mich-mir` | grammar | web first | *Ich ziehe mich an* or *Ich ziehe mir den Pullover an*: the question a viewer asked about Ep.5 |
 

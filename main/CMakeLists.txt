@@ -1,4 +1,4 @@
-set(srcs "main.cpp" "card_ui.cpp" "character.cpp" "knoedel.cpp" "knoedel_bubbles.cpp" "katze.cpp"
+set(srcs "main.cpp" "card_ui.cpp" "character.cpp" "knoedel.cpp" "knoedel_bubbles.cpp" "katze.cpp" "dinge.cpp"
          "deck.cpp" "content.cpp" "progress.cpp" "motion.cpp" "audio_player.cpp" "third_party/minimp3_impl.c")
 
 # The board's side of main/board/board.h, chosen in Kconfig ("Target board").

@@ -218,6 +218,16 @@ void m_dance(float *v, float c, float w)
     v[TAIL] += sinf(c * 6) * 16 * w;
 }
 
+// a2-gesundheit-nomen: a cough every 1.8 s; eyes shut, mouth open, a small duck.
+void m_cough(float *v, float c, float w)
+{
+    const float u = fmodf(c, 1.8f) / 1.8f, k = u < 0.12f ? u / 0.12f : u < 0.3f ? 1 - (u - 0.12f) / 0.18f : 0;
+    v[ROT] += 4 * k * w;
+    v[SHUT] = fmaxf(v[SHUT], k * w);
+    v[MOPEN] = fmaxf(v[MOPEN], 0.5f * k * w);
+    v[JUMP] -= 1.5f * k * w;
+}
+
 struct MotionDef {
     const char *id;
     MotionFn fn;
@@ -228,6 +238,7 @@ const MotionDef MOTIONS[] = {
     {"smooth", m_smooth}, {"reach-up", m_reach_up}, {"pour", m_pour}, {"watch-spin", m_watch_spin},
     {"pedal", m_pedal}, {"run", m_run}, {"tap", m_tap}, {"look-around", m_look_around}, {"tremble", m_tremble},
     {"type", m_type}, {"drop", m_drop}, {"knock", m_knock}, {"write", m_write}, {"dance", m_dance},
+    {"cough", m_cough},
 };
 constexpr int MOTION_COUNT = sizeof(MOTIONS) / sizeof(MOTIONS[0]);
 
@@ -1356,6 +1367,94 @@ void p_folder(Ctx &x, bool draw)
     s.rect(-6, -2, 12, 5, 1, WHITE);
 }
 
+// ---- a2-wohnung-nomen and a2-gesundheit-nomen (cards drawn by the cat) ----
+
+// An open fridge, its door to the right.
+void p_fridge(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const Pen &s = x.scene;
+    s.rect(44, -122, 58, 122, 8, 0xF6F8FB, 0xAEB6C4, 2.2f);
+    s.rect(48, -78, 50, 74, 3, 0xFFF4C2);
+    s.line(49, -56, 97, -56, 2, 0xE9D58A);
+    s.line(49, -32, 97, -32, 2, 0xE9D58A);
+    s.rect(54, -74, 10, 18, 1.5f, WHITE, 0xC9CED6, 1);
+    s.rect(54, -68, 10, 4, 0, 0x4BA3D9);
+    s.ell(86, -61, 5, 5, 0xE5484D);
+    Path cheese;
+    cheese.to(70, -32).to(86, -32).to(86, -42);
+    s.fill(cheese, 0xF2C14E);
+    s.rect(44, -122, 58, 42, 8, 0xF6F8FB, 0xAEB6C4, 2.2f);
+    Path door;
+    door.to(102, -80).to(118, -86).to(118, -4).to(102, -2);
+    s.fill(door, 0xF6F8FB, 0xAEB6C4, 2.2f);
+}
+
+// The back of a sofa behind the cat.
+void p_sofa_back(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const Pen &s = x.scene;
+    s.rect(-58, -66, 170, 40, 14, 0x9D8DF1, 0x7C6BD6, 2);
+    s.rect(-62, -36, 178, 28, 10, 0xB3A6F5, 0x7C6BD6, 2);
+    s.rect(96, -50, 22, 44, 10, 0x9D8DF1, 0x7C6BD6, 2);
+    s.rect(-50, -8, 5, 8, 0, 0x7A4A2E);
+    s.rect(104, -8, 5, 8, 0, 0x7A4A2E);
+}
+
+// A cushion hugged in both paws.
+void p_pillow(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const Pen s = x.body.move((x.L[0] + x.R[0]) / 2, (x.L[1] + x.R[1]) / 2).turn(-8);
+    s.rect(-14, -14, 28, 28, 8, 0xF2C14E, 0xC99227, 1.6f);
+    s.ell(0, 0, 2.4f, 2.4f, 0xC99227);
+}
+
+// Worn: a red nose (a cold).
+void p_red_nose(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    x.body.ell(0, -77.5f, 4.6f, 3.6f, 0xE5484D);
+    x.body.ell(1.4f, -78.8f, 1.1f, 1.1f, 0xFFB3B3);
+}
+
+// A tissue in the right paw.
+void p_tissue(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const Pen s = x.body.move(x.R[0] - 2, x.R[1] - 4).turn(-10);
+    Path tissue;
+    tissue.to(-9, -8).quad(0, -12, 9, -8, 4).to(8, 8).quad(0, 11, -8, 8, 4);
+    s.fill(tissue, WHITE, 0xC9CED6, 1.2f);
+    Path fold1, fold2;
+    fold1.to(-4, -6).quad(-2, 0, -5, 6, 4);
+    fold2.to(3, -7).quad(5, 0, 2, 7, 4);
+    s.stroke(fold1, 1, 0xE4E7EE);
+    s.stroke(fold2, 1, 0xE4E7EE);
+}
+
+// Worn: a plaster on the cheek.
+void p_plaster_cheek(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const Pen s = x.body.turn(-20, 19, -80);
+    s.rect(12, -84, 15, 7, 3, 0xF2D2A6, 0xD9AE7E, 1);
+    s.rect(16.5f, -83, 6, 5, 1, 0xE9BF8E);
+}
+
 // Where a prop is drawn: on the stage behind the cat (scene frame), worn on
 // the body under the arms, or held between the arms and the paws (body frame).
 enum Layer { BACK, WEAR, HAND };
@@ -1384,6 +1483,8 @@ const PropDef PROPS[] = {
     {"calendar-move", BACK, p_calendar_move}, {"calendar-x", BACK, p_calendar_x}, {"thermometer", WEAR, p_thermometer},
     {"big-clock", BACK, p_big_clock}, {"door", BACK, p_door}, {"number-display", BACK, p_number_display},
     {"ticket", HAND, p_ticket}, {"clipboard", HAND, p_clipboard}, {"pen", HAND, p_pen}, {"folder", HAND, p_folder},
+    {"fridge", BACK, p_fridge}, {"sofa-back", BACK, p_sofa_back}, {"pillow", HAND, p_pillow}, {"red-nose", WEAR, p_red_nose},
+    {"tissue", HAND, p_tissue}, {"plaster-cheek", WEAR, p_plaster_cheek},
 };
 constexpr int PROP_COUNT = sizeof(PROPS) / sizeof(PROPS[0]);
 
@@ -1723,6 +1824,36 @@ void fx_signature(const Ctx &x)
     }
 }
 
+// ---- a2-gesundheit-nomen ----
+
+// Puffs from the mouth with each cough (motion "cough").
+void fx_cough_puffs(const Ctx &x)
+{
+    const float u = fmodf(x.c, 1.8f) / 1.8f;
+    for (int i = 0; i < 3; i++) {
+        const float k = clampf((u - 0.08f - i * 0.04f) / 0.4f), a = x.w * (k > 0 && k < 1 ? 1 - k : 0);
+        const float px = x.v[X] + 8 + k * 26 + i * 4, py = x.mouth_y - 2 - k * 6 + i * 3, r = 2 + k * 4;
+        if (a > 0.05f && x.inside(px, py, r)) {
+            x.stage.ell(px, py, r, r, 0xD6DCE6, a);
+        }
+    }
+}
+
+// Zigzags of pain beside the back.
+void fx_pain(const Ctx &x)
+{
+    for (int i = 0; i < 3; i++) {
+        const float k = fract(x.c * 1.2f + i / 3.0f), a = x.w * sinf(PI_F * k);
+        const float px = x.v[X] + 34 + k * 6, py = x.body_y - 14 + i * 12;
+        if (a < 0.05f || !x.inside(px + 6, py - 2, 8)) {
+            continue;
+        }
+        Path zig;
+        zig.to(0, 0).to(4, -4).to(8, 0).to(12, -4);
+        x.stage.move(px, py).stroke(zig, 2.2f, x.fade(0xE5484D, a));
+    }
+}
+
 struct FxDef {
     const char *id;
     bool back;  // drawn behind the cat
@@ -1736,6 +1867,7 @@ const FxDef EFFECTS[] = {
     {"contactless", false, fx_contactless}, {"parcel", false, fx_parcel}, {"swap", false, fx_swap},
     {"coins", false, fx_coins}, {"ring", false, fx_ring}, {"callback", false, fx_callback},
     {"checkmark", false, fx_checkmark}, {"knock-lines", false, fx_knock_lines}, {"signature", false, fx_signature},
+    {"cough-puffs", false, fx_cough_puffs}, {"pain", false, fx_pain},
 };
 constexpr int FX_COUNT = sizeof(EFFECTS) / sizeof(EFFECTS[0]);
 

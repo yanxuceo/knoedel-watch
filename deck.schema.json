@@ -209,7 +209,7 @@
                 "string",
                 "null"
               ],
-              "description": "Full plural without article, or null if none."
+              "description": "Full plural without article, or null if none. Mark the changing part with {{…|pl}}: Schr{{ä|pl}}nk{{e|pl}}."
             }
           }
         },
@@ -334,6 +334,10 @@
               "items": {
                 "$ref": "#/$defs/slug"
               }
+            },
+            "character": {
+              "$ref": "#/$defs/slug",
+              "description": "Draw this card with another character than the deck's (e.g. the cat on some cards of a noun deck). Needs registry/<character>.json."
             },
             "props": {
               "type": "array",

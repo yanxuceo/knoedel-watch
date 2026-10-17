@@ -10,7 +10,7 @@ English | [中文](README.zh.md)
 
 <p align="center"><img src="docs/img/hero.gif" width="798" alt="Three watches: Knödel celebrates with confetti, Brezel vacuums, Brezel rides a bike"></p>
 
-Animated vocabulary cards for the M5Stack StopWatch Dev Kit (ESP32-S3, round AMOLED touch screen, speaker, motion sensor). Two characters act out every word: **Knödel**, a dumpling, shows adjectives and expressions; **Brezel**, a ginger cat, does the verbs.
+Animated vocabulary cards for the M5Stack StopWatch Dev Kit (ESP32-S3, round AMOLED touch screen, speaker, motion sensor). Two characters act out every word: **Knödel**, a dumpling, shows adjectives and expressions; **Brezel**, a ginger cat, does the verbs. Nouns show the thing itself, on a disc in the colour of its gender.
 
 Each card has up to three faces: the word with its animation, the grammar line with an example sentence and its translation, and a tip. Every German line is spoken, in synthetic voices (Microsoft Azure neural text-to-speech, not recordings of real people); short dialogues are spoken in two voices. Around the cards the watch has a practice mode with spaced repetition, a clock with a word of the day, and a focus timer.
 
@@ -126,7 +126,7 @@ The program and the learning content are separate:
 
 So new content does not need a new firmware, and a watch can be moved from one pack to another (say, from A2 to B1) in under a minute.
 
-The first pack, `a2-start`, has eight decks of 12 cards at level A2: moods and emotions, body and health, personality, household chores, on the go, quick reactions, shopping, appointments. Translations are in English and Chinese.
+The first pack, `a2-start`, has ten decks of 12 cards at level A2: moods and emotions, body and health, personality, household chores, on the go, quick reactions, shopping, appointments, at home (nouns), at the doctor's (nouns). Translations are in English and Chinese.
 
 ## Build and flash
 

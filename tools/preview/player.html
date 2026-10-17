@@ -77,7 +77,8 @@ footer code{background:var(--chip);padding:1px 6px;border-radius:5px;font-size:1
 <script>
 const DECK = /*__DECK__*/;
 const THEME = /*__THEME__*/;
-const REGISTRY = /*__REGISTRY__*/;
+const REGISTRIES = /*__REGISTRY__*/;
+const REGISTRY = REGISTRIES[DECK.character];
 /*__CHARACTER__*/
 
 const LOCALE_NAMES = { 'zh-Hans': '中文', 'en': 'English' };
@@ -100,7 +101,7 @@ function grammarLine(c) {
     const aux = c.verb.perfekt.aux === 'sein' ? 'ist' : 'hat';
     return `${markup(c.verb.praeteritum)} · <span style="color:${THEME.dark.aux[c.verb.perfekt.aux]};font-weight:800">${aux}</span> ${markup(c.verb.perfekt.rest)}`;
   }
-  if (c.noun) return c.noun.plural ? `die ${esc(c.noun.plural)}` : null;
+  if (c.noun) return c.noun.plural ? `die ${esc(c.noun.plural).replace(/\{\{([^}|]*)\|pl\}\}/g, (m, t) => `<span style="color:${THEME.dark.gender[c.noun.article]};font-weight:800;text-decoration:underline;text-underline-offset:3px">${t}</span>`)}` : null;
   if (c.pattern) return pill(c.pattern);
   return null;
 }
@@ -110,7 +111,7 @@ function pill(p) {
   return `<span class="pill">${esc(p.text)}${chip}</span>`;
 }
 function missing(c) {
-  const a = c.anim || {}, out = [];
+  const a = c.anim || {}, out = [], REGISTRY = REGISTRIES[a.character || DECK.character];
   Object.keys(a.pose || {}).forEach(k => { if (!(k in REGISTRY.pose)) out.push('pose:' + k); });
   (a.motion || []).forEach(m => { if (!REGISTRY.motion.includes(m)) out.push('motion:' + m); });
   (a.fx || []).forEach(f => { if (!REGISTRY.fx.includes(f)) out.push('fx:' + f); });
@@ -147,10 +148,11 @@ DECK.cards.forEach((c, i) => {
   const item = document.createElement('div'); item.className = 'item';
   const dev = document.createElement('div'); dev.className = 'dev'; dev.tabIndex = 0; dev.setAttribute('role', 'button');
   dev.style.setProperty('--c', c.style.color);
+  const headLen = (c.noun ? c.noun.article.length + 1 : 0) + strip(c.headword).length;
   const article = c.noun ? `<span style="color:${THEME.dark.gender[c.noun.article]}">${c.noun.article}</span> ` : '';
   dev.innerHTML = ringSvg(i, DECK.cards.length) + `
     <div class="face f1"><svg class="disc" viewBox="0 0 200 200" aria-hidden="true"></svg>
-      <div class="lead de">${esc(c.lead || '')}</div><div class="head de">${article}${markup(c.headword)}</div><div class="gloss"></div></div>
+      <div class="lead de">${esc(c.lead || '')}</div><div class="head de" style="${headLen > 14 ? `font-size:${(9.5 * 14 / headLen).toFixed(2)}cqw` : ''}">${article}${markup(c.headword)}</div><div class="gloss"></div></div>
     <div class="face f2" hidden></div><div class="face f3" hidden></div>`;
   const faces = [1, 2].concat(c.tip || face3Pattern(c) ? [3] : []);
   const dots = document.createElement('div'); dots.className = 'dots'; dots.innerHTML = faces.map(() => '<i></i>').join('');

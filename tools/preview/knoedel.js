@@ -478,4 +478,4 @@ class KnoedelScene {
 }
 
 const PROP = {};          /* Knödel holds nothing yet */
-const Scene = KnoedelScene; /* the player instantiates Scene */
+var Scene = KnoedelScene; /* the player instantiates Scene */
