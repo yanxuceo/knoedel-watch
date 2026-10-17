@@ -1,0 +1,1761 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sport im Freien</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: a wall of round device screens, each tappable through its faces; page chrome stays quiet. */
+:root{
+  --bg:#EEF0F4; --fg:#1A1F2B; --muted:#5E6676; --line:#D7DCE4; --chip:#E2E6EE; --warn:#B4540A;
+  --screen:#0D1015; --screen-fg:#F2F3F7; --screen-muted:#8E95A6; --screen-soft:#B9B4F0; --ring:#5C63B8;
+  --display:"Bricolage Grotesque","Avenir Next","Segoe UI",system-ui,sans-serif;
+  --body:"Noto Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --bg:#12151B; --fg:#E8EBF0; --muted:#98A1B0; --line:#2A303B; --chip:#222833; --warn:#F0A04B; color-scheme:dark }
+}
+:root[data-theme="dark"]{ --bg:#12151B; --fg:#E8EBF0; --muted:#98A1B0; --line:#2A303B; --chip:#222833; --warn:#F0A04B; color-scheme:dark }
+*,*::before,*::after{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1140px;margin:0 auto;padding-inline:clamp(16px,3vw,32px);padding-block:26px 56px}
+header{display:flex;flex-wrap:wrap;gap:14px 24px;align-items:flex-end;justify-content:space-between}
+h1{margin:0;font-family:var(--display);font-size:clamp(32px,6vw,56px);font-weight:800;letter-spacing:-.02em;line-height:1;text-wrap:balance}
+.meta{margin:8px 0 0;color:var(--muted);font-size:15px}
+.seg{display:inline-flex;background:var(--chip);border-radius:999px;padding:3px}
+.seg button{font:inherit;border:0;background:transparent;color:var(--muted);padding:7px 16px;border-radius:999px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--bg);color:var(--fg);font-weight:700}
+.hint{margin:14px 0 22px;color:var(--muted);font-size:14px;line-height:1.6}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:28px 22px}
+.item{display:flex;flex-direction:column;align-items:center;gap:10px;min-width:0}
+.dev{position:relative;width:100%;max-width:300px;aspect-ratio:1;border-radius:50%;background:var(--screen);container-type:inline-size;cursor:pointer;
+  box-shadow:0 0 0 6px #22262E,0 10px 24px rgba(0,0,0,.18);transition:transform .14s ease-in;outline:none}
+.dev:focus-visible{box-shadow:0 0 0 6px #22262E,0 0 0 9px var(--c)}
+.dev.flipping{transform:scaleX(0)}
+.ring{position:absolute;inset:0;width:100%;height:100%}
+.face{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;text-align:center;color:var(--screen-fg)}
+.face[hidden]{display:none}
+.de{font-family:var(--display)}
+.kw{color:color-mix(in srgb,var(--c) 70%,white);font-weight:800;white-space:nowrap}
+/* face 1 */
+.disc{width:58cqw;height:58cqw;margin-top:10cqw;flex:none}
+.lead{font-size:4cqw;color:var(--screen-muted);margin-top:1.6cqw;line-height:1.1;min-height:4.4cqw}
+.head{font-size:9.5cqw;font-weight:800;letter-spacing:-.01em;line-height:1.05;color:color-mix(in srgb,var(--c) 70%,white);white-space:nowrap}
+.gloss{font-size:4.4cqw;color:var(--screen-soft);margin-top:1cqw}
+/* faces 2 and 3 */
+.f2,.f3{justify-content:center;padding:0 13cqw;gap:3cqw}
+.pill{display:inline-flex;align-items:center;gap:1.6cqw;background:var(--c);color:#fff;border-radius:99px;padding:.9cqw 3.2cqw;font-size:4.5cqw;font-weight:700;white-space:nowrap}
+.chip{background:#fff;border-radius:99px;padding:.2cqw 1.6cqw;font-size:3.1cqw;font-weight:800}
+.ex{font-size:5cqw;line-height:1.32;font-weight:500;white-space:pre-line}
+.tr{font-size:3.8cqw;line-height:1.45;color:var(--screen-soft);white-space:pre-line}
+.tiplabel{font-size:3.3cqw;color:var(--screen-muted);letter-spacing:.08em}
+.tip{font-size:5cqw;line-height:1.38;font-weight:500}
+.dots{display:flex;gap:6px}
+.dots i{width:7px;height:7px;border-radius:50%;background:var(--line)}
+.dots i.on{background:var(--fg)}
+.cap{font-size:13px;color:var(--muted);text-align:center;line-height:1.5;max-width:300px}
+.cap code{font-size:12px}
+.todo{color:var(--warn)}
+footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:14px;line-height:1.7}
+footer code{background:var(--chip);padding:1px 6px;border-radius:5px;font-size:12.5px}
+@media (prefers-reduced-motion: reduce){.dev{transition:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1 class="de" id="title"></h1>
+      <p class="meta" id="meta"></p>
+    </div>
+    <div class="seg" role="group" aria-label="翻译语言" id="locales"></div>
+  </header>
+  <p class="hint" id="hint">模拟设备圆屏：点一下屏幕翻面（正面 → 例句面 → 易错点面）。动画按设备的节奏循环；卡片下方标橙色的是固件还没实现、需要照这份预览移植的编号。</p>
+  <main class="grid" id="grid"></main>
+  <footer id="foot"></footer>
+</div>
+
+<script>
+const DECK = {"format": 1, "id": "a2-sport-draussen", "version": "0.1.0", "episode": 19, "title": {"de": "Sport im Freien", "zh-Hans": "户外运动", "en": "Outdoor sports"}, "level": "A2-B1", "character": "katze", "locales": ["zh-Hans", "en"], "license": "CC-BY-NC-SA-4.0", "review": {"status": "draft", "notes": "Sport double episode 2/2 (A2 with B1 extras: Sport treiben, frische Luft schnappen, außer Atem sein, um die Wette rennen, Drachen steigen lassen). Please check every notes entry."}, "cards": [{"id": "sport-treiben", "pos": "verb", "lead": "Sport", "headword": "treiben", "gloss": {"zh-Hans": "做运动", "en": "to do sport"}, "verb": {"reflexive": null, "praeteritum": "trieb", "perfekt": {"aux": "haben", "rest": "getrieben"}}, "example": {"de": "– {{Treibst}} du {{Sport}}?\n– Ja, ich jogge zweimal pro Woche.", "translations": {"zh-Hans": "—你平时运动吗？\n—嗯，我每周慢跑两次。", "en": "– Do you do any sport?\n– Yes, I jog twice a week."}}, "tip": {"zh-Hans": "口语也说：Sport {{machen}}", "en": "In everyday speech: Sport {{machen}}"}, "style": {"color": "#3E8E2F", "background": "#E1F3DA"}, "anim": {"pose": {"happy": 1, "smile": 1, "hRx": 36, "hRy": -60, "hLx": -30, "hLy": -40}, "tint": null, "motion": ["hop", "tail-wag"], "fx": [], "props": ["park", "headband", "ball", "knoedel"], "bubble": null}, "notes": "Sport treiben is the standard collocation (B1); Sport machen is everyday speech."}, {"id": "sich-bewegen", "pos": "verb", "lead": "sich", "headword": "bewegen", "gloss": {"zh-Hans": "活动身体", "en": "to move, exercise"}, "verb": {"reflexive": "acc", "praeteritum": "bewegte {{sich|refl}}", "perfekt": {"aux": "haben", "rest": "{{sich|refl}} bewegt"}}, "example": {"de": "Der Arzt sagt, ich soll {{mich|refl}} mehr {{bewegen}}.", "translations": {"zh-Hans": "医生说我应该多活动。", "en": "The doctor says I should get more exercise."}}, "tip": {"zh-Hans": "名词 die {{Bewegung}}：Bewegung tut gut.", "en": "Noun: die {{Bewegung}} – Bewegung tut gut."}, "style": {"color": "#2E8FA8", "background": "#D8F0F5"}, "anim": {"pose": {"smile": 0.7, "happy": 1}, "tint": null, "motion": ["walk", "tail-wag"], "fx": [], "props": ["park", "knoedel-walk"], "bubble": null}}, {"id": "frische-luft", "pos": "verb", "lead": "frische Luft", "headword": "schnappen", "gloss": {"zh-Hans": "透透气", "en": "to get fresh air"}, "verb": {"reflexive": null, "praeteritum": "schnappte", "perfekt": {"aux": "haben", "rest": "geschnappt"}}, "example": {"de": "Ich gehe kurz raus, {{frische Luft schnappen}}.", "translations": {"zh-Hans": "我出去一下，透透气。", "en": "I'm popping out to get some fresh air."}}, "tip": {"zh-Hans": "schnappen 本义是“一口咬住”，猫最会了！", "en": "schnappen = to snap at – very cat-like!"}, "style": {"color": "#5E8C31", "background": "#E5F1D6"}, "anim": {"pose": {"shut": 1, "smile": 0.9, "hLx": -42, "hLy": -60, "hRx": 42, "hRy": -60, "lookY": -1, "rot": -2}, "tint": null, "motion": ["deep-breath"], "fx": ["breeze"], "props": ["park", "knoedel"], "bubble": null}, "notes": "B1 idiom. raus = colloquial for hinaus."}, {"id": "joggen", "pos": "verb", "headword": "joggen", "gloss": {"zh-Hans": "慢跑", "en": "to jog"}, "verb": {"reflexive": null, "praeteritum": "joggte", "perfekt": {"aux": "sein", "rest": "gejoggt"}}, "example": {"de": "Heute Morgen bin ich fünf Kilometer {{gejoggt}}.", "translations": {"zh-Hans": "今天早上我慢跑了五公里。", "en": "This morning I jogged five kilometres."}}, "tip": {"zh-Hans": "也常说：{{laufen gehen}}", "en": "Also common: {{laufen gehen}}"}, "style": {"color": "#D6435E", "background": "#FBE1E7"}, "anim": {"pose": {"rot": 5, "smile": 0.6, "lookX": 0.8}, "tint": null, "motion": ["run"], "fx": ["speed-lines"], "props": ["park", "headband", "knoedel-walk"], "bubble": null}, "notes": "joggen takes sein for a distance or direction; haben is also used for the activity."}, {"id": "ausser-atem", "pos": "verb", "lead": "außer Atem", "headword": "sein", "gloss": {"zh-Hans": "上气不接下气", "en": "to be out of breath"}, "verb": {"reflexive": null, "praeteritum": "war", "perfekt": {"aux": "sein", "rest": "gewesen"}}, "example": {"de": "Nach zwei Kilometern war ich schon total {{außer Atem}}.", "translations": {"zh-Hans": "才两公里，我就上气不接下气了。", "en": "After two kilometres I was already totally out of breath."}}, "tip": {"zh-Hans": "大口喘气：nach Luft {{schnappen}}", "en": "Gasping: nach Luft {{schnappen}}"}, "style": {"color": "#C2553A", "background": "#F9E0D8"}, "anim": {"pose": {"rot": 8, "sy": 0.94, "sx": 1.04, "hLx": -20, "hLy": -24, "hRx": 22, "hRy": -24, "lid": 0.5, "mopen": 0.6, "smile": -0.2, "earL": -10, "earR": -10}, "tint": null, "motion": ["pant"], "fx": ["sweat", "sigh-puffs"], "props": ["park", "headband", "knoedel-flat"], "bubble": null}, "notes": "B1."}, {"id": "um-die-wette", "pos": "verb", "lead": "um die Wette", "headword": "rennen", "gloss": {"zh-Hans": "赛跑", "en": "to race each other"}, "verb": {"reflexive": null, "praeteritum": "rannte", "perfekt": {"aux": "sein", "rest": "gerannt"}}, "example": {"de": "Komm, wir rennen {{um die Wette}}! Wer zuerst am Baum ist, hat gewonnen!", "translations": {"zh-Hans": "来，我们赛跑吧！看谁先跑到那棵树！", "en": "Come on, let's race! First one to the tree wins!"}}, "tip": {"zh-Hans": "rennen 比 laufen 快：全力奔跑", "en": "rennen is faster than laufen: running flat out"}, "style": {"color": "#B7791F", "background": "#FFF0C9"}, "anim": {"pose": {"rot": 8, "mopen": 0.4, "smile": 0.6, "lookX": 1.6, "earL": -8, "earR": -8}, "tint": null, "motion": ["run"], "fx": ["speed-lines"], "props": ["park", "knoedel-roll"], "bubble": null}, "notes": "B1."}, {"id": "fussball", "pos": "verb", "lead": "Fußball", "headword": "spielen", "gloss": {"zh-Hans": "踢足球", "en": "to play football"}, "verb": {"reflexive": null, "praeteritum": "spielte", "perfekt": {"aux": "haben", "rest": "gespielt"}}, "example": {"de": "Am Sonntag spielen wir im Park {{Fußball}}.", "translations": {"zh-Hans": "周日我们在公园踢足球。", "en": "On Sunday we're playing football in the park."}}, "tip": {"zh-Hans": "进球啦：Tor! 守门员：der {{Torwart}}", "en": "Goal! – Tor! Goalkeeper: der {{Torwart}}"}, "style": {"color": "#2F6BD6", "background": "#DCE6F7"}, "anim": {"pose": {"rot": -4, "hLx": -40, "hLy": -52, "hRx": 34, "hRy": -40, "smile": 0.8, "lookX": 1.6}, "tint": null, "motion": ["kick"], "fx": [], "props": ["goal", "football"], "bubble": null}}, {"id": "klimmzuege", "pos": "verb", "lead": "Klimmzüge", "headword": "machen", "gloss": {"zh-Hans": "做引体向上", "en": "to do pull-ups"}, "verb": {"reflexive": null, "praeteritum": "machte", "perfekt": {"aux": "haben", "rest": "gemacht"}}, "example": {"de": "Wie viele {{Klimmzüge}} schaffst du?", "translations": {"zh-Hans": "你能做几个引体向上？", "en": "How many pull-ups can you do?"}}, "tip": {"zh-Hans": "schaffen = 做到：Ich {{schaffe}} das!", "en": "schaffen = to manage: Ich {{schaffe}} das!"}, "style": {"color": "#7A4FD6", "background": "#ECE4F8"}, "anim": {"pose": {"jump": 20, "hLx": -18, "hLy": -80, "hRx": 18, "hRy": -80, "fLx": -10, "fLy": 6, "fRx": 10, "fRy": 6, "shut": 1, "mopen": 0.3, "smile": -0.2}, "tint": null, "motion": ["pullup"], "fx": [], "props": ["park", "pullup-bar", "knoedel-coach"], "bubble": null}, "notes": "der Klimmzug (B1), plural Klimmzüge."}, {"id": "yoga", "pos": "verb", "lead": "Yoga", "headword": "machen", "gloss": {"zh-Hans": "做瑜伽", "en": "to do yoga"}, "verb": {"reflexive": null, "praeteritum": "machte", "perfekt": {"aux": "haben", "rest": "gemacht"}}, "example": {"de": "Im Sommer machen wir morgens im Park {{Yoga}}.", "translations": {"zh-Hans": "夏天我们早上在公园做瑜伽。", "en": "In summer we do yoga in the park in the mornings."}}, "tip": {"zh-Hans": "瑜伽垫：die {{Yogamatte}}", "en": "Yoga mat: die {{Yogamatte}}"}, "style": {"color": "#9C7AD6", "background": "#F0E9FA"}, "anim": {"pose": {"hLx": -5, "hLy": -54, "hRx": 5, "hRy": -54, "fRx": 20, "fRy": -16, "shut": 1, "smile": 0.7, "jump": 3}, "tint": null, "motion": ["wobble"], "fx": [], "props": ["park", "yoga-mat", "knoedel-yoga"], "bubble": null}}, {"id": "drachen", "pos": "verb", "lead": "Drachen", "headword": "steigen lassen", "gloss": {"zh-Hans": "放风筝", "en": "to fly a kite"}, "verb": {"reflexive": null, "praeteritum": "ließ steigen", "perfekt": {"aux": "haben", "rest": "steigen lassen"}}, "example": {"de": "Im Herbst lassen wir {{Drachen steigen}}.", "translations": {"zh-Hans": "秋天我们放风筝。", "en": "In autumn we fly kites."}}, "tip": {"zh-Hans": "der {{Drachen}} 风筝，der Drache 龙", "en": "der {{Drachen}} = kite, der Drache = dragon"}, "style": {"color": "#2E8FA8", "background": "#DCEFFA"}, "anim": {"pose": {"hRx": 36, "hRy": -76, "hLx": -24, "hLy": -48, "happy": 1, "smile": 1, "lookX": 1.2, "lookY": -1.6}, "tint": null, "motion": ["tail-wag", "breathe"], "fx": ["breeze"], "props": ["field", "kite"], "bubble": null}, "notes": "B1: Perfekt usually with Ersatzinfinitiv – wir haben Drachen steigen lassen (steigen gelassen is less standard). Flying kites is a typical autumn activity in Germany."}, {"id": "tauchen", "pos": "verb", "headword": "tauchen", "gloss": {"zh-Hans": "潜水", "en": "to dive (underwater)"}, "verb": {"reflexive": null, "praeteritum": "tauchte", "perfekt": {"aux": "sein", "rest": "getaucht"}}, "example": {"de": "Im Urlaub {{tauche}} ich jeden Tag im Meer.", "translations": {"zh-Hans": "度假时我每天都在海里潜水。", "en": "On holiday I go diving in the sea every day."}}, "tip": {"zh-Hans": "浮潜：{{schnorcheln}}", "en": "Snorkelling: {{schnorcheln}}"}, "style": {"color": "#1F7FC4", "background": "#CDEBFA"}, "anim": {"pose": {"jump": 22, "hLx": -38, "hLy": -52, "hRx": 38, "hRy": -52, "happy": 1, "smile": 0.8, "fLx": -16, "fLy": 4, "fRx": 16, "fRy": 4}, "tint": null, "motion": ["swim"], "fx": ["bubbles"], "props": ["underwater", "snorkel", "knoedel-dive"], "bubble": null}, "notes": "tauchen takes sein for movement (ist getaucht); haben is also heard for the activity."}, {"id": "ski-fahren", "pos": "verb", "lead": "Ski", "headword": "fahren", "gloss": {"zh-Hans": "滑雪", "en": "to ski"}, "verb": {"reflexive": null, "praeteritum": "fuhr", "perfekt": {"aux": "sein", "rest": "gefahren"}}, "example": {"de": "Im Winter fahren wir in den Alpen {{Ski}}.", "translations": {"zh-Hans": "冬天我们去阿尔卑斯山滑雪。", "en": "In winter we go skiing in the Alps."}}, "tip": {"zh-Hans": "Ski 读作 Schi，同英语 she", "en": "Ski is pronounced Schi, like 'she'"}, "style": {"color": "#3B6BB0", "background": "#E6F0FA"}, "anim": {"pose": {"rot": -6, "hLx": -34, "hLy": -40, "hRx": 34, "hRy": -40, "happy": 1, "smile": 1, "blush": 0.8, "jump": 4}, "tint": null, "motion": ["ski"], "fx": ["snow"], "props": ["snow-slope", "skis", "beanie", "ski-poles", "knoedel-snow"], "bubble": null}}]};
+const THEME = {"description": "Fixed colours for grammar markup. 'light' is for light backgrounds (web), 'dark' for the black round screen. The card keyword uses card.style.color instead.", "light": {"gender": {"der": "#2F6BD6", "die": "#D6435E", "das": "#B7791F"}, "prefix": "#D9620F", "refl": "#0E8C7E", "aux": {"haben": "#2A5FC4", "sein": "#D2402A"}, "case": {"Akk": "#E1601A", "Dat": "#13946A", "Gen": "#7A4FD6"}}, "dark": {"gender": {"der": "#7FA6F5", "die": "#FF7E95", "das": "#FFC24A"}, "prefix": "#FF9F43", "refl": "#4FD1BF", "aux": {"haben": "#86A9F5", "sein": "#FF8468"}, "case": {"Akk": "#FF8A47", "Dat": "#3CCB98", "Gen": "#B394FF"}}};
+const REGISTRIES = {"katze": {"character": "katze", "maintained_by": "firmware: list only what is implemented on the device", "pose": {"jump": 0, "rot": 0, "sx": 1, "sy": 1, "open": 1, "lid": 0, "happy": 0, "shut": 0, "lookX": 0, "lookY": 0, "smile": 0.25, "mopen": 0, "blush": 0, "earL": 0, "earR": 0, "tail": 0, "hLx": -28, "hLy": -31, "hRx": 28, "hRy": -31, "fLx": -12, "fLy": 0, "fRx": 12, "fRy": 0}, "motion": ["tail-wag", "breathe", "bounce", "hop", "walk", "scrub", "push", "sweep", "smooth", "reach-up", "pour", "watch-spin", "pedal", "run", "tap", "look-around", "tremble", "type", "drop", "knock", "write", "dance", "cough", "climb", "fan", "swim", "wave", "jumping-jack", "flex", "lift", "squat", "skip", "punch", "curl", "stiff", "deep-breath", "pant", "kick", "pullup", "wobble", "ski"], "fx": ["sparkles", "bubbles", "dust", "shine", "steam", "stink", "drops", "sun", "speed-lines", "sweat", "sigh-puffs", "question", "hearts", "rain", "contactless", "parcel", "swap", "coins", "ring", "callback", "checkmark", "knock-lines", "signature", "cough-puffs", "pain", "flash", "clink", "breeze", "snow"], "prop": ["bed", "window", "washing-machine", "drying-rack", "ironing-board", "plant", "box", "sponge", "towel", "plate", "sock", "iron", "trash-bag", "watering-can", "vacuum", "mop", "bike", "bus", "bus-stop", "train-door", "bus-door", "departure-board", "transfer-sign", "station-sign", "suitcase", "map", "welcome-sign", "umbrella", "clothes-rack", "mirror", "shoe-shelf", "card-terminal", "counter", "piggy-bank", "jacket", "scarf", "shoe-small", "card", "gift", "phone", "sweater-small", "toaster", "wallet", "coin", "phone-ear", "calendar", "calendar-move", "calendar-x", "thermometer", "big-clock", "door", "number-display", "ticket", "clipboard", "pen", "folder", "fridge", "sofa-back", "pillow", "red-nose", "tissue", "plaster-cheek", "mountains", "sunset", "hills", "slope", "boulder", "big-sun", "bench", "lake-back", "night-window", "knoedel-sleep", "meadow", "summit", "signpost", "hut-door", "hut-bench", "menu-board", "car", "backpack-open", "hiking-pole", "water-bottle", "fuel-nozzle", "camera", "fork", "glass", "knoedel-hug", "nightcap", "sunglasses", "backpack-straps", "backpack", "knoedel-on-pack", "lake-water", "table-food", "table-drinks", "table-empty", "knoedel", "knoedel-wow", "knoedel-tired", "knoedel-walk", "knoedel-top", "knoedel-bench", "knoedel-pose", "knoedel-float", "knoedel-cool", "knoedel-guest", "knoedel-shock", "knoedel-table", "knoedel-cheers", "knoedel-full", "knoedel-flat", "knoedel-coach", "knoedel-stretch", "knoedel-laugh", "knoedel-roll", "knoedel-yoga", "knoedel-dive", "knoedel-snow", "gym", "headband", "barbell", "treadmill", "jump-rope", "punching-bag", "boxing-gloves", "mat", "yoga-mat", "dumbbells", "timer", "scale", "park", "field", "ball", "goal", "football", "pullup-bar", "kite", "underwater", "snorkel", "snow-slope", "skis", "beanie", "ski-poles"], "bubble": []}};
+const REGISTRY = REGISTRIES[DECK.character];
+/* Showcase (tools/build_showcase.py): the same cards for people who are not working
+   on them, in English, without draft status or ids still to implement. */
+const SHOWCASE = true;
+/* Katze drawing reference. Shared by the web preview and used by the firmware as the
+   porting reference: every motion, fx and prop is one entry keyed by its registry id.
+   Stage: 200 × 200 disc (centre 100,100, radius 100). Basic shapes only: paths, ellipses,
+   rects, round-capped lines. No bitmaps, gradients or filters.
+
+   Coordinates of the cat ("body frame"): feet on y = 0, centre x = 0, ear tips at y ≈ -134.
+   Paws are placed by target points (hLx, hLy, hRx, hRy) and reached with a two-bone arm
+   (shoulders at ±24, -56; upper and lower arm 13.5 each; elbow bends outwards).
+
+   Frames:
+     root  = translate(x, y - jump) scale(sx, sy)      feet, floor props attached to the cat
+     body  = root · rotate(rot, 0, -10)                everything else, held props
+     scene = translate(STAGE)                          props standing on the stage (layer "back")
+*/
+
+const NS = 'http://www.w3.org/2000/svg';
+const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
+const ease = u => -(Math.cos(Math.PI * u) - 1) / 2;
+const backOut = u => { const c = 1.7; return 1 + (c + 1) * Math.pow(u - 1, 3) + c * Math.pow(u - 1, 2); };
+function el(tag, attrs, parent) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+const hex = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+const mixC = (a, b, u) => { const A = hex(a), B = hex(b); return 'rgb(' + A.map((v, i) => Math.round(v + (B[i] - v) * u)).join(',') + ')'; };
+const f1 = v => v.toFixed(1);
+
+/* ---------- character ---------- */
+const KZ = { base: '#F3A25A', edge: '#C9772F', belly: '#FFF1DE', ear: '#F7B9A6', ink: '#2B2230', mouth: '#8C3B3B', nose: '#E8807A', blush: '#F49A94' };
+/* neutral pose: the registry lists these parameters once the firmware implements them */
+const N0 = { x: 0, y: 0, jump: 0, rot: 0, sx: 1, sy: 1,
+  open: 1, lid: 0, happy: 0, shut: 0, lookX: 0, lookY: 0, smile: 0.25, mopen: 0, blush: 0,
+  earL: 0, earR: 0, tail: 0,
+  hLx: -28, hLy: -31, hRx: 28, hRy: -31, fLx: -12, fLy: 0, fRx: 12, fRy: 0 };
+const SHOULDER = 24, SHOULDER_Y = -56, ARM = 13.5;
+const STW = { 'stroke-width': 2.2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' };
+const fillStroke = (f, s, w) => Object.assign({ fill: f, stroke: s }, STW, w ? { 'stroke-width': w } : {});
+
+/* tapered limb between two points, as one closed path */
+function limb(x0, y0, x1, y1, w0, w1) {
+  const dx = x1 - x0, dy = y1 - y0, L = Math.hypot(dx, dy) || 1, nx = -dy / L, ny = dx / L;
+  return `M${f1(x0 + nx * w0)} ${f1(y0 + ny * w0)} L${f1(x1 + nx * w1)} ${f1(y1 + ny * w1)} A${w1} ${w1} 0 0 0 ${f1(x1 - nx * w1)} ${f1(y1 - ny * w1)} L${f1(x0 - nx * w0)} ${f1(y0 - ny * w0)} A${w0} ${w0} 0 0 0 ${f1(x0 + nx * w0)} ${f1(y0 + ny * w0)} Z`;
+}
+/* two-bone arm: returns [elbow, paw]; the paw is pulled in if the target is out of reach */
+function reach(side, tx, ty) {
+  const sx = side * SHOULDER, sy = SHOULDER_Y;
+  let dx = tx - sx, dy = ty - sy, d = Math.hypot(dx, dy); const m = 2 * ARM - 0.5;
+  if (d > m) { tx = sx + dx / d * m; ty = sy + dy / d * m; d = m; }
+  if (d < 4) { d = 4; }
+  const base = Math.atan2(ty - sy, tx - sx), a = Math.acos(clamp(d / (2 * ARM), -1, 1));
+  const e1 = [sx + ARM * Math.cos(base + a), sy + ARM * Math.sin(base + a)], e2 = [sx + ARM * Math.cos(base - a), sy + ARM * Math.sin(base - a)];
+  return [e1[0] * side > e2[0] * side ? e1 : e2, [tx, ty]];
+}
+
+function makeCat(parent) {
+  const R = {};
+  R.root = el('g', {}, parent);
+  R.legs = [0, 1].map(() => el('path', fillStroke(KZ.base, KZ.edge), R.root));
+  R.feet = [0, 1].map(() => el('ellipse', Object.assign({ rx: 9, ry: 5.5 }, fillStroke(KZ.belly, KZ.edge)), R.root));
+  const b = R.body = el('g', {}, R.root);
+  R.tail = el('g', {}, b);
+  el('path', { d: 'M0 0 C26 -2 30 -32 18 -46', fill: 'none', stroke: KZ.edge, 'stroke-width': 10, 'stroke-linecap': 'round' }, R.tail);
+  el('path', { d: 'M0 0 C26 -2 30 -32 18 -46', fill: 'none', stroke: KZ.base, 'stroke-width': 5.6, 'stroke-linecap': 'round' }, R.tail);
+  R.behind = el('g', {}, b);            /* props behind the torso (backpack) */
+  R.ears = [-1, 1].map(s => {
+    const g = el('g', {}, b);
+    el('path', Object.assign({ d: `M${s * 30} -100 L${s * 27} -134 L${s * 6} -116 Z` }, fillStroke(KZ.base, KZ.edge)), g);
+    el('path', { d: `M${s * 25} -106 L${s * 24} -124 L${s * 13} -114 Z`, fill: KZ.ear }, g);
+    return g;
+  });
+  R.torso = el('path', Object.assign({ d: 'M-31 -94 C-35 -60 -32 -22 -20 -9 C-8 0 8 0 20 -9 C32 -22 35 -60 31 -94 C27 -122 -27 -122 -31 -94 Z' }, fillStroke(KZ.base, KZ.edge)), b);
+  el('ellipse', { cx: 0, cy: -34, rx: 18, ry: 20, fill: KZ.belly }, b);
+  [[-7, -109], [0, -111], [7, -109]].forEach(([x, y]) => el('path', { d: `M${x} ${y} l0 7`, stroke: KZ.edge, 'stroke-width': 3, 'stroke-linecap': 'round' }, b));
+  R.blush = [-20, 20].map(x => el('ellipse', { cx: x, cy: -77, rx: 5, ry: 2.8, fill: KZ.blush }, b));
+  R.eyes = [-11, 11].map(x => {
+    const e = { g: el('g', { transform: `translate(${x} -86)` }, b) };
+    e.ell = el('ellipse', { rx: 4, ry: 4.9, fill: KZ.ink }, e.g);
+    e.hl = el('circle', { r: 1.5, fill: '#fff' }, e.g);
+    e.lid = el('rect', { x: -5.5, y: -7, width: 11, height: 0, fill: KZ.base }, e.g);
+    e.happy = el('path', { d: 'M-4.5 1 Q0 -5 4.5 1', fill: 'none', stroke: KZ.ink, 'stroke-width': 2.2, 'stroke-linecap': 'round', opacity: 0 }, e.g);
+    e.shut = el('path', { d: 'M-4.5 -1 Q0 3.5 4.5 -1', fill: 'none', stroke: KZ.ink, 'stroke-width': 2.2, 'stroke-linecap': 'round', opacity: 0 }, e.g);
+    return e;
+  });
+  el('path', Object.assign({ d: 'M-2.6 -79 L2.6 -79 L0 -76 Z' }, fillStroke(KZ.nose, KZ.nose, 1.4)), b);
+  R.open = el('path', { fill: KZ.mouth }, b);
+  R.mouth = el('path', { fill: 'none', stroke: KZ.ink, 'stroke-width': 1.7, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, b);
+  [[-16, -79, -29, -81], [-16, -75, -29, -73], [16, -79, 29, -81], [16, -75, 29, -73]].forEach(([a, c, d, e]) =>
+    el('path', { d: `M${a} ${c} L${d} ${e}`, stroke: KZ.edge, 'stroke-width': 1.3, 'stroke-linecap': 'round' }, b));
+  R.wear = el('g', {}, b);              /* worn props (scarf, jacket, thermometer): over the body, under the arms */
+  R.arms = [0, 1, 2, 3].map(() => el('path', fillStroke(KZ.base, KZ.edge), b));
+  R.hand = el('g', {}, b);              /* held props: between the arms and the paws */
+  R.paws = [0, 1].map(() => el('ellipse', Object.assign({ rx: 6, ry: 5.4 }, fillStroke(KZ.base, KZ.edge)), b));
+  return R;
+}
+
+function drawCat(R, p) {
+  R.root.setAttribute('transform', `translate(${f1(p.x)} ${f1(p.y - p.jump)}) scale(${p.sx.toFixed(3)} ${p.sy.toFixed(3)})`);
+  R.body.setAttribute('transform', `rotate(${p.rot.toFixed(2)} 0 -10)`);
+  [[p.fLx, p.fLy, -11], [p.fRx, p.fRy, 11]].forEach(([x, y, hx], i) => {
+    const lifted = y < -3 || Math.abs(x - hx) > 6;
+    R.legs[i].setAttribute('d', lifted ? limb(hx, -12, x, y, 6.5, 6) : '');
+    R.feet[i].setAttribute('cx', f1(x)); R.feet[i].setAttribute('cy', f1(y - 4));
+  });
+  R.tail.setAttribute('transform', `translate(20 -16) rotate(${p.tail.toFixed(1)})`);
+  R.ears[0].setAttribute('transform', `rotate(${p.earL.toFixed(1)} -18 -104)`);
+  R.ears[1].setAttribute('transform', `rotate(${(-p.earR).toFixed(1)} 18 -104)`);
+  const vis = 1 - Math.max(p.happy, p.shut), ry = 4.9 * p.open;
+  R.eyes.forEach(e => {
+    e.ell.setAttribute('ry', ry.toFixed(2)); e.ell.setAttribute('cx', p.lookX.toFixed(2)); e.ell.setAttribute('cy', p.lookY.toFixed(2)); e.ell.setAttribute('opacity', vis.toFixed(2));
+    e.hl.setAttribute('cx', (p.lookX + 1.4).toFixed(2)); e.hl.setAttribute('cy', (p.lookY - ry * 0.4).toFixed(2)); e.hl.setAttribute('opacity', vis.toFixed(2));
+    e.lid.setAttribute('y', (p.lookY - ry - 0.8).toFixed(2)); e.lid.setAttribute('height', (p.lid * ry * 2 + 0.8).toFixed(2)); e.lid.setAttribute('opacity', (p.lid > 0.02 ? vis : 0).toFixed(2));
+    e.happy.setAttribute('opacity', p.happy.toFixed(2)); e.shut.setAttribute('opacity', p.shut.toFixed(2));
+  });
+  const s = p.smile * 3.6;
+  R.mouth.setAttribute('d', `M-5.5 -73 Q-2.7 ${f1(-73 + s)} 0 -73.5 Q2.7 ${f1(-73 + s)} 5.5 -73`);
+  R.open.setAttribute('d', p.mopen > 0.02 ? `M-4.2 -72.6 Q0 ${f1(-72.6 + 11 * p.mopen)} 4.2 -72.6 Z` : '');
+  R.blush.forEach(b => b.setAttribute('opacity', (0.45 + 0.45 * p.blush).toFixed(2)));
+  const L = reach(-1, p.hLx, p.hLy), Rr = reach(1, p.hRx, p.hRy);
+  [[L, -1, 0], [Rr, 1, 2]].forEach(([[e, w], side, k]) => {
+    R.arms[k].setAttribute('d', limb(side * SHOULDER, SHOULDER_Y, e[0], e[1], 6, 5.4));
+    R.arms[k + 1].setAttribute('d', limb(e[0], e[1], w[0], w[1], 5.4, 5));
+  });
+  R.paws[0].setAttribute('cx', f1(L[1][0])); R.paws[0].setAttribute('cy', f1(L[1][1]));
+  R.paws[1].setAttribute('cx', f1(Rr[1][0])); R.paws[1].setAttribute('cy', f1(Rr[1][1]));
+  return { L: L[1], R: Rr[1] };
+}
+
+/* frame conversions (see the header) */
+function bodyToRoot(p, x, y) {
+  const a = p.rot * Math.PI / 180, dy = y + 10;
+  return [x * Math.cos(a) - dy * Math.sin(a), x * Math.sin(a) + dy * Math.cos(a) - 10];
+}
+function rootToBody(p, x, y) {
+  const a = -p.rot * Math.PI / 180, dy = y + 10;
+  return [x * Math.cos(a) - dy * Math.sin(a), x * Math.sin(a) + dy * Math.cos(a) - 10];
+}
+function rootToStage(p, x, y) { return [p.x + x * p.sx, p.y - p.jump + y * p.sy]; }
+const bodyToStage = (p, x, y) => rootToStage(p, ...bodyToRoot(p, x, y));
+
+/* ---------- shapes reused by effects and props ---------- */
+const STAR = 'M0 -6 L1.6 -1.6 L6 0 L1.6 1.6 L0 6 L-1.6 1.6 L-6 0 L-1.6 -1.6 Z';
+const DROP = 'M0 -5 C2 -1 3 1 3 2.5 A3 3 0 1 1 -3 2.5 C-3 1 -2 -1 0 -5 Z';
+const FONT = 'Bricolage Grotesque, system-ui, sans-serif';
+
+/* ---------- MOTION: (pose, clock, weight) -> mutates pose ---------- */
+const MOTION = {
+  'tail-wag': (p, c, w) => { p.tail += Math.sin(c * 3) * 14 * w; },
+  'breathe':  (p, c, w) => { const k = 1 + Math.sin(c * 1.8) * 0.015 * w; p.sx *= k; p.sy *= k; },
+  'bounce':   (p, c, w) => { const s = Math.abs(Math.sin(c * 5)); p.jump += w * s * 9; p.sy *= 1 - 0.06 * w * (1 - s); },
+  'hop':      (p, c, w) => { p.jump += w * Math.max(0, Math.sin(c * 2.4)) * 3; },
+  /* walking on the spot: feet step, body bobs */
+  'walk': (p, c, w) => {
+    const s = Math.sin(c * 6);
+    p.jump += Math.abs(s) * 2.2 * w; p.rot += s * 2 * w;
+    p.fLy -= Math.max(0, s) * 5 * w; p.fRy -= Math.max(0, -s) * 5 * w;
+    p.hLy += Math.sin(c * 12) * 1.2 * w; p.hRy += Math.sin(c * 12) * 1.2 * w;
+  },
+  /* small circles of the right paw (sponge, towel) */
+  'scrub': (p, c, w) => { p.hRx += Math.cos(c * 9) * 5 * w; p.hRy += Math.sin(c * 9) * 4 * w; p.rot += Math.sin(c * 9) * 0.8 * w; },
+  /* both paws forwards and back along a slight diagonal (vacuum, iron) */
+  'push': (p, c, w) => { const d = Math.sin(c * 3.2); p.hRx += d * 9 * w; p.hRy += d * 2.5 * w; p.hLx += d * 9 * w; p.hLy += d * 2.5 * w; p.rot += d * 2 * w; },
+  /* wide side-to-side swing of both paws (mop) */
+  'sweep': (p, c, w) => { const d = Math.sin(c * 2.6); p.hRx += d * 12 * w; p.hLx += d * 12 * w; p.rot += d * 3 * w; p.lookX += d * 0.8 * w; },
+  /* gentle smoothing over a surface (bed cover) */
+  'smooth': (p, c, w) => { const d = Math.sin(c * 2.2); p.hLx += d * 8 * w; p.hRx += d * 8 * w; p.rot += d * 1.5 * w; },
+  /* right paw comes up to the target, holds, goes down again (hanging washing) */
+  'reach-up': (p, c, w) => { const u = ease(clamp(Math.sin(c * 1.8) * 0.8 + 0.5)); p.hRy += (1 - u) * 22 * w; p.hRx -= (1 - u) * 6 * w; p.jump += u * 1.5 * w; p.lookY -= u * 0.8 * w; },
+  /* tilts the held watering can; the prop reads p._tilt */
+  'pour': (p, c, w) => { const u = ease(clamp(Math.sin(c * 1.6) * 0.9 + 0.55)); p._tilt = (p._tilt || 0) + u * 34 * w; p.hRy -= u * 2 * w; },
+  /* eyes follow a spinning drum; head tilts along */
+  'watch-spin': (p, c, w) => { p.lookX += Math.cos(c * 4) * 1.6 * w + 0.8 * w; p.lookY += Math.sin(c * 4) * 1.3 * w; p.rot += Math.sin(c * 4) * 1.6 * w; },
+  /* new in a2-unterwegs-verben */
+  /* feet circle round the bike's crank (stage 0, -14); use with pose jump ≈ 20 */
+  'pedal': (p, c, w) => {
+    const a = c * 7, cy = -14 + p.jump, mix = (v, t) => v + (t - v) * w;
+    p.fLx = mix(p.fLx, Math.cos(a) * 7); p.fLy = mix(p.fLy, cy + Math.sin(a) * 7);
+    p.fRx = mix(p.fRx, -Math.cos(a) * 7); p.fRy = mix(p.fRy, cy - Math.sin(a) * 7);
+    p.jump += Math.abs(Math.sin(a)) * 1 * w;
+  },
+  /* running on the spot: bigger steps, arms swing, tail streams back */
+  'run': (p, c, w) => {
+    const s = Math.sin(c * 11);
+    p.jump += Math.abs(s) * 4 * w; p.rot += s * 2 * w;
+    p.fLx += s * 6 * w; p.fRx -= s * 6 * w; p.fLy -= Math.max(0, s) * 7 * w; p.fRy -= Math.max(0, -s) * 7 * w;
+    p.hLx += s * 7 * w; p.hRx -= s * 7 * w; p.hLy -= Math.abs(s) * 3 * w; p.hRy -= Math.abs(s) * 3 * w;
+    p.tail += (-20 + s * 10) * w;
+  },
+  /* impatient foot tapping */
+  'tap': (p, c, w) => { p.fRy -= Math.max(0, Math.sin(c * 7)) * 4 * w; p.tail += Math.sin(c * 1.5) * 8 * w; },
+  /* looking left and right, head tilts, ears turn */
+  'look-around': (p, c, w) => { const s = Math.sin(c * 1.7); p.lookX += s * 2.2 * w; p.rot += s * 3 * w; p.earL += s * 6 * w; p.earR -= s * 6 * w; },
+  'tremble': (p, c, w) => { p.x += Math.sin(c * 30) * 0.7 * w; },
+  /* new in a2-einkaufen-verben and a2-termine-verben */
+  'type':  (p, c, w) => { p.hRy += Math.max(0, Math.sin(c * 14)) * 2 * w; p.hRx += Math.sin(c * 7) * 1.5 * w; },
+  'drop':  (p, c, w) => { const u = ease(clamp(Math.sin(c * 2) * 0.9 + 0.5)); p.hRy += u * 14 * w; p.hRx += u * 3 * w; p.lookY += u * 1.2 * w; },
+  'knock': (p, c, w) => { const on = Math.sin(c * 1.6) > -0.2 ? 1 : 0; p.hRx += Math.max(0, Math.sin(c * 11)) * 4 * w * on; p.rot += Math.max(0, Math.sin(c * 11)) * 0.6 * w * on; },
+  'write': (p, c, w) => { p.hRx += Math.sin(c * 12) * 2.5 * w; p.hRy += Math.sin(c * 6) * 1 * w; },
+  /* new in the noun decks */
+  'cough': (p, c, w) => { const u = (c % 1.8) / 1.8, k = u < 0.12 ? u / 0.12 : u < 0.3 ? 1 - (u - 0.12) / 0.18 : 0;
+    p.rot += 4 * k * w; p.shut = Math.max(p.shut, k * w); p.mopen = Math.max(p.mopen, 0.5 * k * w); p.jump -= 1.5 * k * w; },
+};
+
+const txt = (g, x, y, t, size, fill, anchor) => { const e = el('text', { x, y, 'font-size': size, 'font-weight': 800, fill, 'font-family': FONT, 'text-anchor': anchor || 'middle' }, g); e.textContent = t; return e; };
+
+/* wall calendar shared by 'calendar', 'calendar-move' and 'calendar-x' (scene frame) */
+function calendarSheet(g, mode) {
+  el('rect', { x: 40, y: -136, width: 60, height: 54, rx: 3, fill: '#FFFFFF', stroke: '#C9CED6', 'stroke-width': 1.6 }, g);
+  el('rect', { x: 40, y: -136, width: 60, height: 12, rx: 3, fill: '#E5484D' }, g);
+  [52, 88].forEach(x => el('line', { x1: x, y1: -140, x2: x, y2: -131, stroke: '#6B7180', 'stroke-width': 2.4, 'stroke-linecap': 'round' }, g));
+  const cell = (r, k) => [46 + k * 13, -118 + r * 11];
+  for (let r = 0; r < 3; r++) for (let k = 0; k < 4; k++) { const [x, y] = cell(r, k); el('rect', { x, y, width: 9, height: 7, rx: 1, fill: '#EEF0F4' }, g); }
+  const s = { mode };
+  if (mode === 'circle') { const [x, y] = cell(1, 2); s.mark = el('ellipse', { cx: x + 4.5, cy: y + 3.5, rx: 8, ry: 6.5, fill: 'none', stroke: '#E5484D', 'stroke-width': 2, 'stroke-dasharray': '46', 'stroke-dashoffset': 46 }, g); }
+  if (mode === 'move') { s.from = cell(0, 1); s.to = cell(2, 3);
+    el('path', { d: `M${s.from[0] + 9} ${s.from[1] + 6} Q${s.to[0] - 2} ${s.from[1] + 4} ${s.to[0] + 2} ${s.to[1] - 2}`, fill: 'none', stroke: '#9AA4B1', 'stroke-width': 1.4, 'stroke-dasharray': '2 2' }, g);
+    s.mark = el('rect', { width: 9, height: 7, rx: 1.5, fill: '#F2C14E', stroke: '#C99227', 'stroke-width': 1 }, g); }
+  if (mode === 'x') { const [x, y] = cell(1, 1); el('rect', { x, y, width: 9, height: 7, rx: 1, fill: '#FADBD8' }, g);
+    s.mark = el('path', { d: `M${x - 1} ${y - 2} L${x + 10} ${y + 9} M${x + 10} ${y - 2} L${x - 1} ${y + 9}`, stroke: '#E5484D', 'stroke-width': 2.4, 'stroke-linecap': 'round' }, g); }
+  return s;
+}
+function calendarTick(s, P) {
+  const u = (P.c % 3) / 3;
+  if (s.mode === 'circle') s.mark.setAttribute('stroke-dashoffset', f1(46 * (1 - clamp(u * 2))));
+  if (s.mode === 'move') { const k = ease(clamp(u * 1.6 - 0.2)); s.mark.setAttribute('x', f1(s.from[0] + (s.to[0] - s.from[0]) * k)); s.mark.setAttribute('y', f1(s.from[1] + (s.to[1] - s.from[1]) * k)); }
+  if (s.mode === 'x') s.mark.setAttribute('opacity', u < 0.15 ? (u / 0.15).toFixed(2) : 1);
+}
+
+/* ---------- PROP: { layer: 'back' | 'wear' | 'hand', make(group) -> state, tick(state, P) } ----------
+   'wear' props are fixed to the body (scarf, jacket) and drawn under the arms.
+   'back' props stand on the stage behind the cat (scene frame, feet at 0,0).
+   'hand' props are drawn in the body frame between the arms and the paws.
+   P = { p, c, L:[x,y], R:[x,y] (paws, body frame), pub } ; pub collects anchor points (stage coords) for fx. */
+const PROP = {
+  'bed': { layer: 'back', make: g => {
+    el('rect', { x: 92, y: -64, width: 8, height: 64, rx: 3, fill: '#A86B48' }, g);
+    el('rect', { x: 32, y: -8, width: 5, height: 8, fill: '#A86B48' }, g);
+    el('rect', { x: 30, y: -30, width: 66, height: 22, rx: 4, fill: '#FFFFFF', stroke: '#D6D2E0', 'stroke-width': 1.6 }, g);
+    el('ellipse', { cx: 83, cy: -36, rx: 10, ry: 6, fill: '#FFFFFF', stroke: '#D6D2E0', 'stroke-width': 1.6 }, g);
+    el('path', { d: 'M26 -38 L72 -38 Q76 -24 72 -10 L26 -10 Q22 -24 26 -38 Z', fill: '#C9C2F2', stroke: '#9D8DF1', 'stroke-width': 1.6, 'stroke-linejoin': 'round' }, g);
+    el('path', { d: 'M26 -38 L72 -38 L72 -32 L26 -32 Z', fill: '#FFFFFF', opacity: 0.85 }, g);
+    return null; }, tick: () => {} },
+  'window': { layer: 'back', make: g => {
+    el('rect', { x: 40, y: -116, width: 52, height: 58, rx: 3, fill: '#DDF1FB', stroke: '#8FA3B8', 'stroke-width': 3 }, g);
+    el('path', { d: 'M66 -116 L66 -58 M40 -87 L92 -87', stroke: '#8FA3B8', 'stroke-width': 2.4 }, g);
+    el('path', { d: 'M46 -108 L54 -100 M48 -96 L60 -108', stroke: '#FFFFFF', 'stroke-width': 2.4, 'stroke-linecap': 'round' }, g);
+    el('rect', { x: 36, y: -58, width: 60, height: 5, rx: 2, fill: '#8FA3B8' }, g);
+    return null; }, tick: () => {} },
+  'washing-machine': { layer: 'back', make: g => {
+    el('rect', { x: 44, y: -64, width: 50, height: 64, rx: 6, fill: '#FFFFFF', stroke: '#B9BFCC', 'stroke-width': 2 }, g);
+    el('line', { x1: 44, y1: -52, x2: 94, y2: -52, stroke: '#B9BFCC', 'stroke-width': 1.6 }, g);
+    el('circle', { cx: 84, cy: -58, r: 2.6, fill: '#9D8DF1' }, g); el('rect', { x: 50, y: -60, width: 14, height: 4, rx: 2, fill: '#D6DCE6' }, g);
+    el('circle', { cx: 69, cy: -27, r: 18, fill: '#DCE3EC', stroke: '#8FA3B8', 'stroke-width': 3 }, g);
+    const drum = el('g', {}, g);
+    [['#E5484D', 0], ['#F2C14E', 2.1], ['#4BA3D9', 4.2]].forEach(([col, a]) => el('ellipse', { cx: 9 * Math.cos(a), cy: 9 * Math.sin(a), rx: 6, ry: 4, fill: col, transform: `rotate(${a * 57} ${9 * Math.cos(a)} ${9 * Math.sin(a)})` }, drum));
+    el('path', { d: 'M54 -34 Q69 -24 84 -34', fill: 'none', stroke: '#9FC4E8', 'stroke-width': 2, opacity: 0.8 }, g);
+    return { drum }; },
+    tick: (s, P) => { s.drum.setAttribute('transform', `translate(69 -27) rotate(${f1((P.c * 260) % 360)})`); P.pub.drum = [P.stageX + 69, P.stageY - 27]; } },
+  'drying-rack': { layer: 'back', make: g => {
+    el('path', { d: 'M40 0 L82 -64 M96 0 L54 -64', stroke: '#9AA4B1', 'stroke-width': 2.4, 'stroke-linecap': 'round' }, g);
+    [-64, -56].forEach(y => el('line', { x1: 36, y1: y, x2: 98, y2: y, stroke: '#9AA4B1', 'stroke-width': 2, 'stroke-linecap': 'round' }, g));
+    el('path', { d: 'M58 -64 L80 -64 L84 -54 L78 -52 L78 -30 L60 -30 L60 -52 L54 -54 Z', fill: '#9D8DF1', stroke: '#7C6BD6', 'stroke-width': 1.4, 'stroke-linejoin': 'round' }, g);
+    el('rect', { x: 86, y: -56, width: 10, height: 22, rx: 1.5, fill: '#F2C14E' }, g);
+    return null; }, tick: () => {} },
+  'ironing-board': { layer: 'back', make: g => {
+    el('path', { d: 'M46 0 L80 -40 M86 0 L52 -40', stroke: '#9AA4B1', 'stroke-width': 2.4, 'stroke-linecap': 'round' }, g);
+    el('path', { d: 'M28 -40 Q24 -46 34 -46 L94 -46 Q98 -46 98 -42 L98 -40 Z', fill: '#BFE3F2', stroke: '#7FA6C4', 'stroke-width': 1.8, 'stroke-linejoin': 'round' }, g);
+    el('path', { d: 'M60 -46 L78 -46 L80 -50 L72 -52 L66 -52 L58 -50 Z', fill: '#FFFFFF', stroke: '#C9CED6', 'stroke-width': 1.2 }, g);
+    return null; }, tick: () => {} },
+  'plant': { layer: 'back', make: g => {
+    el('path', { d: 'M62 -22 L90 -22 L86 0 L66 0 Z', fill: '#D9824A', stroke: '#B0653A', 'stroke-width': 1.6, 'stroke-linejoin': 'round' }, g);
+    el('path', { d: 'M76 -22 L76 -46', stroke: '#3E8E2F', 'stroke-width': 2.4, 'stroke-linecap': 'round' }, g);
+    el('path', { d: 'M76 -30 Q64 -34 62 -44 Q72 -42 76 -32 Z M76 -34 Q88 -38 90 -48 Q80 -46 76 -36 Z', fill: '#5E9E45' }, g);
+    const fl = el('g', { transform: 'translate(76 -50)' }, g);
+    [0, 72, 144, 216, 288].forEach(a => el('ellipse', { cx: 0, cy: -4.5, rx: 3.2, ry: 4.5, fill: '#F28CA8', transform: `rotate(${a})` }, fl));
+    el('circle', { r: 2.8, fill: '#F2C14E' }, fl);
+    return null; }, tick: () => {} },
+
+  /* held props: drawn at the paw, in the body frame */
+  'box': { layer: 'hand', make: g => {
+    const s = el('g', {}, g);
+    el('circle', { cx: -8, cy: -15, r: 6, fill: '#E5484D' }, s);
+    el('rect', { x: 2, y: -24, width: 8, height: 14, rx: 1, fill: '#4BA3D9', transform: 'rotate(12 6 -17)' }, s);
+    el('rect', { x: -20, y: -12, width: 40, height: 24, rx: 2, fill: '#D9A86C', stroke: '#B0803F', 'stroke-width': 1.6 }, s);
+    el('path', { d: 'M-20 -12 L-26 -18 M20 -12 L26 -18', stroke: '#B0803F', 'stroke-width': 1.6, 'stroke-linecap': 'round' }, s);
+    return s; },
+    tick: (s, P) => { const x = (P.L[0] + P.R[0]) / 2, y = (P.L[1] + P.R[1]) / 2; s.setAttribute('transform', `translate(${f1(x)} ${f1(y + 4)})`); } },
+  'sponge': { layer: 'hand', make: g => {
+    const s = el('g', {}, g);
+    el('rect', { x: -7, y: -5, width: 14, height: 10, rx: 2.5, fill: '#F2C14E', stroke: '#C99227', 'stroke-width': 1.2 }, s);
+    el('rect', { x: -7, y: -5, width: 14, height: 3.5, rx: 1.5, fill: '#5E9E45' }, s);
+    return s; },
+    tick: (s, P) => { s.setAttribute('transform', `translate(${f1(P.R[0] + 3)} ${f1(P.R[1] - 5)}) rotate(-20)`); P.pub.tool = bodyToStage(P.p, P.R[0] + 4, P.R[1] - 8); } },
+  'towel': { layer: 'hand', make: g => {
+    const s = el('g', {}, g);
+    el('path', { d: 'M-8 -6 L8 -6 L9 10 L-7 12 Z', fill: '#FFFFFF', stroke: '#C9CED6', 'stroke-width': 1.2, 'stroke-linejoin': 'round' }, s);
+    el('path', { d: 'M-8 -1 L8 -1 M-7.5 4 L8.5 4', stroke: '#E5484D', 'stroke-width': 1.8 }, s);
+    return s; },
+    tick: (s, P) => { s.setAttribute('transform', `translate(${f1(P.R[0] + 1)} ${f1(P.R[1] + 2)}) rotate(-10)`); P.pub.tool = bodyToStage(P.p, P.R[0], P.R[1]); } },
+  'plate': { layer: 'hand', make: g => {
+    const s = el('g', {}, g);
+    el('circle', { r: 13, fill: '#FFFFFF', stroke: '#B9BFCC', 'stroke-width': 1.6 }, s);
+    el('circle', { r: 8, fill: 'none', stroke: '#DCE3EC', 'stroke-width': 1.4 }, s);
+    return s; },
+    tick: (s, P) => { s.setAttribute('transform', `translate(${f1(P.L[0] + 10)} ${f1(P.L[1] - 4)})`); P.pub.plate = bodyToStage(P.p, P.L[0] + 10, P.L[1] - 4); } },
+  'sock': { layer: 'hand', make: g => {
+    const s = el('g', {}, g);
+    el('path', { d: 'M-4 0 L4 0 L4 14 Q4 18 10 18 L12 18 Q16 18 16 22 Q16 26 12 26 L2 26 Q-4 26 -4 20 Z', fill: '#4BA3D9', stroke: '#2F7DB8', 'stroke-width': 1.2, 'stroke-linejoin': 'round' }, s);
+    el('path', { d: 'M-4 5 L4 5 M-4 9 L4 9', stroke: '#FFFFFF', 'stroke-width': 1.6 }, s);
+    el('rect', { x: -2, y: -6, width: 4, height: 8, rx: 1, fill: '#F2C14E' }, s);
+    return s; },
+    tick: (s, P) => { s.setAttribute('transform', `translate(${f1(P.R[0])} ${f1(P.R[1] + 2)})`); } },
+  'iron': { layer: 'hand', make: g => {
+    const s = el('g', {}, g);
+    el('path', { d: 'M-12 4 L12 4 Q14 -4 6 -8 L-6 -8 Q-12 -6 -12 4 Z', fill: '#E5484D', stroke: '#B8323A', 'stroke-width': 1.4, 'stroke-linejoin': 'round' }, s);
+    el('path', { d: 'M-12 4 L12 4 L13 6 L-12 6 Z', fill: '#C9CED6' }, s);
+    el('path', { d: 'M-5 -8 Q-5 -14 0 -14 L5 -14 Q8 -14 8 -8', fill: 'none', stroke: '#3B2F4A', 'stroke-width': 2.6, 'stroke-linecap': 'round' }, s);
+    return s; },
+    tick: (s, P) => { const [x, y] = [P.R[0] + 2, P.R[1] + 12]; s.setAttribute('transform', `translate(${f1(x)} ${f1(y)})`); P.pub.iron = bodyToStage(P.p, x + 8, y - 6); } },
+  'trash-bag': { layer: 'hand', make: g => {
+    const s = el('g', {}, g);
+    el('path', { d: 'M-3 2 Q-14 8 -14 20 Q-14 32 0 32 Q14 32 14 20 Q14 8 3 2 Z', fill: '#4A4F5C', stroke: '#2E323B', 'stroke-width': 1.4, 'stroke-linejoin': 'round' }, s);
+    el('path', { d: 'M-4 2 L-7 -4 M4 2 L7 -4', stroke: '#2E323B', 'stroke-width': 2.2, 'stroke-linecap': 'round' }, s);
+    el('path', { d: 'M-8 16 Q-6 24 -2 26', fill: 'none', stroke: '#6B7180', 'stroke-width': 1.6, 'stroke-linecap': 'round' }, s);
+    return s; },
+    tick: (s, P) => { const sw = Math.sin(P.c * 6) * 6; s.setAttribute('transform', `translate(${f1(P.R[0])} ${f1(P.R[1] + 2)}) rotate(${f1(sw)})`); P.pub.bag = bodyToStage(P.p, P.R[0], P.R[1] + 4); } },
+  'watering-can': { layer: 'hand', make: g => {
+    const s = el('g', {}, g);
+    el('path', { d: 'M10 -4 L30 -16 L32 -13 L14 2 Z', fill: '#4BA3D9', stroke: '#2F7DB8', 'stroke-width': 1.4, 'stroke-linejoin': 'round' }, s);
+    el('ellipse', { cx: 31, cy: -15, rx: 2.6, ry: 4, fill: '#2F7DB8', transform: 'rotate(-30 31 -15)' }, s);
+    el('path', { d: 'M-12 -10 L12 -10 L10 12 L-10 12 Z', fill: '#4BA3D9', stroke: '#2F7DB8', 'stroke-width': 1.6, 'stroke-linejoin': 'round' }, s);
+    el('path', { d: 'M-8 -10 Q0 -22 8 -10', fill: 'none', stroke: '#2F7DB8', 'stroke-width': 2.6, 'stroke-linecap': 'round' }, s);
+    return s; },
+    tick: (s, P) => {
+      const t = P.p._tilt || 0, x = P.R[0] - 2, y = P.R[1] + 18;
+      s.setAttribute('transform', `translate(${f1(x)} ${f1(y)}) rotate(${f1(t)})`);
+      const a = t * Math.PI / 180, sx = 31 * Math.cos(a) + 15 * Math.sin(a), sy = 31 * Math.sin(a) - 15 * Math.cos(a);
+      P.pub.spout = bodyToStage(P.p, x + sx, y + sy); P.pub.pour = clamp((t - 12) / 18);
+    } },
+  /* held, but touching the floor: the head is placed on the floor in root coordinates */
+  'vacuum': { layer: 'hand', make: g => {
+    const s = { stick: el('path', { stroke: '#8A8FA0', 'stroke-width': 3.6, 'stroke-linecap': 'round' }, g),
+      can: el('rect', { width: 11, height: 20, rx: 4, fill: '#9D8DF1', stroke: '#7C6BD6', 'stroke-width': 1.6 }, g),
+      head: el('rect', { width: 28, height: 9, rx: 4, fill: '#3B2F4A', stroke: '#231C2C', 'stroke-width': 1.4 }, g) };
+    return s; },
+    tick: (s, P) => {
+      const [rx] = bodyToRoot(P.p, ...P.R), [hx, hy] = rootToBody(P.p, rx + 40, -6);
+      const [px, py] = P.R, mx = px + (hx - px) * 0.38, my = py + (hy - py) * 0.38, ang = Math.atan2(hy - py, hx - px) * 180 / Math.PI - 90;
+      s.stick.setAttribute('d', `M${f1(px)} ${f1(py)} L${f1(hx)} ${f1(hy)}`);
+      s.can.setAttribute('transform', `translate(${f1(mx)} ${f1(my)}) rotate(${f1(ang)}) translate(-5.5 -10)`);
+      s.head.setAttribute('transform', `rotate(${f1(-P.p.rot)} ${f1(hx)} ${f1(hy)}) translate(${f1(hx - 8)} ${f1(hy - 4.5)})`);
+      P.pub.vac = rootToStage(P.p, rx + 40 + 22, -4);
+    } },
+  'mop': { layer: 'hand', make: g => {
+    const s = { stick: el('path', { stroke: '#B07A45', 'stroke-width': 3.4, 'stroke-linecap': 'round' }, g), head: el('g', {}, g) };
+    el('rect', { x: -10, y: -3, width: 20, height: 5, rx: 2, fill: '#4BA3D9' }, s.head);
+    [-9, -5, -1, 3, 7].forEach((x, i) => el('path', { d: `M${x} 2 L${x - 2 + i} 9`, stroke: '#9FC4E8', 'stroke-width': 3, 'stroke-linecap': 'round' }, s.head));
+    return s; },
+    tick: (s, P) => {
+      const [rx] = bodyToRoot(P.p, ...P.R), [hx, hy] = rootToBody(P.p, rx + 30, -10);
+      s.stick.setAttribute('d', `M${f1(P.R[0])} ${f1(P.R[1] - 4)} L${f1(hx)} ${f1(hy)}`);
+      s.head.setAttribute('transform', `translate(${f1(hx)} ${f1(hy)}) rotate(${f1(-P.p.rot)})`);
+      P.pub.mop = rootToStage(P.p, rx + 30, -2);
+    } },
+
+  /* new in a2-unterwegs-verben: stage props */
+  'bike': { layer: 'back', make: g => {
+    const wheels = [-40, 44].map(x => { const w = el('g', { transform: `translate(${x} -16)` }, g);
+      el('circle', { r: 16, fill: 'none', stroke: '#3B2F4A', 'stroke-width': 3.2 }, w);
+      const sp = el('g', {}, w); [0, 60, 120].forEach(a => el('line', { x1: -14, y1: 0, x2: 14, y2: 0, stroke: '#9AA4B1', 'stroke-width': 1.2, transform: `rotate(${a})` }, sp));
+      return sp; });
+    el('path', { d: 'M-40 -16 L0 -14 L-8 -44 Z M0 -14 L34 -48 M-8 -44 L34 -48 M34 -48 L44 -16', fill: 'none', stroke: '#E5484D', 'stroke-width': 3.4, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }, g);
+    el('rect', { x: -17, y: -50, width: 17, height: 5, rx: 2.5, fill: '#3B2F4A' }, g);
+    el('path', { d: 'M34 -48 L38 -60 L50 -60', fill: 'none', stroke: '#3B2F4A', 'stroke-width': 3.2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, g);
+    el('circle', { cx: 0, cy: -14, r: 3.2, fill: '#3B2F4A' }, g);
+    return { wheels }; },
+    tick: (s, P) => s.wheels.forEach(w => w.setAttribute('transform', `rotate(${f1((P.c * 420) % 360)})`)) },
+  'bus': { layer: 'back', make: g => {
+    const b = el('g', {}, g);
+    el('rect', { x: 0, y: -74, width: 84, height: 62, rx: 9, fill: '#4BA3D9', stroke: '#2F7DB8', 'stroke-width': 2 }, b);
+    [6, 28, 50].forEach(x => el('rect', { x, y: -66, width: 18, height: 18, rx: 3, fill: '#DDF1FB' }, b));
+    el('rect', { x: 72, y: -66, width: 8, height: 44, rx: 2, fill: '#DDF1FB' }, b);
+    el('rect', { x: 0, y: -40, width: 84, height: 5, fill: '#FFFFFF' }, b);
+    [16, 66].forEach(x => el('circle', { cx: x, cy: -12, r: 8, fill: '#3B2F4A', stroke: '#9AA4B1', 'stroke-width': 2 }, b));
+    const puffs = [0, 1, 2].map(() => el('circle', { r: 4, fill: '#C9CED6', opacity: 0 }, b));
+    return { b, puffs }; },
+    tick: (s, P) => {
+      const off = (P.c * 16) % 70;
+      s.b.setAttribute('transform', `translate(${f1(44 + off)} 0)`); s.b.setAttribute('opacity', (1 - clamp((off - 42) / 26)).toFixed(2));
+      s.puffs.forEach((q, i) => { const k = (P.c * 1.2 + i / 3) % 1; q.setAttribute('cx', f1(-4 - k * 16)); q.setAttribute('cy', f1(-16 - k * 6)); q.setAttribute('r', f1(2.5 + k * 4)); q.setAttribute('opacity', (0.8 * (1 - k)).toFixed(2)); });
+    } },
+  'bus-stop': { layer: 'back', make: g => {
+    el('line', { x1: 56, y1: 0, x2: 56, y2: -104, stroke: '#9AA4B1', 'stroke-width': 3.2, 'stroke-linecap': 'round' }, g);
+    el('circle', { cx: 56, cy: -112, r: 13, fill: '#F2C14E', stroke: '#3E8E2F', 'stroke-width': 2.6 }, g);
+    const t = el('text', { x: 56, y: -106.5, 'text-anchor': 'middle', 'font-size': 16, 'font-weight': 800, fill: '#3E8E2F', 'font-family': FONT }, g); t.textContent = 'H';
+    el('rect', { x: 48, y: -88, width: 16, height: 22, rx: 2, fill: '#FFFFFF', stroke: '#9AA4B1', 'stroke-width': 1.4 }, g);
+    [-83, -79, -75, -71].forEach(y => el('line', { x1: 51, y1: y, x2: 61, y2: y, stroke: '#C9CED6', 'stroke-width': 1.2 }, g));
+    return null; }, tick: () => {} },
+  'train-door': { layer: 'back', make: g => {
+    el('rect', { x: 34, y: -128, width: 96, height: 122, rx: 9, fill: '#F3F4F6', stroke: '#B9BFCC', 'stroke-width': 2 }, g);
+    el('rect', { x: 34, y: -42, width: 96, height: 6, fill: '#E5484D' }, g);
+    el('rect', { x: 78, y: -106, width: 34, height: 26, rx: 4, fill: '#BFE3F2' }, g);
+    el('rect', { x: 40, y: -112, width: 28, height: 102, rx: 3, fill: '#4A4F5C' }, g);
+    el('rect', { x: 44, y: -108, width: 20, height: 40, rx: 2, fill: '#6B7180' }, g);
+    el('line', { x1: 52, y1: -100, x2: 52, y2: -30, stroke: '#D6DCE6', 'stroke-width': 2.4, 'stroke-linecap': 'round' }, g);
+    el('rect', { x: 36, y: -12, width: 36, height: 4, rx: 1.5, fill: '#9AA4B1' }, g);
+    return null; }, tick: () => {} },
+  'bus-door': { layer: 'back', make: g => {
+    el('rect', { x: 30, y: -120, width: 100, height: 108, rx: 10, fill: '#4BA3D9', stroke: '#2F7DB8', 'stroke-width': 2 }, g);
+    el('rect', { x: 36, y: -106, width: 30, height: 92, rx: 3, fill: '#3B4A5C' }, g);
+    el('rect', { x: 74, y: -106, width: 34, height: 28, rx: 4, fill: '#DDF1FB' }, g);
+    el('rect', { x: 30, y: -60, width: 100, height: 5, fill: '#FFFFFF' }, g);
+    el('circle', { cx: 100, cy: -12, r: 9, fill: '#3B2F4A', stroke: '#9AA4B1', 'stroke-width': 2 }, g);
+    return null; }, tick: () => {} },
+  'departure-board': { layer: 'back', make: g => {
+    el('path', { d: 'M46 -138 L46 -150 M92 -138 L92 -150', stroke: '#9AA4B1', 'stroke-width': 2 }, g);
+    el('rect', { x: 34, y: -138, width: 72, height: 40, rx: 4, fill: '#1F3A6E' }, g);
+    const txt = (x, y, t, fill, size) => { const e = el('text', { x, y, 'font-size': size || 8, 'font-weight': 700, fill, 'font-family': FONT }, g); e.textContent = t; return e; };
+    txt(39, -125, '08:15', '#FFFFFF'); txt(64, -125, 'München', '#FFFFFF');
+    const gl = txt(39, -113, 'Gleis 3', '#FFC93C');
+    txt(39, -103, '08:32', '#8EA3C7', 7); txt(64, -103, 'Augsburg', '#8EA3C7', 7);
+    return { gl }; },
+    tick: (s, P) => s.gl.setAttribute('opacity', Math.sin(P.c * 5) > -0.3 ? 1 : 0.25) },
+  'transfer-sign': { layer: 'back', make: g => {
+    el('line', { x1: 70, y1: -96, x2: 70, y2: -150, stroke: '#9AA4B1', 'stroke-width': 2 }, g);
+    el('rect', { x: 50, y: -132, width: 40, height: 36, rx: 5, fill: '#2F5DA8' }, g);
+    el('path', { d: 'M58 -120 L80 -120 M74 -126 L80 -120 L74 -114 M82 -108 L60 -108 M66 -114 L60 -108 L66 -102', fill: 'none', stroke: '#FFFFFF', 'stroke-width': 2.6, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, g);
+    el('rect', { x: 54, y: -92, width: 32, height: 13, rx: 2, fill: '#FFFFFF' }, g);
+    const t = el('text', { x: 70, y: -82, 'text-anchor': 'middle', 'font-size': 9, 'font-weight': 800, fill: '#E5484D', 'font-family': FONT }, g); t.textContent = 'ICE';
+    return null; }, tick: () => {} },
+  'station-sign': { layer: 'back', make: g => {
+    el('path', { d: 'M44 -132 L44 -146 M96 -132 L96 -146', stroke: '#9AA4B1', 'stroke-width': 2 }, g);
+    el('rect', { x: 32, y: -132, width: 76, height: 22, rx: 3, fill: '#2F5DA8' }, g);
+    const t = el('text', { x: 70, y: -116.5, 'text-anchor': 'middle', 'font-size': 12, 'font-weight': 800, fill: '#FFFFFF', 'font-family': FONT }, g); t.textContent = 'Hamburg';
+    return null; }, tick: () => {} },
+
+  /* new in a2-unterwegs-verben: held props */
+  'suitcase': { layer: 'hand', make: g => {
+    const s = el('g', {}, g);
+    el('path', { d: 'M-5 2 L-5 -3 L5 -3 L5 2', fill: 'none', stroke: '#3B2F4A', 'stroke-width': 2.2, 'stroke-linejoin': 'round' }, s);
+    el('rect', { x: -12, y: 2, width: 24, height: 19, rx: 3.5, fill: '#9D8DF1', stroke: '#7C6BD6', 'stroke-width': 1.6 }, s);
+    el('line', { x1: -12, y1: 11, x2: 12, y2: 11, stroke: '#F2C14E', 'stroke-width': 2.2 }, s);
+    return s; },
+    tick: (s, P) => s.setAttribute('transform', `translate(${f1(P.L[0])} ${f1(P.L[1] + 2)})`) },
+  'map': { layer: 'hand', make: g => {
+    const s = el('g', {}, g);
+    el('path', { d: 'M-22 -14 L-8 -11 L6 -14 L22 -11 L22 13 L6 10 L-8 13 L-22 10 Z', fill: '#FFF6DA', stroke: '#C9B98A', 'stroke-width': 1.4, 'stroke-linejoin': 'round' }, s);
+    el('path', { d: 'M-8 -11 L-8 13 M6 -14 L6 10', stroke: '#E4D6A8', 'stroke-width': 1.2 }, s);
+    el('path', { d: 'M-22 2 Q-10 -6 0 2 T22 -2', fill: 'none', stroke: '#6FB8E6', 'stroke-width': 2.4 }, s);
+    el('path', { d: 'M-16 8 L-6 0 L4 4 L12 -6', fill: 'none', stroke: '#E5484D', 'stroke-width': 1.6, 'stroke-dasharray': '2.5 2' }, s);
+    el('path', { d: 'M10 -9 L15 -4 M15 -9 L10 -4', stroke: '#E5484D', 'stroke-width': 1.8, 'stroke-linecap': 'round' }, s);
+    return s; },
+    tick: (s, P) => { const x = (P.L[0] + P.R[0]) / 2, y = (P.L[1] + P.R[1]) / 2; s.setAttribute('transform', `translate(${f1(x)} ${f1(y - 2)}) rotate(-5)`); } },
+  'welcome-sign': { layer: 'hand', make: g => {
+    const s = el('g', {}, g);
+    el('rect', { x: -22, y: -14, width: 44, height: 28, rx: 3, fill: '#FFFFFF', stroke: '#C9CED6', 'stroke-width': 1.6 }, s);
+    el('path', { d: 'M0 -2 C-3 -7 -9 -5 -7 0 L0 6 L7 0 C9 -5 3 -7 0 -2 Z', fill: '#F06C8B', transform: 'translate(0 -3)' }, s);
+    const t = el('text', { x: 0, y: 11, 'text-anchor': 'middle', 'font-size': 7.5, 'font-weight': 800, fill: '#C0567A', 'font-family': FONT }, s); t.textContent = 'Hallo!';
+    return s; },
+    tick: (s, P) => { const x = (P.L[0] + P.R[0]) / 2, y = (P.L[1] + P.R[1]) / 2; s.setAttribute('transform', `translate(${f1(x)} ${f1(y + 2)})`); } },
+  'umbrella': { layer: 'hand', make: g => {
+    const s = el('g', {}, g);
+    el('path', { d: 'M0 4 Q0 9 -5 9', fill: 'none', stroke: '#3B2F4A', 'stroke-width': 2.4, 'stroke-linecap': 'round' }, s);
+    el('line', { x1: 0, y1: 4, x2: -16, y2: -80, stroke: '#3B2F4A', 'stroke-width': 2.2, 'stroke-linecap': 'round' }, s);
+    el('path', { d: 'M-62 -78 C-58 -116 26 -116 30 -78 Q22 -84 14 -78 Q7 -84 -1 -78 Q-8 -84 -16 -78 Q-24 -84 -31 -78 Q-39 -84 -46 -78 Q-54 -84 -62 -78 Z', fill: '#E5484D', stroke: '#B8323A', 'stroke-width': 1.6, 'stroke-linejoin': 'round' }, s);
+    el('path', { d: 'M-16 -106 L-16 -112', stroke: '#3B2F4A', 'stroke-width': 2.2, 'stroke-linecap': 'round' }, s);
+    return s; },
+    tick: (s, P) => s.setAttribute('transform', `translate(${f1(P.R[0])} ${f1(P.R[1])})`) },
+
+  /* new in a2-einkaufen-verben: stage props */
+  'clothes-rack': { layer: 'back', make: g => {
+    el('path', { d: 'M32 0 L32 -98 M104 0 L104 -98 M28 -98 L108 -98', fill: 'none', stroke: '#9AA4B1', 'stroke-width': 3, 'stroke-linecap': 'round' }, g);
+    [[46, '#E5484D', '#B8323A'], [68, '#4BA3D9', '#2F7DB8'], [90, '#F2C14E', '#C99227']].forEach(([x, f, s2]) => {
+      el('path', { d: `M${x} -98 L${x} -94`, stroke: '#6B7180', 'stroke-width': 1.6 }, g);
+      el('path', { d: `M${x - 11} -86 L${x - 4} -92 Q${x} -89 ${x + 4} -92 L${x + 11} -86 L${x + 8} -81 L${x + 6} -82 L${x + 6} -62 L${x - 6} -62 L${x - 6} -82 L${x - 8} -81 Z`, fill: f, stroke: s2, 'stroke-width': 1.4, 'stroke-linejoin': 'round' }, g);
+    });
+    return null; }, tick: () => {} },
+  'mirror': { layer: 'back', make: g => {
+    el('path', { d: 'M56 0 L64 -38 M80 0 L72 -38', stroke: '#A86B48', 'stroke-width': 3, 'stroke-linecap': 'round' }, g);
+    el('ellipse', { cx: 68, cy: -76, rx: 21, ry: 33, fill: '#DDF1FB', stroke: '#C99A6B', 'stroke-width': 4 }, g);
+    el('path', { d: 'M56 -92 L64 -100 M57 -82 L70 -95', stroke: '#FFFFFF', 'stroke-width': 2.6, 'stroke-linecap': 'round' }, g);
+    return null; }, tick: () => {} },
+  'shoe-shelf': { layer: 'back', make: g => {
+    el('rect', { x: 40, y: -108, width: 64, height: 108, rx: 3, fill: '#F3E3CF', stroke: '#C99A6B', 'stroke-width': 2 }, g);
+    [-74, -40].forEach(y => el('rect', { x: 40, y, width: 64, height: 4, fill: '#C99A6B' }, g));
+    const shoe = (x, y, f, s2) => el('path', { d: `M${x} ${y} L${x} ${y - 9} Q${x + 4} ${y - 11} ${x + 8} ${y - 8} L${x + 18} ${y - 4} Q${x + 22} ${y - 3} ${x + 22} ${y} Z`, fill: f, stroke: s2, 'stroke-width': 1.3, 'stroke-linejoin': 'round' }, g);
+    shoe(46, -74, '#4BA3D9', '#2F7DB8'); shoe(70, -74, '#4BA3D9', '#2F7DB8');
+    el('rect', { x: 46, y: -76, width: 46, height: 2, fill: '#FFFFFF', opacity: 0.8 }, g);
+    shoe(48, -40, '#B9BFCC', '#8A8FA0'); shoe(72, -40, '#B9BFCC', '#8A8FA0');
+    el('path', { d: 'M94 -94 L102 -94 L102 -84 L94 -84 Z', fill: '#F06C8B' }, g);
+    return null; }, tick: () => {} },
+  'card-terminal': { layer: 'back', make: g => {
+    el('rect', { x: 60, y: -24, width: 52, height: 24, rx: 2, fill: '#E4DFD6' }, g);
+    el('rect', { x: 74, y: -78, width: 26, height: 38, rx: 4, fill: '#3B2F4A', stroke: '#231C2C', 'stroke-width': 1.6 }, g);
+    el('rect', { x: 78, y: -74, width: 18, height: 13, rx: 2, fill: '#BFF0D4' }, g);
+    for (let r = 0; r < 3; r++) for (let k = 0; k < 3; k++) el('rect', { x: 79 + k * 6, y: -57 + r * 5, width: 4, height: 3, rx: 1, fill: '#6B7180' }, g);
+    el('path', { d: 'M82 -40 L92 -40 L94 -24 L80 -24 Z', fill: '#3B2F4A' }, g);
+    return null; }, tick: () => {} },
+  'counter': { layer: 'back', make: g => {
+    el('rect', { x: 40, y: -50, width: 74, height: 50, fill: '#D9B48A' }, g);
+    el('rect', { x: 36, y: -54, width: 82, height: 7, rx: 2, fill: '#A86B48' }, g);
+    el('rect', { x: 48, y: -40, width: 58, height: 32, rx: 2, fill: 'none', stroke: '#C49A6E', 'stroke-width': 1.6 }, g);
+    return null; }, tick: () => {} },
+  'piggy-bank': { layer: 'back', make: g => {
+    el('rect', { x: 52, y: -26, width: 34, height: 6, rx: 2, fill: '#A86B48' }, g);
+    el('path', { d: 'M56 -20 L56 0 M82 -20 L82 0', stroke: '#A86B48', 'stroke-width': 3 }, g);
+    el('ellipse', { cx: 69, cy: -40, rx: 19, ry: 14, fill: '#F7A8BE', stroke: '#D9708E', 'stroke-width': 1.6 }, g);
+    el('ellipse', { cx: 87, cy: -40, rx: 5, ry: 6, fill: '#F7A8BE', stroke: '#D9708E', 'stroke-width': 1.4 }, g);
+    el('circle', { cx: 86, cy: -41, r: 0.9, fill: '#B0506C' }, g); el('circle', { cx: 88.5, cy: -39, r: 0.9, fill: '#B0506C' }, g);
+    el('path', { d: 'M74 -53 L78 -60 L80 -51 Z', fill: '#F7A8BE', stroke: '#D9708E', 'stroke-width': 1.2, 'stroke-linejoin': 'round' }, g);
+    el('circle', { cx: 78, cy: -45, r: 1.6, fill: '#2B2230' }, g);
+    el('rect', { x: 62, y: -55, width: 10, height: 2.4, rx: 1.2, fill: '#B0506C' }, g);
+    [60, 76].forEach(x => el('rect', { x, y: -29, width: 5, height: 4, rx: 1, fill: '#F7A8BE', stroke: '#D9708E', 'stroke-width': 1 }, g));
+    el('path', { d: 'M50 -42 q-5 -2 -3 -6', fill: 'none', stroke: '#D9708E', 'stroke-width': 1.4, 'stroke-linecap': 'round' }, g);
+    return null; }, tick: () => {} },
+
+  /* new in a2-einkaufen-verben: worn and held props */
+  'jacket': { layer: 'wear', make: g => {
+    el('path', { d: 'M-31 -64 Q-36 -36 -26 -12 L-5 -10 L-3 -64 Q-18 -70 -31 -64 Z', fill: '#4A6FA5', stroke: '#33507A', 'stroke-width': 1.6, 'stroke-linejoin': 'round' }, g);
+    el('path', { d: 'M31 -64 Q36 -36 26 -12 L5 -10 L3 -64 Q18 -70 31 -64 Z', fill: '#4A6FA5', stroke: '#33507A', 'stroke-width': 1.6, 'stroke-linejoin': 'round' }, g);
+    el('path', { d: 'M-3 -64 L-12 -50 L-16 -64 Z M3 -64 L12 -50 L16 -64 Z', fill: '#6F8FC2' }, g);
+    [-40, -28].forEach(y => el('circle', { cx: -8, cy: y, r: 1.4, fill: '#F2C14E' }, g));
+    return null; }, tick: () => {} },
+  'scarf': { layer: 'wear', make: g => {
+    el('path', { d: 'M-27 -72 Q0 -60 27 -72 L28 -63 Q0 -51 -28 -63 Z', fill: '#E5484D', stroke: '#B8323A', 'stroke-width': 1.4, 'stroke-linejoin': 'round' }, g);
+    el('path', { d: 'M10 -60 L19 -62 L23 -36 L14 -35 Z', fill: '#E5484D', stroke: '#B8323A', 'stroke-width': 1.4, 'stroke-linejoin': 'round' }, g);
+    el('path', { d: 'M15 -35 l0 4 M18 -35.5 l0 4 M21 -36 l0 4', stroke: '#B8323A', 'stroke-width': 1.4, 'stroke-linecap': 'round' }, g);
+    return null; }, tick: () => {} },
+  'shoe-small': { layer: 'hand', make: g => { const s = el('g', {}, g);
+    el('path', { d: 'M-6 6 L-6 -2 Q-3 -4 0 -2 L6 1 Q9 2 9 6 Z', fill: '#E5484D', stroke: '#B8323A', 'stroke-width': 1.2, 'stroke-linejoin': 'round' }, s);
+    el('path', { d: 'M-2 -1 L1 1 M0 -2 L3 0', stroke: '#FFFFFF', 'stroke-width': 1 }, s);
+    return s; }, tick: (s, P) => s.setAttribute('transform', `translate(${f1(P.R[0] + 6)} ${f1(P.R[1] - 12)}) scale(1.6)`) },
+  'card': { layer: 'hand', make: g => { const s = el('g', {}, g);
+    el('rect', { x: -9, y: -6, width: 18, height: 12, rx: 2, fill: '#9D8DF1', stroke: '#7C6BD6', 'stroke-width': 1.4 }, s);
+    el('rect', { x: -6, y: -3, width: 5, height: 4, rx: 1, fill: '#F2C14E' }, s);
+    return s; }, tick: (s, P) => { s.setAttribute('transform', `translate(${f1(P.R[0] + 6)} ${f1(P.R[1] - 6)}) rotate(-12)`); P.pub.card = bodyToStage(P.p, P.R[0] + 14, P.R[1] - 8); } },
+  'gift': { layer: 'hand', make: g => { const s = el('g', {}, g);
+    el('rect', { x: -16, y: -12, width: 32, height: 22, rx: 2, fill: '#F2C14E', stroke: '#C99227', 'stroke-width': 1.4 }, s);
+    el('path', { d: 'M0 -12 L0 10 M-16 -2 L16 -2', stroke: '#E5484D', 'stroke-width': 3 }, s);
+    el('path', { d: 'M0 -12 C-8 -22 -12 -12 0 -12 C12 -12 8 -22 0 -12 Z', fill: '#E5484D' }, s);
+    return s; }, tick: (s, P) => { const x = (P.L[0] + P.R[0]) / 2, y = (P.L[1] + P.R[1]) / 2; s.setAttribute('transform', `translate(${f1(x)} ${f1(y + 2)})`); } },
+  'phone': { layer: 'hand', make: g => { const s = el('g', {}, g);
+    el('rect', { x: -8, y: -14, width: 16, height: 26, rx: 3, fill: '#3B2F4A', stroke: '#231C2C', 'stroke-width': 1.2 }, s);
+    el('rect', { x: -6, y: -11, width: 12, height: 19, rx: 1.5, fill: '#DDF1FB' }, s);
+    el('path', { d: 'M-3 -6 L3 -6 M-3 -2 L3 -2 M-3 2 L1 2', stroke: '#9AA4B1', 'stroke-width': 1.2, 'stroke-linecap': 'round' }, s);
+    return s; }, tick: (s, P) => { const x = (P.L[0] + P.R[0]) / 2, y = Math.min(P.L[1], P.R[1]) - 6; s.setAttribute('transform', `translate(${f1(x)} ${f1(y)})`); P.pub.phone = bodyToStage(P.p, x, y - 16); } },
+  'sweater-small': { layer: 'hand', make: g => { const s = el('g', {}, g);
+    el('path', { d: 'M-12 -8 L-5 -11 Q0 -8 5 -11 L12 -8 L15 0 L10 1 L9 -3 L9 10 L-9 10 L-9 -3 L-10 1 L-15 0 Z', fill: '#5E9E45', stroke: '#3E7A2F', 'stroke-width': 1.4, 'stroke-linejoin': 'round' }, s);
+    el('path', { d: 'M-9 2 L9 2 M-9 6 L9 6', stroke: '#8CC56E', 'stroke-width': 1.4 }, s);
+    return s; }, tick: (s, P) => { const x = (P.L[0] + P.R[0]) / 2, y = (P.L[1] + P.R[1]) / 2; s.setAttribute('transform', `translate(${f1(x)} ${f1(y + 4)})`); } },
+  'toaster': { layer: 'hand', make: g => { const s = el('g', {}, g);
+    el('rect', { x: -14, y: -10, width: 28, height: 20, rx: 6, fill: '#D6DCE6', stroke: '#8A8FA0', 'stroke-width': 1.4 }, s);
+    el('path', { d: 'M-8 -10 L-8 -6 M0 -10 L0 -6', stroke: '#6B7180', 'stroke-width': 2.4, 'stroke-linecap': 'round' }, s);
+    el('rect', { x: 10, y: -2, width: 6, height: 3, rx: 1, fill: '#3B2F4A' }, s);
+    el('path', { d: 'M-4 -16 q-3 -3 0 -6 q3 -3 0 -6', fill: 'none', stroke: '#8A8FA0', 'stroke-width': 1.6, 'stroke-linecap': 'round' }, s);
+    return s; }, tick: (s, P) => { const x = (P.L[0] + P.R[0]) / 2, y = (P.L[1] + P.R[1]) / 2; s.setAttribute('transform', `translate(${f1(x)} ${f1(y - 4)})`); } },
+  'wallet': { layer: 'hand', make: g => { const s = el('g', {}, g);
+    el('path', { d: 'M-12 -2 L12 -2 L12 12 L-12 12 Z', fill: '#A86B48', stroke: '#7A4A2E', 'stroke-width': 1.4 }, s);
+    el('path', { d: 'M-12 -2 L-8 -12 L16 -12 L12 -2 Z', fill: '#C08559', stroke: '#7A4A2E', 'stroke-width': 1.4, 'stroke-linejoin': 'round' }, s);
+    el('path', { d: 'M-8 4 L8 4', stroke: '#7A4A2E', 'stroke-width': 1.2 }, s);
+    return s; }, tick: (s, P) => { s.setAttribute('transform', `translate(${f1(P.R[0] + 6)} ${f1(P.R[1] - 6)}) scale(1.3)`); P.pub.wallet = bodyToStage(P.p, P.R[0] + 6, P.R[1] - 2); } },
+  'coin': { layer: 'hand', make: g => { const s = el('g', {}, g);
+    el('circle', { r: 5, fill: '#F2C14E', stroke: '#C99227', 'stroke-width': 1.3 }, s);
+    txt(s, 0, 2.6, '€', 7, '#B07A10');
+    return s; }, tick: (s, P) => s.setAttribute('transform', `translate(${f1(P.R[0] + 2)} ${f1(P.R[1] + 7)})`) },
+
+  /* new in a2-termine-verben */
+  'phone-ear': { layer: 'hand', make: g => { const s = el('g', {}, g);
+    el('rect', { x: -5, y: -13, width: 10, height: 24, rx: 3, fill: '#3B2F4A', stroke: '#231C2C', 'stroke-width': 1.2 }, s);
+    return s; }, tick: (s, P) => { s.setAttribute('transform', `translate(${f1(P.R[0] + 2)} ${f1(P.R[1] - 6)}) rotate(-18)`); P.pub.ear = bodyToStage(P.p, P.R[0] + 6, P.R[1] - 16); } },
+  'calendar': { layer: 'back', make: g => calendarSheet(g, 'circle'), tick: (s, P) => calendarTick(s, P) },
+  'calendar-move': { layer: 'back', make: g => calendarSheet(g, 'move'), tick: (s, P) => calendarTick(s, P) },
+  'calendar-x': { layer: 'back', make: g => calendarSheet(g, 'x'), tick: (s, P) => calendarTick(s, P) },
+  'thermometer': { layer: 'wear', make: g => {
+    el('line', { x1: 2, y1: -72, x2: 24, y2: -79, stroke: '#9AA4B1', 'stroke-width': 4.4, 'stroke-linecap': 'round' }, g);
+    el('line', { x1: 2, y1: -72, x2: 24, y2: -79, stroke: '#FFFFFF', 'stroke-width': 2.8, 'stroke-linecap': 'round' }, g);
+    el('line', { x1: 3, y1: -72.3, x2: 15, y2: -76.2, stroke: '#E5484D', 'stroke-width': 1.4, 'stroke-linecap': 'round' }, g);
+    txt(g, 30, -84, '38°', 8, '#E5484D');
+    return null; }, tick: () => {} },
+  'big-clock': { layer: 'back', make: g => {
+    el('circle', { cx: 74, cy: -108, r: 21, fill: '#FFFFFF', stroke: '#3B2F4A', 'stroke-width': 3 }, g);
+    [0, 90, 180, 270].forEach(a => el('line', { x1: 74, y1: -126, x2: 74, y2: -122, stroke: '#3B2F4A', 'stroke-width': 2, transform: `rotate(${a} 74 -108)` }, g));
+    const hm = el('line', { x1: 74, y1: -108, x2: 74, y2: -124, stroke: '#3B2F4A', 'stroke-width': 2.4, 'stroke-linecap': 'round' }, g);
+    const hh = el('line', { x1: 74, y1: -108, x2: 74, y2: -118, stroke: '#E5484D', 'stroke-width': 3, 'stroke-linecap': 'round' }, g);
+    return { hm, hh }; },
+    tick: (s, P) => { s.hm.setAttribute('transform', `rotate(${f1((P.c * 240) % 360)} 74 -108)`); s.hh.setAttribute('transform', `rotate(${f1((P.c * 20) % 360)} 74 -108)`); } },
+  'door': { layer: 'back', make: g => {
+    el('rect', { x: 50, y: -128, width: 54, height: 128, rx: 3, fill: '#B07A4E', stroke: '#7A4A2E', 'stroke-width': 2 }, g);
+    el('rect', { x: 58, y: -118, width: 38, height: 44, rx: 2, fill: 'none', stroke: '#8C5B3A', 'stroke-width': 1.8 }, g);
+    el('rect', { x: 58, y: -64, width: 38, height: 52, rx: 2, fill: 'none', stroke: '#8C5B3A', 'stroke-width': 1.8 }, g);
+    el('circle', { cx: 60, cy: -66, r: 3, fill: '#F2C14E' }, g);
+    el('rect', { x: 64, y: -108, width: 26, height: 11, rx: 2, fill: '#FFFFFF' }, g);
+    txt(g, 77, -100, 'Praxis', 6.5, '#3B2F4A');
+    return null; }, tick: () => {} },
+  'number-display': { layer: 'back', make: g => {
+    el('path', { d: 'M70 -132 L70 -142 M96 -132 L96 -142', stroke: '#9AA4B1', 'stroke-width': 2 }, g);
+    el('rect', { x: 58, y: -132, width: 50, height: 20, rx: 3, fill: '#2B2230' }, g);
+    const t = txt(g, 83, -117.5, 'B 042', 11, '#FF6B5A');
+    return { t }; }, tick: (s, P) => s.t.setAttribute('opacity', Math.sin(P.c * 4) > -0.4 ? 1 : 0.35) },
+  'ticket': { layer: 'hand', make: g => { const s = el('g', {}, g);
+    el('rect', { x: -9, y: -14, width: 18, height: 12, rx: 1.5, fill: '#FFFFFF', stroke: '#C9CED6', 'stroke-width': 1.2 }, s);
+    txt(s, 0, -5.5, 'B 042', 5.5, '#2B2230');
+    return s; }, tick: (s, P) => s.setAttribute('transform', `translate(${f1(P.R[0] + 2)} ${f1(P.R[1])}) rotate(-8)`) },
+  'clipboard': { layer: 'hand', make: g => { const s = el('g', {}, g);
+    el('rect', { x: -13, y: -17, width: 26, height: 33, rx: 2.5, fill: '#C99A6B', stroke: '#A86B48', 'stroke-width': 1.4 }, s);
+    el('rect', { x: -10, y: -13, width: 20, height: 26, rx: 1, fill: '#FFFFFF' }, s);
+    el('rect', { x: -5, y: -19, width: 10, height: 5, rx: 1.5, fill: '#9AA4B1' }, s);
+    [-9, -5, -1].forEach(y => el('path', { d: `M-7 ${y} L7 ${y}`, stroke: '#C9D3DE', 'stroke-width': 1.4 }, s));
+    el('path', { d: 'M-7 9 L7 9', stroke: '#9AA4B1', 'stroke-width': 1 }, s);
+    return s; }, tick: (s, P) => { const x = P.L[0] + 12, y = P.L[1] - 4; s.setAttribute('transform', `translate(${f1(x)} ${f1(y)})`); P.pub.clip = bodyToStage(P.p, x, y); } },
+  'pen': { layer: 'hand', make: g => { const s = el('g', {}, g);
+    el('line', { x1: 0, y1: 0, x2: -8, y2: 9, stroke: '#2F5DA8', 'stroke-width': 2.6, 'stroke-linecap': 'round' }, s);
+    el('line', { x1: -8, y1: 9, x2: -9.5, y2: 11, stroke: '#2B2230', 'stroke-width': 1.6, 'stroke-linecap': 'round' }, s);
+    return s; }, tick: (s, P) => s.setAttribute('transform', `translate(${f1(P.R[0])} ${f1(P.R[1] - 2)})`) },
+  'folder': { layer: 'hand', make: g => { const s = el('g', {}, g);
+    el('rect', { x: -14, y: -14, width: 26, height: 20, rx: 1, fill: '#FFFFFF', stroke: '#C9CED6', 'stroke-width': 1, transform: 'rotate(-6)' }, s);
+    el('rect', { x: -16, y: -10, width: 32, height: 22, rx: 2, fill: '#4BA3D9', stroke: '#2F7DB8', 'stroke-width': 1.4 }, s);
+    el('rect', { x: -6, y: -2, width: 12, height: 5, rx: 1, fill: '#FFFFFF' }, s);
+    return s; }, tick: (s, P) => { const x = (P.L[0] + P.R[0]) / 2, y = (P.L[1] + P.R[1]) / 2; s.setAttribute('transform', `translate(${f1(x)} ${f1(y)})`); } },
+  /* new in the noun decks (cards drawn by the cat) */
+  'fridge': { layer: 'back', make: g => {
+    el('rect', { x: 44, y: -122, width: 58, height: 122, rx: 8, fill: '#F6F8FB', stroke: '#AEB6C4', 'stroke-width': 2.2 }, g);
+    el('rect', { x: 48, y: -78, width: 50, height: 74, rx: 3, fill: '#FFF4C2' }, g);
+    [-56, -32].forEach(y => el('line', { x1: 49, y1: y, x2: 97, y2: y, stroke: '#E9D58A', 'stroke-width': 2 }, g));
+    el('rect', { x: 54, y: -74, width: 10, height: 18, rx: 1.5, fill: '#FFFFFF', stroke: '#C9CED6' }, g); el('rect', { x: 54, y: -68, width: 10, height: 4, fill: '#4BA3D9' }, g);
+    el('circle', { cx: 86, cy: -61, r: 5, fill: '#E5484D' }, g); el('path', { d: 'M70 -32 L86 -32 L86 -42 Z', fill: '#F2C14E' }, g);
+    el('rect', { x: 44, y: -122, width: 58, height: 42, rx: 8, fill: '#F6F8FB', stroke: '#AEB6C4', 'stroke-width': 2.2 }, g);
+    el('path', { d: 'M102 -80 L118 -86 L118 -4 L102 -2 Z', fill: '#F6F8FB', stroke: '#AEB6C4', 'stroke-width': 2.2, 'stroke-linejoin': 'round' }, g);
+    return null; }, tick: () => {} },
+  'sofa-back': { layer: 'back', make: g => {
+    el('rect', { x: -58, y: -66, width: 170, height: 40, rx: 14, fill: '#9D8DF1', stroke: '#7C6BD6', 'stroke-width': 2 }, g);
+    el('rect', { x: -62, y: -36, width: 178, height: 28, rx: 10, fill: '#B3A6F5', stroke: '#7C6BD6', 'stroke-width': 2 }, g);
+    el('rect', { x: 96, y: -50, width: 22, height: 44, rx: 10, fill: '#9D8DF1', stroke: '#7C6BD6', 'stroke-width': 2 }, g);
+    [[-50, -8], [104, -8]].forEach(([x, y]) => el('rect', { x, y, width: 5, height: 8, fill: '#7A4A2E' }, g));
+    return null; }, tick: () => {} },
+  'pillow': { layer: 'hand', make: g => { const s = el('g', {}, g);
+    el('rect', { x: -14, y: -14, width: 28, height: 28, rx: 8, fill: '#F2C14E', stroke: '#C99227', 'stroke-width': 1.6 }, s); el('circle', { r: 2.4, fill: '#C99227' }, s); return s; },
+    tick: (s, P) => { const x = (P.L[0] + P.R[0]) / 2, y = (P.L[1] + P.R[1]) / 2; s.setAttribute('transform', `translate(${f1(x)} ${f1(y)}) rotate(-8)`); } },
+  'red-nose': { layer: 'wear', make: g => { el('ellipse', { cx: 0, cy: -77.5, rx: 4.6, ry: 3.6, fill: '#E5484D' }, g); el('circle', { cx: 1.4, cy: -78.8, r: 1.1, fill: '#FFB3B3' }, g); return null; }, tick: () => {} },
+  'tissue': { layer: 'hand', make: g => { const s = el('g', {}, g);
+    el('path', { d: 'M-9 -8 Q0 -12 9 -8 L8 8 Q0 11 -8 8 Z', fill: '#FFFFFF', stroke: '#C9CED6', 'stroke-width': 1.2, 'stroke-linejoin': 'round' }, s);
+    el('path', { d: 'M-4 -6 Q-2 0 -5 6 M3 -7 Q5 0 2 7', fill: 'none', stroke: '#E4E7EE', 'stroke-width': 1 }, s);
+    return s; }, tick: (s, P) => s.setAttribute('transform', `translate(${f1(P.R[0] - 2)} ${f1(P.R[1] - 4)}) rotate(-10)`) },
+  'plaster-cheek': { layer: 'wear', make: g => {
+    el('rect', { x: 12, y: -84, width: 15, height: 7, rx: 3, fill: '#F2D2A6', stroke: '#D9AE7E', 'stroke-width': 1, transform: 'rotate(-20 19 -80)' }, g);
+    el('rect', { x: 16.5, y: -83, width: 6, height: 5, rx: 1, fill: '#E9BF8E', transform: 'rotate(-20 19 -80)' }, g);
+    return null; }, tick: () => {} },
+};
+
+/* ---------- FX: { make(group, card) -> state, tick(state, clock, weight, anchors) } ----------
+   anchors: x, y (head top), my (mouth), by (body centre), floor, plus points published by props (tool, vac, mop, iron, bag, spout, drum, plate) */
+const FX = {
+  'sparkles': {
+    make: g => Array.from({ length: 4 }, () => el('path', { d: STAR, fill: '#FFC93C', opacity: 0 }, g)),
+    tick: (s, c, w, h) => {
+      const o = h.plate || h.tool || [h.x + 40, h.by - 10];
+      s.forEach((e, i) => {
+        const pos = [[-16, -16], [16, -10], [-12, 14], [18, 16]][i], tw = Math.abs(Math.sin(c * 3 + i * 1.3));
+        e.setAttribute('transform', `translate(${f1(o[0] + pos[0])} ${f1(o[1] + pos[1])}) scale(${(0.35 + tw * 0.65).toFixed(2)})`);
+        e.setAttribute('opacity', (w * tw).toFixed(2));
+      });
+    },
+  },
+  'bubbles': {
+    make: g => Array.from({ length: 6 }, (_, i) => el('circle', { r: 2.5 + (i % 3), fill: '#FFFFFF', stroke: '#9FC4E8', 'stroke-width': 1, opacity: 0 }, g)),
+    tick: (s, c, w, h) => {
+      const o = h.tool || h.drum || [h.x + 30, h.by];
+      s.forEach((b, i) => {
+        const k = (c * 0.45 + i / s.length) % 1;
+        b.setAttribute('cx', f1(o[0] + Math.sin(k * 6 + i) * 6 + (i % 2 ? 6 : -6)));
+        b.setAttribute('cy', f1(o[1] - k * 34));
+        b.setAttribute('opacity', (w * Math.sin(Math.PI * k) * 0.95).toFixed(2));
+      });
+    },
+  },
+  'dust': {
+    make: g => Array.from({ length: 5 }, () => el('circle', { r: 2.2, fill: '#E9A766', opacity: 0 }, g)),
+    tick: (s, c, w, h) => {
+      const o = h.vac || [h.x + 50, h.floor - 4];
+      s.forEach((d, i) => {
+        const k = (c * 0.8 + i / s.length) % 1;
+        d.setAttribute('cx', f1(o[0] + 2 + (1 - k) * 18)); d.setAttribute('cy', f1(o[1] - 2 - Math.sin(k * 9 + i) * 4 * (1 - k)));
+        d.setAttribute('r', (3.2 * (1 - k * 0.6)).toFixed(2)); d.setAttribute('opacity', (w * (k < 0.85 ? 1 : (1 - k) / 0.15)).toFixed(2));
+      });
+    },
+  },
+  'shine': { layer: 'back',
+    make: g => ({ pool: el('ellipse', { rx: 26, ry: 3.4, fill: '#9FD3EE', opacity: 0 }, g), stars: [0, 1, 2].map(() => el('path', { d: STAR, fill: '#FFFFFF', opacity: 0 }, g)) }),
+    tick: (s, c, w, h) => {
+      const o = h.mop || [h.x + 40, h.floor];
+      s.pool.setAttribute('cx', f1(o[0])); s.pool.setAttribute('cy', f1(h.floor + 1)); s.pool.setAttribute('opacity', (w * 0.7).toFixed(2));
+      s.stars.forEach((e, i) => { const tw = Math.abs(Math.sin(c * 2.4 + i * 2));
+        e.setAttribute('transform', `translate(${f1(o[0] - 16 + i * 16)} ${f1(h.floor - 2)}) scale(${(0.3 + tw * 0.4).toFixed(2)})`); e.setAttribute('opacity', (w * tw).toFixed(2)); });
+    },
+  },
+  'steam': {
+    make: g => [0, 1, 2].map(() => el('path', { d: 'M0 0 q-3 -4 0 -8 q3 -4 0 -8', fill: 'none', stroke: '#C9D3DE', 'stroke-width': 2, 'stroke-linecap': 'round', opacity: 0 }, g)),
+    tick: (s, c, w, h) => {
+      const o = h.steam || h.iron || [h.x + 40, h.by];
+      s.forEach((e, i) => { const k = (c * 0.6 + i / 3) % 1;
+        e.setAttribute('transform', `translate(${f1(o[0] - 6 + i * 6)} ${f1(o[1] - k * 14)})`); e.setAttribute('opacity', (w * Math.sin(Math.PI * k)).toFixed(2)); });
+    },
+  },
+  'stink': {
+    make: g => [0, 1, 2].map(() => el('path', { d: 'M0 0 q-3 -4 0 -8 q3 -4 0 -8', fill: 'none', stroke: '#7DB35A', 'stroke-width': 2.2, 'stroke-linecap': 'round', opacity: 0 }, g)),
+    tick: (s, c, w, h) => {
+      const o = h.bag || [h.x + 40, h.by];
+      s.forEach((e, i) => { const k = (c * 0.5 + i / 3) % 1;
+        e.setAttribute('transform', `translate(${f1(o[0] - 10 + i * 10)} ${f1(o[1] + 6 - k * 18)})`); e.setAttribute('opacity', (w * Math.sin(Math.PI * k)).toFixed(2)); });
+    },
+  },
+  'drops': {
+    make: g => Array.from({ length: 4 }, () => el('path', { d: DROP, fill: '#6FB8E6', opacity: 0 }, g)),
+    tick: (s, c, w, h) => {
+      const o = h.spout || [h.x + 50, h.by], on = h.pour == null ? 1 : h.pour;
+      s.forEach((d, i) => { const k = (c * 1.4 + i / s.length) % 1;
+        d.setAttribute('transform', `translate(${f1(o[0] + 2 + k * 3)} ${f1(o[1] + 3 + k * 22)}) scale(0.7)`); d.setAttribute('opacity', (w * on * (1 - k * 0.6)).toFixed(2)); });
+    },
+  },
+  'sun': { layer: 'back',
+    make: g => { const s = el('g', { opacity: 0 }, g); el('circle', { r: 9, fill: '#FFC93C' }, s);
+      const rays = el('g', {}, s); for (let i = 0; i < 8; i++) el('line', { x1: 0, y1: -12.5, x2: 0, y2: -17, stroke: '#FFC93C', 'stroke-width': 2.4, 'stroke-linecap': 'round', transform: `rotate(${i * 45})` }, rays);
+      return { s, rays }; },
+    tick: (st, c, w, h) => { st.s.setAttribute('transform', `translate(${f1(h.stageX - 56)} ${f1(h.stageY - 118)})`); st.s.setAttribute('opacity', w.toFixed(2)); st.rays.setAttribute('transform', `rotate(${f1(c * 20)})`); },
+  },
+  /* new in a2-unterwegs-verben */
+  'speed-lines': {
+    make: g => [0, 1, 2].map(() => el('path', { stroke: '#FFFFFF', 'stroke-width': 3, 'stroke-linecap': 'round', opacity: 0 }, g)),
+    tick: (s, c, w, h) => s.forEach((l, i) => { const k = (c * 2 + i / 3) % 1, x = h.x - 46 - k * 22, y = h.by - 34 + i * 20;
+      l.setAttribute('d', `M${f1(x)} ${f1(y)} l-16 0`); l.setAttribute('opacity', (w * (1 - k) * 0.95).toFixed(2)); }),
+  },
+  'sweat': {
+    make: g => [0, 1].map(() => el('path', { d: DROP, fill: '#6FB8E6', opacity: 0 }, g)),
+    tick: (s, c, w, h) => s.forEach((d, i) => { const k = (c * 0.9 + i * 0.5) % 1, side = i ? 1 : -1;
+      d.setAttribute('transform', `translate(${f1(h.x + side * (34 + k * 8))} ${f1(h.y + 26 + k * 10)}) rotate(${side * 30})`); d.setAttribute('opacity', (w * (1 - k)).toFixed(2)); }),
+  },
+  'sigh-puffs': {
+    make: g => [0, 1, 2].map(() => el('circle', { r: 4, fill: '#FFFFFF', opacity: 0 }, g)),
+    tick: (s, c, w, h) => { const k = (c * 0.45) % 1; s.forEach((q, i) => {
+      q.setAttribute('cx', f1(h.x + 10 + k * 26 + i * 7)); q.setAttribute('cy', f1(h.my - k * 10 - i * 3)); q.setAttribute('r', f1(2.5 + i * 1.3 + k * 2));
+      q.setAttribute('opacity', (w * Math.sin(Math.PI * k) * 0.9).toFixed(2)); }); },
+  },
+  'question': {
+    make: g => [0, 1].map(() => { const t = el('text', { 'text-anchor': 'middle', 'font-size': 20, 'font-weight': 800, fill: '#7A4FD6', 'font-family': FONT, opacity: 0 }, g); t.textContent = '?'; return t; }),
+    tick: (s, c, w, h) => s.forEach((t, i) => { const k = (c * 0.7 + i * 0.5) % 1, sc = k < 0.25 ? backOut(k / 0.25) : 1;
+      t.setAttribute('transform', `translate(${f1(h.x + (i ? -32 : 34))} ${f1(h.y + (i ? 6 : -2))}) scale(${(Math.max(0.01, sc) * (i ? 0.8 : 1)).toFixed(2)})`);
+      t.setAttribute('opacity', (w * (k < 0.85 ? 1 : (1 - k) / 0.15)).toFixed(2)); }),
+  },
+  'hearts': {
+    make: g => [0, 1, 2].map(() => el('path', { d: 'M0 -2 C-3 -7 -9 -5 -7 0 L0 6 L7 0 C9 -5 3 -7 0 -2 Z', fill: '#F06C8B', opacity: 0 }, g)),
+    tick: (s, c, w, h) => s.forEach((e, i) => { const k = (c * 0.5 + i / 3) % 1;
+      e.setAttribute('transform', `translate(${f1(h.x + [-34, 36, 26][i] + Math.sin(k * 7) * 3)} ${f1(h.y + 40 - k * 34)}) scale(${(0.6 + k * 0.5).toFixed(2)})`);
+      e.setAttribute('opacity', (w * Math.sin(Math.PI * k)).toFixed(2)); }),
+  },
+  'rain': { layer: 'back',
+    make: g => Array.from({ length: 12 }, () => el('line', { stroke: '#7FA6C4', 'stroke-width': 1.8, 'stroke-linecap': 'round', opacity: 0 }, g)),
+    tick: (s, c, w, h) => s.forEach((l, i) => { const k = (c * 1.1 + i * 0.37) % 1, x = h.x - 70 + (i * 53) % 190, y = h.y - 40 + k * 190;
+      l.setAttribute('x1', f1(x)); l.setAttribute('y1', f1(y)); l.setAttribute('x2', f1(x - 3)); l.setAttribute('y2', f1(y + 9)); l.setAttribute('opacity', (w * 0.8).toFixed(2)); }),
+  },
+  /* new in a2-einkaufen-verben and a2-termine-verben */
+  'contactless': {
+    make: g => [6, 11, 16].map(r => el('path', { d: `M0 ${-r} A${r} ${r} 0 0 1 0 ${r}`, fill: 'none', stroke: '#7C6BD6', 'stroke-width': 2, 'stroke-linecap': 'round', opacity: 0 }, g)),
+    tick: (s, c, w, h) => { const o = h.card || [h.x + 50, h.by]; s.forEach((a, i) => { const k = (c * 1.2 - i * 0.2) % 1;
+      a.setAttribute('transform', `translate(${f1(o[0])} ${f1(o[1])})`); a.setAttribute('opacity', (w * Math.max(0, Math.sin(Math.PI * ((k + 1) % 1)))).toFixed(2)); }); },
+  },
+  'parcel': {
+    make: g => { const s = el('g', { opacity: 0 }, g); el('rect', { x: -7, y: -6, width: 14, height: 12, rx: 1.5, fill: '#D9A86C', stroke: '#B0803F', 'stroke-width': 1.2 }, s);
+      el('path', { d: 'M-7 -1 L7 -1 M0 -6 L0 6', stroke: '#B0803F', 'stroke-width': 1.2 }, s); return s; },
+    tick: (s, c, w, h) => { const o = h.phone || [h.x, h.by - 30], k = (c * 0.5) % 1;
+      s.setAttribute('transform', `translate(${f1(o[0] + 22 + k * 40)} ${f1(o[1] - 6 - Math.sin(Math.PI * k) * 24 - k * 8)}) scale(${(0.6 + k * 0.5).toFixed(2)})`);
+      s.setAttribute('opacity', (w * (k < 0.8 ? 1 : (1 - k) / 0.2)).toFixed(2)); },
+  },
+  'swap': {
+    make: g => { const s = el('g', { opacity: 0 }, g);
+      el('path', { d: 'M-10 -4 A11 11 0 0 1 9 -6', fill: 'none', stroke: '#1F8FA8', 'stroke-width': 2.6, 'stroke-linecap': 'round' }, s);
+      el('path', { d: 'M9 -6 l-1 -5 M9 -6 l-5 1', stroke: '#1F8FA8', 'stroke-width': 2.6, 'stroke-linecap': 'round' }, s);
+      el('path', { d: 'M10 4 A11 11 0 0 1 -9 6', fill: 'none', stroke: '#1F8FA8', 'stroke-width': 2.6, 'stroke-linecap': 'round' }, s);
+      el('path', { d: 'M-9 6 l1 5 M-9 6 l5 -1', stroke: '#1F8FA8', 'stroke-width': 2.6, 'stroke-linecap': 'round' }, s);
+      return s; },
+    tick: (s, c, w, h) => { s.setAttribute('transform', `translate(${f1(h.x + 40)} ${f1(h.y + 16)}) rotate(${f1((c * 90) % 360)})`); s.setAttribute('opacity', w.toFixed(2)); },
+  },
+  'coins': {
+    make: g => Array.from({ length: 4 }, () => el('circle', { r: 3.4, fill: '#F2C14E', stroke: '#C99227', 'stroke-width': 1, opacity: 0 }, g)),
+    tick: (s, c, w, h) => { const o = h.wallet || [h.x + 34, h.by - 20]; s.forEach((d, i) => { const k = (c * 0.9 + i / s.length) % 1;
+      d.setAttribute('cx', f1(o[0] + (i - 1.5) * 5 + k * 6)); d.setAttribute('cy', f1(o[1] + 6 + k * k * 50)); d.setAttribute('opacity', (w * (1 - k)).toFixed(2)); }); },
+  },
+  'ring': {
+    make: g => [0, 1, 2].map(() => el('path', { fill: 'none', stroke: '#2E9A7A', 'stroke-width': 2, 'stroke-linecap': 'round', opacity: 0 }, g)),
+    tick: (s, c, w, h) => { const o = h.ear || [h.x + 34, h.y + 40]; s.forEach((a, i) => { const k = (c * 1.5 + i / 3) % 1, r = 6 + k * 10;
+      a.setAttribute('d', `M${f1(o[0] + r * 0.7)} ${f1(o[1] - r * 0.7)} A${f1(r)} ${f1(r)} 0 0 1 ${f1(o[0] + r * 0.7)} ${f1(o[1] + r * 0.7)}`); a.setAttribute('opacity', (w * (1 - k)).toFixed(2)); }); },
+  },
+  'callback': {
+    make: g => { const s = el('g', { opacity: 0 }, g); el('circle', { r: 11, fill: '#FFFFFF', stroke: '#2F7DB8', 'stroke-width': 1.6 }, s);
+      el('path', { d: 'M5 -3 A6 6 0 1 0 5 4', fill: 'none', stroke: '#2F7DB8', 'stroke-width': 2.2, 'stroke-linecap': 'round' }, s);
+      el('path', { d: 'M5 -3 l1 -4 M5 -3 l-4 -1', stroke: '#2F7DB8', 'stroke-width': 2.2, 'stroke-linecap': 'round' }, s); return s; },
+    tick: (s, c, w, h) => { const o = h.phone || [h.x + 30, h.by - 40], k = (c * 0.8) % 1, sc = k < 0.25 ? backOut(k / 0.25) : 1;
+      s.setAttribute('transform', `translate(${f1(o[0] + 34)} ${f1(o[1] - 16)}) scale(${Math.max(0.01, sc).toFixed(2)})`); s.setAttribute('opacity', (w * (k < 0.85 ? 1 : (1 - k) / 0.15)).toFixed(2)); },
+  },
+  'checkmark': {
+    make: g => { const s = el('g', { opacity: 0 }, g); el('circle', { r: 12, fill: '#3E8E2F' }, s);
+      el('path', { d: 'M-6 0 L-2 5 L7 -5', fill: 'none', stroke: '#FFFFFF', 'stroke-width': 3, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, s); return s; },
+    tick: (s, c, w, h) => { const o = h.phone || [h.x + 30, h.by - 40], k = (c * 0.6) % 1, sc = k < 0.2 ? backOut(k / 0.2) : 1;
+      s.setAttribute('transform', `translate(${f1(o[0] + 36)} ${f1(o[1] - 16)}) scale(${Math.max(0.01, sc).toFixed(2)})`); s.setAttribute('opacity', (w * (k < 0.85 ? 1 : (1 - k) / 0.15)).toFixed(2)); },
+  },
+  'knock-lines': {
+    make: g => [0, 1, 2].map(() => el('path', { stroke: '#7A4A2E', 'stroke-width': 2, 'stroke-linecap': 'round', opacity: 0 }, g)),
+    tick: (s, c, w, h) => { const o = h.pawR || [h.x + 40, h.by - 20], on = Math.sin(c * 1.6) > -0.2 && Math.sin(c * 11) > 0.3 ? 1 : 0;
+      [[-6, -10, 1], [0, -12, 1], [6, -10, 1]].forEach(([dx, dy], i) => { s[i].setAttribute('d', `M${f1(o[0] + 8 + dx)} ${f1(o[1] + dy)} l${dx * 0.5} -5`); s[i].setAttribute('opacity', (w * on).toFixed(2)); }); },
+  },
+  'signature': {
+    make: g => el('path', { d: 'M-8 0 q2 -6 4 0 t4 0 q2 -5 3 1 q1 3 5 -3', fill: 'none', stroke: '#2F5DA8', 'stroke-width': 1.6, 'stroke-linecap': 'round', 'stroke-dasharray': '40', 'stroke-dashoffset': 40, opacity: 0 }, g),
+    tick: (e, c, w, h) => { const o = h.clip || [h.x + 10, h.by]; const k = (c * 0.45) % 1;
+      e.setAttribute('transform', `translate(${f1(o[0])} ${f1(o[1] + 4)})`); e.setAttribute('stroke-dashoffset', f1(40 * (1 - clamp(k * 1.4)))); e.setAttribute('opacity', w.toFixed(2)); },
+  },
+  /* new in the noun decks */
+  'cough-puffs': {
+    make: g => [0, 1, 2].map(() => el('circle', { r: 3, fill: '#D6DCE6', opacity: 0 }, g)),
+    tick: (s, c, w, h) => { const u = (c % 1.8) / 1.8; s.forEach((q, i) => { const k = clamp((u - 0.08 - i * 0.04) / 0.4);
+      q.setAttribute('cx', f1(h.x + 8 + k * 26 + i * 4)); q.setAttribute('cy', f1(h.my - 2 - k * 6 + i * 3)); q.setAttribute('r', f1(2 + k * 4));
+      q.setAttribute('opacity', (w * (k > 0 && k < 1 ? 1 - k : 0)).toFixed(2)); }); },
+  },
+  'pain': {
+    make: g => [0, 1, 2].map(() => el('path', { d: 'M0 0 l4 -4 l4 4 l4 -4', fill: 'none', stroke: '#E5484D', 'stroke-width': 2.2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', opacity: 0 }, g)),
+    tick: (s, c, w, h) => s.forEach((z, i) => { const k = (c * 1.2 + i / 3) % 1;
+      z.setAttribute('transform', `translate(${f1(h.x + 34 + k * 6)} ${f1(h.by - 14 + i * 12)})`); z.setAttribute('opacity', (w * Math.sin(Math.PI * k)).toFixed(2)); }),
+  },
+};
+
+/* ================= new in the Berge mini-series (a2-wandern-verben, a2-huette-phrasen) =================
+   New prop layers: "behind" (body frame, behind the torso: backpack) and "front" (stage frame, over
+   the cat: lake water, the hut table). make(g, card, cat) also gets the cat parts, so a backpack can
+   draw its straps into cat.wear. */
+
+/* ---------- Knödel as the cat's buddy: a mini Knödel, feet on (0, 0), about 32 px tall ----------
+   buddy(g, mood) draws him and returns tick(clock). Moods: happy wow tired shock sleep flat cool
+   cheers pose walk float full hug. Same colours as knoedel.js. */
+const KNM = { base: '#EECB8C', edge: '#CFA563', spot: '#C99A55', herb: '#5E9E45', foot: '#D6AC6A', arm: '#E2BB7B', ink: '#3A2420', mouth: '#5B2D2A', blush: '#F59A9A' };
+const BUDDY_ARMS = { happy: [20, 130], wow: [150, 150], tired: [6, 6], shock: [165, 165], sleep: [12, 12], flat: [80, 80], cool: [20, 20],
+  cheers: [25, 150], pose: [140, 140], walk: [15, 15], float: [95, 95], full: [15, 50], hug: [70, 70],
+  coach: [20, 110], stretch: [20, 172], laugh: [40, 40], roll: [60, 60], yoga: [174, 174], snow: [20, 130] };
+function buddy(g, mood) {
+  const o = el('g', {}, g), b = el('g', {}, o);
+  const fL = el('ellipse', { cx: -6, cy: -1.8, rx: 5, ry: 2.6, fill: KNM.foot }, b);
+  const fR = el('ellipse', { cx: 6, cy: -1.8, rx: 5, ry: 2.6, fill: KNM.foot }, b);
+  el('circle', { cx: 0, cy: -16, r: 15, fill: KNM.base, stroke: KNM.edge, 'stroke-width': 1.2 }, b);
+  [[-9, -23, 1.4, 1], [8, -9, 1.2, 0.9], [-4, -6, 1, 0.8], [10, -21, 1.1, 0.8], [-11, -12, 1, 0.7]].forEach(([cx, cy, rx, ry]) =>
+    el('ellipse', { cx, cy, rx, ry, fill: KNM.spot, opacity: 0.55 }, b));
+  [[-6, -27], [5, -26], [11, -14], [-11, -7], [2, -4]].forEach(([cx, cy], i) =>
+    el('path', { d: `M${cx} ${cy} l1.5 -0.7`, stroke: KNM.herb, 'stroke-width': 1.2, 'stroke-linecap': 'round', transform: `rotate(${i * 47} ${cx} ${cy})` }, b));
+  el('ellipse', { cx: -6, cy: -24, rx: 4.2, ry: 2.1, fill: '#FFFFFF', opacity: 0.4, transform: 'rotate(-32 -6 -24)' }, b);
+  const arm = () => { const a = el('g', {}, b);
+    el('line', { x1: 0, y1: 0, x2: 0, y2: 7, stroke: KNM.arm, 'stroke-width': 3.2, 'stroke-linecap': 'round' }, a);
+    el('circle', { cx: 0, cy: 8, r: 2.4, fill: KNM.arm, stroke: KNM.edge, 'stroke-width': 0.6 }, a); return a; };
+  const aL = arm(), aR = arm();
+  const f = el('g', { transform: 'translate(0 -17)' }, b);
+  const ink = { stroke: KNM.ink, 'stroke-width': 1.3, fill: 'none', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' };
+  const eyeOpen = x => { el('ellipse', { cx: x, cy: -1, rx: 1.6, ry: 2.1, fill: KNM.ink }, f); el('circle', { cx: x + 0.5, cy: -1.8, r: 0.55, fill: '#fff' }, f); };
+  const eyeHappy = x => el('path', Object.assign({ d: `M${x - 2} 0 Q${x} -2.8 ${x + 2} 0` }, ink), f);
+  const eyeShut = x => el('path', Object.assign({ d: `M${x - 2} -1 Q${x} 1.2 ${x + 2} -1` }, ink), f);
+  const eyeLine = x => el('path', Object.assign({ d: `M${x - 2.1} -0.3 Q${x} 0.6 ${x + 2.1} -0.3` }, ink), f);
+  if (['wow', 'cheers', 'full', 'hug', 'float', 'laugh', 'roll', 'snow'].includes(mood)) { eyeHappy(-5); eyeHappy(5); }
+  else if (['sleep', 'stretch', 'yoga'].includes(mood)) { eyeShut(-5); eyeShut(5); }
+  else if (mood === 'tired') { eyeLine(-5); eyeLine(5); }
+  else if (mood === 'flat') el('path', Object.assign({ d: 'M-7 -2.2 L-3.6 -0.6 L-7 1 M7 -2.2 L3.6 -0.6 L7 1' }, ink), f);
+  else if (mood === 'shock') [-5, 5].forEach(x => { el('circle', { cx: x, cy: -1.5, r: 3.2, fill: '#fff', stroke: KNM.ink, 'stroke-width': 0.9 }, f); el('circle', { cx: x, cy: -1.3, r: 1.1, fill: KNM.ink }, f); });
+  else if (mood === 'pose') { eyeHappy(-5); eyeOpen(5); }
+  else if (mood === 'cool') { el('path', { d: 'M-9.5 -3.5 L9.5 -3.5 L8.6 0.6 Q6 3 3.2 0.8 L1.6 -1.4 L-1.6 -1.4 L-3.2 0.8 Q-6 3 -8.6 0.6 Z', fill: '#2B2230' }, f);
+    el('path', { d: 'M-7.4 -2.2 L-5 -2.2 M2.6 -2.2 L5 -2.2', stroke: '#FFFFFF', 'stroke-width': 0.9, opacity: 0.6, 'stroke-linecap': 'round' }, f); }
+  else { eyeOpen(-5); eyeOpen(5); }
+  if (mood === 'shock') el('ellipse', { cx: 0, cy: 6.4, rx: 2.5, ry: 3.4, fill: KNM.mouth }, f);
+  else if (['wow', 'pose', 'cheers', 'float', 'laugh', 'roll'].includes(mood)) el('path', { d: 'M-3.8 4 Q0 4.6 3.8 4 Q3.4 9.4 0 9.4 Q-3.4 9.4 -3.8 4 Z', fill: KNM.mouth }, f);
+  else if (mood === 'coach') { el('path', { d: 'M-2 3.6 L5.5 3.2 Q8.5 3.4 8.5 6 Q8.5 8.6 5.5 8.6 L-2 7.6 Z', fill: '#F2C14E', stroke: '#C99227', 'stroke-width': 0.8 }, f); el('circle', { cx: 5.4, cy: 5.9, r: 1.2, fill: '#C99227' }, f); }
+  else if (mood === 'tired' || mood === 'flat') el('path', Object.assign({}, ink, { d: 'M-3.2 6.2 l1.6 -1.1 l1.6 1.1 l1.6 -1.1 l1.6 1.1', stroke: KNM.mouth }), f);
+  else if (mood === 'sleep') el('ellipse', { cx: 0, cy: 5.6, rx: 1.3, ry: 1.6, fill: KNM.mouth }, f);
+  else el('path', Object.assign({}, ink, { d: 'M-3.3 4.4 Q0 7.8 3.3 4.4', stroke: KNM.mouth, 'stroke-width': 1.4 }), f);
+  if (mood !== 'shock' && mood !== 'cool') [-9.2, 9.2].forEach(x => el('ellipse', { cx: x, cy: 3, rx: 2.5, ry: 1.4, fill: KNM.blush, opacity: ['full', 'hug', 'wow', 'pose'].includes(mood) ? 0.9 : 0.45 }, f));
+  if (mood === 'cool') [-9.6, 9.6].forEach(x => el('ellipse', { cx: x, cy: 3.4, rx: 2.3, ry: 1.3, fill: KNM.blush, opacity: 0.5 }, f));
+  /* extras */
+  const X = {};
+  if (mood === 'tired' || mood === 'flat') X.drop = el('path', { d: DROP, fill: '#6FB8E6' }, o);
+  if (mood === 'shock') { X.bang = el('g', {}, o); txt(X.bang, 0, 0, '!', 15, '#E5484D');
+    X.lines = [-1, 1].map(s => el('path', { d: `M${s * 13} -36 l${s * 4} -5 M${s * 17} -30 l${s * 6} -2`, stroke: '#E5484D', 'stroke-width': 1.6, 'stroke-linecap': 'round' }, o)); }
+  if (mood === 'sleep') X.zs = [7, 8.5, 10].map(sz => { const t = txt(o, 0, 0, 'z', sz, '#7C6BD6'); t.setAttribute('opacity', 0); return t; });
+  if (mood === 'wow' || mood === 'pose') X.stars = [0, 1].map(() => el('path', { d: STAR, fill: '#FFC93C' }, o));
+  if (mood === 'hug' || mood === 'full') X.heart = el('path', { d: 'M0 -2 C-3 -7 -9 -5 -7 0 L0 6 L7 0 C9 -5 3 -7 0 -2 Z', fill: '#F06C8B', opacity: 0 }, o);
+  if (mood === 'cheers') { X.glass = el('g', {}, b);
+    el('path', { d: 'M15.5 -36 L22.5 -36 L21.6 -25 L16.4 -25 Z', fill: '#F7C948', stroke: '#C9A227', 'stroke-width': 0.8, 'stroke-linejoin': 'round' }, X.glass);
+    el('rect', { x: 15.8, y: -38.4, width: 6.4, height: 2.8, rx: 1.2, fill: '#FFFFFF' }, X.glass); }
+  if (mood === 'coach') X.tweet = [0, 1, 2].map(i => el('path', { d: `M0 0 l${4 + i} ${-2 + i * 2}`, stroke: '#E5484D', 'stroke-width': 1.4, 'stroke-linecap': 'round', opacity: 0 }, o));
+  if (mood === 'laugh') X.ha = [0, 1].map(() => { const t = txt(o, 0, 0, 'ha', 7, '#C77B12'); t.setAttribute('opacity', 0); return t; });
+  if (mood === 'roll') X.lines = [0, 1, 2].map(i => el('path', { d: `M-22 ${-26 + i * 9} l-12 0`, stroke: '#FFFFFF', 'stroke-width': 2.4, 'stroke-linecap': 'round' }, o));
+  if (mood === 'yoga') fR.setAttribute('cy', -9);
+  if (mood === 'snow') { el('path', { d: 'M-13 -24 Q-12 -38 0 -39 Q12 -38 13 -24 Z', fill: '#E5484D' }, b); el('rect', { x: -14, y: -26, width: 28, height: 5, rx: 2.5, fill: '#FFFFFF' }, b);
+    el('circle', { cx: 0, cy: -40, r: 3.4, fill: '#FFFFFF' }, b); el('path', { d: 'M-12 -4 Q0 2 12 -4 L12 0 Q0 6 -12 0 Z M6 -1 L9 10 L13 9 L10 -2 Z', fill: '#4BA3D9' }, b); }
+  const [A0, B0_] = BUDDY_ARMS[mood] || [15, 15];
+  return c => {
+    let jump = 0, sx = 1, sy = 1, rot = 0, x = 0, al = A0, ar = B0_;
+    if (mood === 'flat') { sx = 1.36 + Math.sin(c * 2) * 0.03; sy = 0.58; }
+    if (mood === 'happy') { jump = Math.max(0, Math.sin(c * 2.4)) * 2; ar = B0_ + Math.sin(c * 8) * 22; }
+    else if (mood === 'wow') { const s = Math.abs(Math.sin(c * 4.5)); jump = s * 7; sy *= 1 - 0.07 * (1 - s); sx *= 1 + 0.05 * (1 - s); al = A0 + Math.sin(c * 9) * 12; ar = B0_ + Math.sin(c * 9 + 1) * 12; }
+    else if (mood === 'tired') { const k = Math.sin(c * 1.6); sy = 0.95 + k * 0.025; sx = 1.04 - k * 0.02; rot = -5; }
+    else if (mood === 'shock') { x = Math.sin(c * 38) * 0.9; al = A0 + Math.sin(c * 20) * 6; ar = B0_ + Math.sin(c * 20 + 1) * 6; }
+    else if (mood === 'sleep') { const k = Math.sin(c * 1.8); sy = 1 + k * 0.03; sx = 1 - k * 0.015; }
+    else if (mood === 'cool') { rot = Math.sin(c * 1.4) * 4; al = A0 + Math.sin(c * 1.4) * 5; }
+    else if (mood === 'cheers') { const s = Math.max(0, Math.sin(c * 2.4)); jump = s * 3; }
+    else if (mood === 'pose') { rot = Math.sin(c * 2) * 5; jump = Math.abs(Math.sin(c * 2)) * 1.5; }
+    else if (mood === 'walk') { const s = Math.sin(c * 6); jump = Math.abs(s) * 2.5; al = A0 + s * 24; ar = B0_ - s * 24;
+      fL.setAttribute('cy', f1(-1.8 - Math.max(0, s) * 2.6)); fR.setAttribute('cy', f1(-1.8 - Math.max(0, -s) * 2.6)); }
+    else if (mood === 'float') { jump = Math.sin(c * 2) * 2.2; rot = Math.sin(c * 1.3) * 6; al = A0 + Math.sin(c * 4) * 14; ar = B0_ + Math.sin(c * 4 + 2) * 14; }
+    else if (mood === 'full' || mood === 'hug') { rot = Math.sin(c * 1.6) * 3; }
+    else if (mood === 'coach') { ar = B0_ + Math.sin(c * 6) * 18; jump = Math.max(0, Math.sin(c * 3)) * 1.5; }
+    else if (mood === 'stretch') { rot = -14 + Math.sin(c * 1.4) * 4; }
+    else if (mood === 'laugh') { rot = Math.sin(c * 14) * 5; jump = Math.abs(Math.sin(c * 7)) * 2; }
+    else if (mood === 'roll') { rot = (c * 300) % 360; jump = Math.abs(Math.sin(c * 5.2)) * 2; }
+    else if (mood === 'yoga') { rot = Math.sin(c * 1.6) * 7; x = Math.sin(c * 1.6) * 1; }
+    else if (mood === 'snow') { jump = Math.max(0, Math.sin(c * 2.4)) * 2.5; ar = B0_ + Math.sin(c * 8) * 22; }
+    b.setAttribute('transform', `translate(${f1(x)} ${f1(-jump)}) rotate(${f1(rot)} 0 -10) scale(${sx.toFixed(3)} ${sy.toFixed(3)})`);
+    aL.setAttribute('transform', `translate(-14 -16) rotate(${f1(al)})`);
+    aR.setAttribute('transform', `translate(14 -16) rotate(${f1(-ar)})`);
+    if (X.drop) { const k = (c * 0.7) % 1; X.drop.setAttribute('transform', `translate(${f1(mood === 'flat' ? 20 : 15 + k * 3)} ${f1((mood === 'flat' ? -14 : -28) + k * 8)}) scale(0.7)`); X.drop.setAttribute('opacity', (1 - k).toFixed(2)); }
+    if (X.bang) { X.bang.setAttribute('transform', `translate(0 ${f1(-36 - Math.abs(Math.sin(c * 6)) * 3)})`); }
+    if (X.zs) X.zs.forEach((t, i) => { const k = (c * 0.4 + i / 3) % 1; t.setAttribute('x', f1(10 + k * 12 + i * 2)); t.setAttribute('y', f1(-30 - k * 22)); t.setAttribute('opacity', Math.sin(k * Math.PI).toFixed(2)); });
+    if (X.stars) X.stars.forEach((s2, i) => { const tw = Math.abs(Math.sin(c * 3 + i * 1.7)); s2.setAttribute('transform', `translate(${i ? 20 : -20} ${i ? -34 : -28}) scale(${(0.3 + tw * 0.45).toFixed(2)})`); });
+    if (X.tweet) { const on = (c % 1.2) < 0.45 ? 1 : 0; X.tweet.forEach((t, i) => { t.setAttribute('transform', `translate(10 ${-12 - i * 2})`); t.setAttribute('opacity', on); }); }
+    if (X.ha) X.ha.forEach((t, i) => { const k = (c * 0.8 + i / 2) % 1; t.setAttribute('x', f1(i ? 18 : -18)); t.setAttribute('y', f1(-30 - k * 12)); t.setAttribute('opacity', Math.sin(k * Math.PI).toFixed(2)); });
+    if (X.heart) { const k = (c * 0.5) % 1; X.heart.setAttribute('transform', `translate(${f1(14 + Math.sin(k * 6) * 2)} ${f1(-36 - k * 16)}) scale(0.75)`); X.heart.setAttribute('opacity', Math.sin(k * Math.PI).toFixed(2)); }
+  };
+}
+
+/* buddy props: id -> [mood, x, y, scale]; drawn on the stage (layer "back"), in list order */
+const BUDDY_PROPS = {
+  'knoedel': ['happy', 54, 0, 1], 'knoedel-wow': ['wow', 56, 0, 1], 'knoedel-tired': ['tired', 54, 0, 1],
+  'knoedel-walk': ['walk', 58, 0, 1], 'knoedel-top': ['wow', 58, -46, 0.9, 'front'], 'knoedel-bench': ['sleep', 54, -24, 1],
+  'knoedel-pose': ['pose', 66, 0, 1], 'knoedel-float': ['float', 60, -22, 1], 'knoedel-cool': ['cool', 56, 0, 1],
+  'knoedel-guest': ['happy', 88, -24, 0.9], 'knoedel-shock': ['shock', 64, 0, 1.05], 'knoedel-table': ['happy', 62, -28, 1],
+  'knoedel-cheers': ['cheers', 62, -28, 1], 'knoedel-full': ['full', 62, -28, 1], 'knoedel-flat': ['flat', 54, 0, 1.05],
+};
+Object.keys(BUDDY_PROPS).forEach(id => {
+  const [mood, x, y, k, layer] = BUDDY_PROPS[id];
+  PROP[id] = { layer: layer || 'back', make: g => buddy(el('g', { transform: `translate(${x} ${y}) scale(${k})` }, g), mood), tick: (t, P) => t(P.c) };
+});
+
+/* ---------- landscape helpers (stage frame: feet at 0, 0; visible x ≈ -54…108 at the floor) ---------- */
+const DAY = { rock: '#EEE7DD', edge: '#C9BBA8', shade: '#DDD2C2', snow: '#FFFFFF', hill: '#B2D896', hill2: '#93C474' };
+const DUSK = { rock: '#F8C9B8', edge: '#E29A86', shade: '#F0B2A0', snow: '#FFF1EA', hill: '#B9B2DA', hill2: '#9C93C9' };
+function peaks(g, pal) {
+  el('path', { d: 'M-120 -30 L-94 -86 L-80 -76 L-62 -116 L-44 -92 L-28 -104 L-10 -66 L8 -108 L22 -134 L36 -112 L50 -128 L66 -96 L84 -118 L102 -84 L120 -102 L150 -54 L150 0 L-120 0 Z',
+    fill: pal.rock, stroke: pal.edge, 'stroke-width': 1.6, 'stroke-linejoin': 'round' }, g);
+  /* shaded faces of the towers */
+  el('path', { d: 'M-62 -116 L-56 -80 L-44 -92 Z M22 -134 L28 -96 L36 -112 Z M50 -128 L56 -98 L66 -96 Z M84 -118 L90 -90 L102 -84 Z M-28 -104 L-22 -76 L-10 -66 Z', fill: pal.shade }, g);
+  el('path', { d: 'M-66 -108 L-62 -116 L-57 -106 L-61 -108 Z M18 -126 L22 -134 L27 -124 L22 -127 Z M47 -122 L50 -128 L54 -120 Z M81 -112 L84 -118 L88 -110 Z', fill: pal.snow }, g);
+  el('path', { d: 'M-120 -26 Q-70 -50 -16 -30 Q36 -12 82 -38 Q118 -56 150 -34 L150 0 L-120 0 Z', fill: pal.hill }, g);
+  el('path', { d: 'M-120 -8 Q-50 -24 24 -12 Q86 -2 150 -16 L150 0 L-120 0 Z', fill: pal.hill2 }, g);
+}
+function fir(g, x, y, s, col) {
+  el('rect', { x: x - 1.5 * s, y: y - 5 * s, width: 3 * s, height: 5 * s, fill: '#8A5A3B' }, g);
+  el('path', { d: `M${x} ${y - 30 * s} L${x + 9 * s} ${y - 14 * s} L${x + 5 * s} ${y - 14 * s} L${x + 11 * s} ${y - 4 * s} L${x - 11 * s} ${y - 4 * s} L${x - 5 * s} ${y - 14 * s} L${x - 9 * s} ${y - 14 * s} Z`, fill: col || '#3E8E5A' }, g);
+}
+function tableCloth(g) {
+  el('rect', { x: -120, y: -36, width: 280, height: 80, fill: '#FFFFFF' }, g);
+  for (let i = 0; i < 28; i++) for (let j = 0; j < 8; j++) if ((i + j) % 2 === 0) el('rect', { x: -120 + i * 10, y: -36 + j * 10, width: 10, height: 10, fill: '#E5484D', opacity: 0.82 }, g);
+  el('rect', { x: -120, y: -38, width: 280, height: 4, fill: '#B8323A', opacity: 0.35 }, g);
+}
+
+Object.assign(PROP, {
+  /* --- backdrops --- */
+  'mountains': { layer: 'back', make: g => { peaks(g, DAY); return null; }, tick: () => {} },
+  'sunset': { layer: 'back', make: g => {
+    const sun = el('circle', { cx: 96, cy: -84, r: 22, fill: '#FFB347', opacity: 0.95 }, g);
+    el('circle', { cx: 96, cy: -84, r: 32, fill: '#FFD08A', opacity: 0.35 }, g);
+    peaks(g, DUSK); return sun; },
+    tick: (s, P) => s.setAttribute('r', f1(22 + Math.sin(P.c * 1.5) * 1.2)) },
+  'hills': { layer: 'back', make: g => {
+    peaks(g, DAY);
+    el('path', { d: 'M150 -20 Q100 -12 70 -6 Q40 0 10 2', fill: 'none', stroke: '#E8D3A8', 'stroke-width': 6, 'stroke-linecap': 'round' }, g);
+    fir(g, 100, -16, 1.1); fir(g, 118, -22, 0.9, '#4E9E68'); fir(g, -44, -14, 1); return null; }, tick: () => {} },
+  'slope': { layer: 'back', make: g => {
+    el('path', { d: 'M-120 -8 Q-40 -16 20 -50 Q70 -84 112 -112 L132 -118 L150 -118 L150 0 L-120 0 Z', fill: '#B2D896', stroke: '#86BC67', 'stroke-width': 1.6 }, g);
+    el('path', { d: 'M-30 -18 Q14 -26 2 -36 Q26 -48 48 -58 Q34 -68 64 -80 Q84 -92 104 -108', fill: 'none', stroke: '#E8D3A8', 'stroke-width': 3.4, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, g);
+    fir(g, -36, -14, 0.9); fir(g, 70, -60, 0.8, '#4E9E68');
+    el('path', { d: 'M118 -114 L118 -146 M110 -138 L126 -138', stroke: '#8A5A3B', 'stroke-width': 3, 'stroke-linecap': 'round' }, g);
+    const flag = el('path', { d: 'M118 -146 L132 -142 L118 -138 Z', fill: '#E5484D' }, g);
+    return flag; },
+    tick: (s, P) => s.setAttribute('d', `M118 -146 L${f1(131 + Math.sin(P.c * 5) * 2)} ${f1(-142 + Math.sin(P.c * 5 + 1))} L118 -138 Z`) },
+  'boulder': { layer: 'front', make: g => {   /* in front of the cat: it pulls itself up over the edge */
+    el('path', { d: 'M-100 44 L-92 -10 L-70 -34 L-36 -44 L10 -46 L56 -44 L86 -36 L104 -12 L116 44 Z', fill: '#BDB7AE', stroke: '#8E8880', 'stroke-width': 2, 'stroke-linejoin': 'round' }, g);
+    el('path', { d: 'M-70 -34 L-36 -44 L10 -46 L56 -44 L86 -36 L74 -30 L40 -36 L0 -38 L-40 -36 Z', fill: '#D6D1C9' }, g);
+    el('path', { d: 'M-50 -14 L-40 2 L-46 20 M60 -20 L68 0 M10 -4 L18 14', fill: 'none', stroke: '#8E8880', 'stroke-width': 1.6, 'stroke-linecap': 'round' }, g);
+    el('path', { d: 'M-100 44 Q-96 30 -84 34 Q-78 24 -66 30 L-60 44 Z M80 44 Q84 30 96 34 Q104 28 112 44 Z', fill: '#7DB35E' }, g);
+    return null; }, tick: () => {} },
+  'big-sun': { layer: 'back', make: g => {
+    const s = el('g', { transform: 'translate(80 -112)' }, g);
+    const rays = el('g', {}, s);
+    for (let i = 0; i < 10; i++) el('path', { d: 'M0 -22 L0 -30', stroke: '#FFB020', 'stroke-width': 3, 'stroke-linecap': 'round', transform: `rotate(${i * 36})` }, rays);
+    el('circle', { r: 17, fill: '#FFC93C', stroke: '#FFB020', 'stroke-width': 2 }, s);
+    el('path', { d: 'M-6 -3 q2 -2 4 0 M3 -3 q2 -2 4 0 M-5 5 Q0 9 5 5', fill: 'none', stroke: '#C77B12', 'stroke-width': 1.6, 'stroke-linecap': 'round' }, s);
+    const heat = [0, 1, 2].map(i => el('path', { d: 'M0 0 q4 -4 0 -8 q-4 -4 0 -8', fill: 'none', stroke: '#FFB020', 'stroke-width': 1.8, 'stroke-linecap': 'round', opacity: 0.5 }, g));
+    return { rays, heat }; },
+    tick: (s, P) => { s.rays.setAttribute('transform', `rotate(${f1(P.c * 20)})`);
+      s.heat.forEach((h, i) => { const k = (P.c * 0.6 + i / 3) % 1; h.setAttribute('transform', `translate(${48 + i * 22} ${f1(-20 - k * 20)})`); h.setAttribute('opacity', (0.6 * Math.sin(Math.PI * k)).toFixed(2)); }); } },
+  'bench': { layer: 'back', make: g => {
+    peaks(g, DAY);
+    const W = '#B07A4F', E = '#8A5A3B';
+    [[-54, 0], [64, 0]].forEach(([x]) => el('rect', { x, y: -24, width: 5, height: 24, fill: E }, g));
+    [[-50], [70]].forEach(([x]) => el('rect', { x, y: -58, width: 5, height: 34, fill: E }, g));
+    el('rect', { x: -64, y: -56, width: 146, height: 7, rx: 2, fill: W, stroke: E, 'stroke-width': 1.2 }, g);
+    el('rect', { x: -64, y: -44, width: 146, height: 7, rx: 2, fill: W, stroke: E, 'stroke-width': 1.2 }, g);
+    el('rect', { x: -66, y: -27, width: 150, height: 7, rx: 2, fill: W, stroke: E, 'stroke-width': 1.2 }, g);
+    return null; }, tick: () => {} },
+  'lake-back': { layer: 'back', make: g => {
+    peaks(g, DAY);
+    el('rect', { x: -120, y: -44, width: 280, height: 90, fill: '#8FD0F0' }, g);
+    el('path', { d: 'M-80 -30 L-40 -30 M30 -24 L80 -24 M-20 -14 L20 -14', stroke: '#FFFFFF', 'stroke-width': 1.6, opacity: 0.6, 'stroke-linecap': 'round' }, g);
+    return null; }, tick: () => {} },
+  'night-window': { layer: 'back', make: g => {
+    el('rect', { x: 40, y: -116, width: 52, height: 58, rx: 3, fill: '#151B3D', stroke: '#C89B6D', 'stroke-width': 3 }, g);
+    el('circle', { cx: 76, cy: -100, r: 8, fill: '#FFE58A' }, g);
+    el('circle', { cx: 80, cy: -103, r: 7, fill: '#151B3D' }, g);
+    const stars = [[50, -106], [58, -78], [84, -72], [62, -96]].map(([x, y]) => el('path', { d: STAR, fill: '#FFFFFF', transform: `translate(${x} ${y}) scale(0.35)` }, g));
+    el('path', { d: 'M66 -116 L66 -58 M40 -87 L92 -87', stroke: '#C89B6D', 'stroke-width': 2.4 }, g);
+    el('rect', { x: 36, y: -58, width: 60, height: 5, rx: 2, fill: '#C89B6D' }, g);
+    return stars; },
+    tick: (s, P) => s.forEach((e, i) => e.setAttribute('opacity', (0.4 + 0.6 * Math.abs(Math.sin(P.c * 2 + i * 1.3))).toFixed(2))) },
+  'knoedel-sleep': { layer: 'back', make: g => {
+    const t = buddy(el('g', { transform: 'translate(80 -30) scale(0.82)' }, g), 'sleep');
+    el('path', { d: 'M62 -30 Q74 -34 98 -30 Q102 -20 98 -10 L62 -10 Q58 -20 62 -30 Z', fill: '#C9C2F2', stroke: '#9D8DF1', 'stroke-width': 1.6, 'stroke-linejoin': 'round' }, g);
+    el('path', { d: 'M62 -30 Q74 -34 98 -30 L98 -25 Q74 -29 62 -25 Z', fill: '#FFFFFF', opacity: 0.85 }, g);
+    return t; }, tick: (t, P) => t(P.c) },
+  'meadow': { layer: 'back', make: g => {
+    peaks(g, DAY);
+    const fl = [[-48, -6, '#F28CA8'], [-30, -12, '#FFFFFF'], [86, -10, '#F2C14E'], [100, -4, '#F28CA8'], [70, -16, '#FFFFFF'], [118, -14, '#9C7AD6'], [-40, -18, '#F2C14E']].map(([x, y, c2]) => {
+      const f = el('g', {}, g);
+      el('path', { d: 'M0 0 L0 8', stroke: '#5E9E45', 'stroke-width': 1.4 }, f);
+      [0, 72, 144, 216, 288].forEach(a => el('ellipse', { cx: 0, cy: -2.6, rx: 1.8, ry: 2.6, fill: c2, transform: `rotate(${a})` }, f));
+      el('circle', { r: 1.4, fill: '#F2A93B' }, f); return [f, x, y]; });
+    const bf = el('g', {}, g);
+    el('path', { d: 'M0 0 C-4 -6 -9 -3 -6 1 C-8 4 -3 6 0 1 C3 6 8 4 6 1 C9 -3 4 -6 0 0 Z', fill: '#9C7AD6' }, bf);
+    return { fl, bf }; },
+    tick: (s, P) => { s.fl.forEach(([f, x, y], i) => f.setAttribute('transform', `translate(${x} ${y}) rotate(${f1(Math.sin(P.c * 2 + i) * 8)})`));
+      const k = P.c * 0.7; s.bf.setAttribute('transform', `translate(${f1(80 + Math.sin(k) * 26)} ${f1(-70 + Math.sin(k * 2.3) * 10)}) scale(1 ${(0.6 + 0.4 * Math.abs(Math.sin(P.c * 12))).toFixed(2)})`); } },
+  'summit': { layer: 'back', make: g => {
+    const cl = [[-70, -110, 1], [104, -60, 0.8]].map(([x, y, k]) => { const c2 = el('g', {}, g);
+      [[0, 0, 12], [12, 2, 9], [-11, 3, 8]].forEach(([cx, cy, r]) => el('circle', { cx, cy, r, fill: '#FFFFFF', opacity: 0.9 }, c2)); return [c2, x, y, k]; });
+    el('path', { d: 'M-96 44 L-72 12 L-52 2 L-20 -1 L34 -1 L70 3 L90 14 L112 44 Z', fill: '#BDB7AE', stroke: '#8E8880', 'stroke-width': 2, 'stroke-linejoin': 'round' }, g);
+    el('path', { d: 'M-52 2 L-20 -1 L34 -1 L70 3 L60 8 L-40 8 Z', fill: '#D6D1C9' }, g);
+    el('path', { d: 'M-60 20 L-50 32 M40 18 L52 30', stroke: '#8E8880', 'stroke-width': 1.6, 'stroke-linecap': 'round' }, g);
+    el('path', { d: 'M78 2 L78 -86 M64 -64 L92 -64', stroke: '#8A5A3B', 'stroke-width': 4.5, 'stroke-linecap': 'round' }, g);
+    el('circle', { cx: 78, cy: -64, r: 4, fill: '#F2C14E' }, g);
+    return cl; },
+    tick: (s, P) => s.forEach(([c2, x, y, k], i) => c2.setAttribute('transform', `translate(${f1(x + Math.sin(P.c * 0.5 + i) * 6)} ${y}) scale(${k})`)) },
+
+  /* --- trail and hut --- */
+  'signpost': { layer: 'back', make: g => {
+    el('rect', { x: 70, y: -116, width: 6, height: 116, fill: '#A86B48' }, g);
+    el('rect', { x: 70, y: -44, width: 6, height: 4, fill: '#E5484D' }, g); el('rect', { x: 70, y: -36, width: 6, height: 4, fill: '#E5484D' }, g);
+    const sign = (y, label, time) => { const s = el('g', {}, g);
+      el('path', { d: `M28 ${y} L100 ${y} L110 ${y + 9} L100 ${y + 18} L28 ${y + 18} Z`, fill: '#FFFFFF', stroke: '#C9CED6', 'stroke-width': 1.2, 'stroke-linejoin': 'round' }, s);
+      el('path', { d: `M100 ${y} L110 ${y + 9} L100 ${y + 18} Z`, fill: '#E5484D' }, s);
+      txt(s, 34, y + 12.5, label, 8.5, '#2B2230', 'start'); txt(s, 96, y + 12.5, time, 8.5, '#2B2230', 'end'); return s; };
+    const a = sign(-110, 'Hütte', '1 h'), b2 = sign(-86, 'Gipfel', '3 h');
+    return [a, b2]; },
+    tick: (s, P) => s[0].setAttribute('transform', `rotate(${f1(Math.sin(P.c * 1.6) * 1.2)} 73 -101)`) },
+  'hut-door': { layer: 'back', make: g => {
+    el('rect', { x: 24, y: -132, width: 130, height: 132, fill: '#C68B59' }, g);
+    for (let y = -124; y < 0; y += 12) el('line', { x1: 24, y1: y, x2: 154, y2: y, stroke: '#A8703F', 'stroke-width': 1.6 }, g);
+    el('rect', { x: 34, y: -72, width: 38, height: 72, rx: 3, fill: '#8A5A3B', stroke: '#6E4528', 'stroke-width': 2 }, g);
+    el('path', { d: 'M53 -52 C50 -57 44 -55 46 -50 L53 -44 L60 -50 C62 -55 56 -57 53 -52 Z', fill: '#F3D2A6' }, g);
+    el('circle', { cx: 66, cy: -34, r: 2.4, fill: '#F2C14E' }, g);
+    el('rect', { x: 84, y: -102, width: 34, height: 30, fill: '#DDF1FB', stroke: '#6E4528', 'stroke-width': 2.4 }, g);
+    el('path', { d: 'M101 -102 L101 -72 M84 -87 L118 -87', stroke: '#6E4528', 'stroke-width': 1.8 }, g);
+    el('rect', { x: 80, y: -72, width: 42, height: 8, rx: 2, fill: '#8A5A3B' }, g);
+    const fl = [86, 94, 102, 110, 118].map(x => el('circle', { cx: x, cy: -75, r: 3.6, fill: '#E5484D' }, g));
+    [88, 98, 108, 116].forEach(x => el('ellipse', { cx: x, cy: -71, rx: 3, ry: 1.6, fill: '#5E9E45' }, g));
+    el('rect', { x: 30, y: -94, width: 46, height: 14, rx: 3, fill: '#F3D2A6', stroke: '#8A5A3B', 'stroke-width': 1.4 }, g);
+    txt(g, 53, -83.5, 'Hütte', 9, '#6E4528');
+    return fl; },
+    tick: (s, P) => s.forEach((f, i) => f.setAttribute('r', f1(3.6 + Math.sin(P.c * 3 + i) * 0.4))) },
+  'hut-bench': { layer: 'back', make: g => {
+    const W = '#B07A4F', E = '#8A5A3B';
+    el('rect', { x: 30, y: -48, width: 90, height: 6, rx: 2, fill: W, stroke: E, 'stroke-width': 1.2 }, g);
+    el('rect', { x: 40, y: -42, width: 5, height: 42, fill: E }, g); el('rect', { x: 106, y: -42, width: 5, height: 42, fill: E }, g);
+    el('path', { d: 'M92 -48 L92 -60 Q92 -63 95 -63 L101 -63 Q104 -63 104 -60 L104 -48 Z M104 -58 Q109 -58 109 -54 Q109 -50 104 -50', fill: '#FFFFFF', stroke: '#C9CED6', 'stroke-width': 1.2 }, g);
+    el('rect', { x: 26, y: -27, width: 100, height: 6, rx: 2, fill: W, stroke: E, 'stroke-width': 1.2 }, g);
+    el('rect', { x: 34, y: -21, width: 4, height: 21, fill: E }, g); el('rect', { x: 114, y: -21, width: 4, height: 21, fill: E }, g);
+    return null; }, tick: () => {} },
+  'menu-board': { layer: 'back', make: g => {
+    el('path', { d: 'M54 0 L66 -110 M102 0 L90 -110', stroke: '#8A5A3B', 'stroke-width': 3.4, 'stroke-linecap': 'round' }, g);
+    el('rect', { x: 42, y: -122, width: 70, height: 70, rx: 3, fill: '#2F4A3A', stroke: '#A86B48', 'stroke-width': 3.4 }, g);
+    txt(g, 77, -108, 'Heute', 8.5, '#F7D774');
+    txt(g, 77, -95, 'Speck-', 10.5, '#FFFFFF'); txt(g, 77, -83, 'knödel', 10.5, '#FFFFFF');
+    const d = el('g', { transform: 'translate(70 -66)' }, g);
+    el('circle', { r: 7, fill: 'none', stroke: '#FFFFFF', 'stroke-width': 1.3 }, d);
+    el('path', { d: 'M-2.6 -1.5 l0 0.1 M2.6 -1.5 l0 0.1', stroke: '#FFFFFF', 'stroke-width': 1.6, 'stroke-linecap': 'round' }, d);
+    el('path', { d: 'M-2.6 2 Q0 4.6 2.6 2', fill: 'none', stroke: '#FFFFFF', 'stroke-width': 1.1, 'stroke-linecap': 'round' }, d);
+    el('path', { d: 'M14 -8 L14 6 M11 -8 L11 -2 Q14 1 17 -2 L17 -8', fill: 'none', stroke: '#FFFFFF', 'stroke-width': 1.2, 'stroke-linecap': 'round', transform: 'translate(-2 0)' }, d);
+    txt(g, 98, -61, '9 €', 8, '#F7D774');
+    return null; }, tick: () => {} },
+
+  /* --- car trip --- */
+  'car': { layer: 'back', make: g => {
+    el('rect', { x: -82, y: -88, width: 30, height: 88, rx: 4, fill: '#E5484D', stroke: '#B8323A', 'stroke-width': 1.6 }, g);
+    el('rect', { x: -76, y: -80, width: 18, height: 12, rx: 2, fill: '#FFFFFF' }, g);
+    txt(g, -67, -71, '€', 8, '#2B2230');
+    const hose = el('path', { fill: 'none', stroke: '#2B2230', 'stroke-width': 3, 'stroke-linecap': 'round' }, g);
+    el('path', { d: 'M30 -14 Q30 -32 46 -36 L62 -56 Q66 -60 74 -60 L122 -60 Q130 -60 136 -52 L150 -36 L150 -14 Z', fill: '#4BA3D9', stroke: '#2F7DB8', 'stroke-width': 2, 'stroke-linejoin': 'round' }, g);
+    el('path', { d: 'M66 -54 L74 -54 L120 -54 L130 -40 L58 -40 Z', fill: '#DDF1FB' }, g);
+    const k = buddy(el('g', { transform: 'translate(96 -32) scale(0.62)' }, g), 'happy');
+    el('path', { d: 'M54 -40 L150 -40 L150 -14 L30 -14 Q30 -32 46 -36 Z', fill: '#4BA3D9', stroke: '#2F7DB8', 'stroke-width': 2, 'stroke-linejoin': 'round' }, g);
+    el('line', { x1: 92, y1: -54, x2: 92, y2: -40, stroke: '#2F7DB8', 'stroke-width': 2 }, g);
+    el('rect', { x: 40, y: -32, width: 8, height: 8, rx: 2, fill: '#2F7DB8' }, g);
+    el('ellipse', { cx: 34, cy: -22, rx: 3, ry: 2.4, fill: '#FFE58A' }, g);
+    [[56, 0], [124, 0]].forEach(([x]) => { el('circle', { cx: x, cy: -8, r: 10, fill: '#3B2F4A' }, g); el('circle', { cx: x, cy: -8, r: 4, fill: '#C9CED6' }, g); });
+    return { hose, k }; },
+    tick: (s, P) => { s.k(P.c); const [px, py] = P.pub.pawR, x = px - P.stageX, y = py - P.stageY;
+      s.hose.setAttribute('d', `M-58 -60 Q-60 10 ${f1((x - 58) / 2)} 4 Q${f1(x - 6)} 0 ${f1(x - 4)} ${f1(y + 4)}`); } },
+  'backpack-open': { layer: 'back', make: g => {
+    el('path', { d: 'M40 -2 Q38 -44 50 -48 L82 -48 Q94 -44 92 -2 Q92 2 86 2 L46 2 Q40 2 40 -2 Z', fill: '#4BA3D9', stroke: '#2F7DB8', 'stroke-width': 2, 'stroke-linejoin': 'round' }, g);
+    el('ellipse', { cx: 66, cy: -47, rx: 16, ry: 4.5, fill: '#25486B' }, g);
+    const k = buddy(el('g', { transform: 'translate(66 -34) scale(0.72)' }, g), 'happy');
+    el('path', { d: 'M40 -2 Q39 -34 44 -42 Q66 -36 88 -42 Q93 -34 92 -2 Q92 2 86 2 L46 2 Q40 2 40 -2 Z', fill: '#4BA3D9', stroke: '#2F7DB8', 'stroke-width': 2, 'stroke-linejoin': 'round' }, g);
+    el('rect', { x: 52, y: -26, width: 28, height: 18, rx: 4, fill: '#2F7DB8' }, g);
+    el('path', { d: 'M90 -46 Q104 -52 108 -40 Q100 -36 92 -40', fill: '#2F7DB8' }, g);
+    el('rect', { x: 26, y: -14, width: 16, height: 10, rx: 2, fill: '#FFF6DA', stroke: '#C9B98A', 'stroke-width': 1.2, transform: 'rotate(-12 34 -9)' }, g);
+    el('circle', { cx: 102, cy: -6, r: 6, fill: '#E5484D' }, g); el('path', { d: 'M102 -12 q1 -3 3 -4', stroke: '#5E9E45', 'stroke-width': 1.6, fill: 'none' }, g);
+    return k; }, tick: (k, P) => k(P.c) },
+
+  /* --- held props --- */
+  'hiking-pole': { layer: 'hand', make: g => {
+    const s = el('g', {}, g);
+    el('line', { x1: 0, y1: 0, x2: 7, y2: 54, stroke: '#6B7180', 'stroke-width': 2.2, 'stroke-linecap': 'round' }, s);
+    el('ellipse', { cx: 6.2, cy: 48, rx: 4, ry: 1.4, fill: 'none', stroke: '#3B2F4A', 'stroke-width': 1.2 }, s);
+    el('rect', { x: -2.4, y: -8, width: 5, height: 11, rx: 2.2, fill: '#E5484D', transform: 'rotate(-7)' }, s);
+    return s; },
+    tick: (s, P) => s.setAttribute('transform', `translate(${f1(P.R[0] + 1)} ${f1(P.R[1])})`) },
+  'water-bottle': { layer: 'hand', make: g => {
+    const s = el('g', {}, g);
+    el('rect', { x: -4.5, y: -16, width: 9, height: 20, rx: 3.5, fill: '#E5484D', stroke: '#B8323A', 'stroke-width': 1.2 }, s);
+    el('rect', { x: -3, y: -20, width: 6, height: 5, rx: 1, fill: '#C9CED6' }, s);
+    el('rect', { x: -4.5, y: -8, width: 9, height: 4, fill: '#FFFFFF', opacity: 0.8 }, s);
+    return s; },
+    tick: (s, P) => s.setAttribute('transform', `translate(${f1(P.R[0] + 1)} ${f1(P.R[1] + 4)}) rotate(8)`) },
+  'fuel-nozzle': { layer: 'hand', make: g => {
+    const s = el('g', {}, g);
+    el('path', { d: 'M-5 -4 L5 -4 L7 4 L-3 6 Z', fill: '#2B2230' }, s);
+    el('path', { d: 'M5 -2 L15 2', stroke: '#6B7180', 'stroke-width': 3, 'stroke-linecap': 'round' }, s);
+    el('rect', { x: -6, y: -7, width: 8, height: 4, rx: 1.5, fill: '#F2C14E' }, s);
+    return s; },
+    tick: (s, P) => s.setAttribute('transform', `translate(${f1(P.R[0])} ${f1(P.R[1])})`) },
+  'camera': { layer: 'hand', make: g => {
+    const s = el('g', {}, g);
+    el('rect', { x: -12, y: -8, width: 22, height: 15, rx: 3, fill: '#3B3F4A', stroke: '#22252C', 'stroke-width': 1.2 }, s);
+    el('rect', { x: -8, y: -11, width: 7, height: 4, rx: 1, fill: '#3B3F4A' }, s);
+    el('rect', { x: 8, y: -6, width: 7, height: 11, rx: 2, fill: '#55596A', stroke: '#22252C', 'stroke-width': 1 }, s);
+    el('ellipse', { cx: 15.5, cy: -0.5, rx: 2, ry: 4.5, fill: '#7FB6E0' }, s);
+    el('circle', { cx: -7, cy: -3, r: 1.5, fill: '#E5484D' }, s);
+    return s; },
+    tick: (s, P) => { const x = (P.L[0] + P.R[0]) / 2, y = (P.L[1] + P.R[1]) / 2;
+      s.setAttribute('transform', `translate(${f1(x)} ${f1(y - 2)})`); P.pub.flash = bodyToStage(P.p, x + 16, y - 6); } },
+  'fork': { layer: 'hand', make: g => {
+    const s = el('g', {}, g);
+    el('path', { d: 'M0 4 L0 -12 M-3 -20 L-3 -12 Q0 -9 3 -12 L3 -20 M0 -20 L0 -12', fill: 'none', stroke: '#9AA4B1', 'stroke-width': 1.8, 'stroke-linecap': 'round' }, s);
+    el('path', { d: 'M-4 -26 L4 -27 L5 -21 L-3 -20 Z', fill: '#E8B04B', stroke: '#C08A2E', 'stroke-width': 0.8 }, s);
+    return s; },
+    tick: (s, P) => s.setAttribute('transform', `translate(${f1(P.R[0] + 1)} ${f1(P.R[1] - 2)}) rotate(10)`) },
+  'glass': { layer: 'hand', make: g => {
+    const s = el('g', {}, g);
+    el('path', { d: 'M-5 -20 L5 -20 L4 2 L-4 2 Z', fill: '#F7C948', stroke: '#C9A227', 'stroke-width': 1.2, 'stroke-linejoin': 'round' }, s);
+    el('rect', { x: -5.4, y: -24, width: 10.8, height: 5, rx: 2, fill: '#FFFFFF' }, s);
+    const bub = [0, 1, 2].map(i => el('circle', { r: 0.9, fill: '#FFFFFF', opacity: 0.8 }, s));
+    return { s, bub }; },
+    tick: (o, P) => { o.s.setAttribute('transform', `translate(${f1(P.R[0] + 1)} ${f1(P.R[1] - 3)}) rotate(14)`);
+      o.bub.forEach((b, i) => { const k = (P.c * 0.8 + i / 3) % 1; b.setAttribute('cx', f1(-2 + i * 2)); b.setAttribute('cy', f1(-1 - k * 16)); });
+      P.pub.glass = bodyToStage(P.p, P.R[0] + 6, P.R[1] - 22); } },
+  'knoedel-hug': { layer: 'hand', make: g => { const w = el('g', {}, g); return { w, t: buddy(w, 'hug') }; },
+    tick: (o, P) => { const x = (P.L[0] + P.R[0]) / 2, y = (P.L[1] + P.R[1]) / 2;
+      o.w.setAttribute('transform', `translate(${f1(x)} ${f1(y + 18)}) scale(0.95)`); o.t(P.c); } },
+
+  /* --- worn props --- */
+  'nightcap': { layer: 'wear', make: g => {
+    el('path', { d: 'M-24 -110 Q-20 -138 6 -140 Q30 -140 42 -116 Q46 -106 40 -100 Q34 -122 18 -126 Q22 -116 24 -106 Z', fill: '#9C7AD6', stroke: '#7A5AC8', 'stroke-width': 1.6, 'stroke-linejoin': 'round' }, g);
+    el('path', { d: 'M-26 -108 Q0 -118 26 -108 L26 -102 Q0 -112 -26 -102 Z', fill: '#FFFFFF', stroke: '#D6D2E0', 'stroke-width': 1.2 }, g);
+    const pom = el('circle', { cx: 41, cy: -98, r: 5, fill: '#FFFFFF', stroke: '#D6D2E0', 'stroke-width': 1.2 }, g);
+    [[-10, -126], [10, -130], [26, -120]].forEach(([x, y]) => el('path', { d: STAR, fill: '#FFE58A', transform: `translate(${x} ${y}) scale(0.4)` }, g));
+    return pom; },
+    tick: (s, P) => s.setAttribute('cy', f1(-98 + Math.sin(P.c * 1.8) * 1.2)) },
+  'sunglasses': { layer: 'wear', make: g => {
+    el('path', { d: 'M-21 -91 L-2 -91 L-3 -83 Q-6 -79 -12 -79 Q-19 -79 -21 -85 Z M21 -91 L2 -91 L3 -83 Q6 -79 12 -79 Q19 -79 21 -85 Z', fill: '#2B2230' }, g);
+    el('path', { d: 'M-2 -89 Q0 -91 2 -89 M-21 -90 L-30 -92 M21 -90 L30 -92', fill: 'none', stroke: '#2B2230', 'stroke-width': 1.8, 'stroke-linecap': 'round' }, g);
+    el('path', { d: 'M-17 -88 L-12 -88 M6 -88 L11 -88', stroke: '#FFFFFF', 'stroke-width': 1.4, opacity: 0.55, 'stroke-linecap': 'round' }, g);
+    return null; }, tick: () => {} },
+  'backpack-straps': { layer: 'wear', make: g => {
+    el('path', { d: 'M-17 -110 Q-24 -80 -23 -46 M17 -110 Q24 -80 23 -46', fill: 'none', stroke: '#25486B', 'stroke-width': 5, 'stroke-linecap': 'round' }, g);
+    el('path', { d: 'M-21 -72 L21 -72', stroke: '#25486B', 'stroke-width': 2.4 }, g);
+    el('rect', { x: -4, y: -75, width: 8, height: 6, rx: 1.5, fill: '#F2C14E' }, g);
+    return null; }, tick: () => {} },
+
+  /* --- behind the torso (body frame) --- */
+  'backpack': { layer: 'behind', make: g => {
+    el('path', { d: 'M-32 -40 Q-36 -130 -26 -146 Q0 -158 26 -146 Q36 -130 32 -40 Z', fill: '#4BA3D9', stroke: '#2F7DB8', 'stroke-width': 2, 'stroke-linejoin': 'round' }, g);
+    el('path', { d: 'M-27 -144 Q0 -156 27 -144 L28 -132 Q0 -142 -28 -132 Z', fill: '#2F7DB8' }, g);
+    el('rect', { x: -42, y: -84, width: 12, height: 26, rx: 4, fill: '#2F7DB8' }, g);
+    el('rect', { x: 30, y: -84, width: 12, height: 26, rx: 4, fill: '#2F7DB8' }, g);
+    el('rect', { x: 34, y: -98, width: 5, height: 16, rx: 2, fill: '#E5484D' }, g);
+    return null; }, tick: () => {} },
+  'knoedel-on-pack': { layer: 'behind', make: g => buddy(el('g', { transform: 'translate(2 -149) scale(0.82)' }, g), 'wow'), tick: (t, P) => t(P.c) },
+
+  /* --- in front of the cat (stage frame) --- */
+  'lake-water': { layer: 'front', make: g => {
+    const water = el('path', { fill: '#7CC3EA', opacity: 0.94 }, g);
+    const crest = el('path', { fill: 'none', stroke: '#FFFFFF', 'stroke-width': 2, opacity: 0.8, 'stroke-linecap': 'round' }, g);
+    const rings = [0, 1].map(() => el('ellipse', { cx: 0, cy: -34, rx: 30, ry: 4, fill: 'none', stroke: '#FFFFFF', 'stroke-width': 1.6, opacity: 0 }, g));
+    return { water, crest, rings }; },
+    tick: (s, P) => { let d = 'M-120 50 L-120 -34', top = 'M-120 -34';
+      for (let x = -120; x <= 160; x += 10) { const y = -34 + Math.sin(x * 0.08 + P.c * 2.4) * 1.8; d += ` L${x} ${f1(y)}`; top += ` L${x} ${f1(y)}`; }
+      s.water.setAttribute('d', d + ' L160 50 Z'); s.crest.setAttribute('d', top);
+      const cx = P.pub.x - P.stageX;
+      s.rings.forEach((r, i) => { const k = (P.c * 0.5 + i / 2) % 1; r.setAttribute('cx', f1(cx)); r.setAttribute('rx', f1(26 + k * 26)); r.setAttribute('ry', f1(3 + k * 3)); r.setAttribute('opacity', (0.7 * (1 - k)).toFixed(2)); }); } },
+  'table-food': { layer: 'front', make: g => {
+    tableCloth(g);
+    el('ellipse', { cx: 2, cy: -38, rx: 22, ry: 5.5, fill: '#FFFFFF', stroke: '#C9CED6', 'stroke-width': 1.4 }, g);
+    [[-10, -42, 9, 5, -10], [2, -44, 10, 5, 8], [12, -41, 8, 4.5, -6], [-2, -40, 8, 4, 4]].forEach(([cx, cy, w, h, r]) =>
+      el('rect', { x: cx - w / 2, y: cy - h / 2, width: w, height: h, rx: 1.6, fill: '#E8B04B', stroke: '#C08A2E', 'stroke-width': 0.8, transform: `rotate(${r} ${cx} ${cy})` }, g));
+    [[-6, -46], [4, -47], [10, -44], [-12, -44], [0, -42]].forEach(([x, y]) => el('circle', { cx: x, cy: y, r: 0.9, fill: '#FFFFFF' }, g));
+    el('ellipse', { cx: 64, cy: -38, rx: 13, ry: 4, fill: '#FFFFFF', stroke: '#C9CED6', 'stroke-width': 1.2 }, g);
+    el('path', { d: 'M53 -40 Q64 -30 75 -40 Z', fill: '#F2C14E', stroke: '#C99227', 'stroke-width': 1 }, g);
+    return null; },
+    tick: (s, P) => { P.pub.steam = [P.stageX + 2, P.stageY - 50]; } },
+  'table-drinks': { layer: 'front', make: g => {
+    tableCloth(g);
+    const pz = el('g', { transform: 'translate(16 -40)' }, g);
+    el('path', { d: 'M-8 2 Q-12 -8 -4 -9 Q0 -3 4 -9 Q12 -8 8 2 Q4 -2 0 2 Q-4 -2 -8 2 Z', fill: 'none', stroke: '#B0653A', 'stroke-width': 3.2, 'stroke-linejoin': 'round' }, pz);
+    return null; }, tick: () => {} },
+  'table-empty': { layer: 'front', make: g => {
+    tableCloth(g);
+    el('ellipse', { cx: 4, cy: -38, rx: 18, ry: 4.6, fill: '#FFFFFF', stroke: '#C9CED6', 'stroke-width': 1.3 }, g);
+    el('ellipse', { cx: 64, cy: -38, rx: 13, ry: 4, fill: '#FFFFFF', stroke: '#C9CED6', 'stroke-width': 1.2 }, g);
+    const bill = el('g', { transform: 'translate(34 -42) rotate(-8)' }, g);
+    el('rect', { x: -7, y: -10, width: 14, height: 16, rx: 1.5, fill: '#FFFFFF', stroke: '#C9CED6', 'stroke-width': 1.2 }, bill);
+    el('path', { d: 'M-4 -6 L4 -6 M-4 -3 L4 -3 M-4 0 L2 0', stroke: '#9AA4B1', 'stroke-width': 1.1 }, bill);
+    return null; }, tick: () => {} },
+});
+
+Object.assign(MOTION, {
+  'climb': (p, c, w) => { const s = Math.sin(c * 3); p.hLy += s * 5 * w; p.hRy -= s * 5 * w; p.fRy += Math.max(0, s) * 6 * w; p.fLy -= Math.max(0, -s) * 6 * w; p.jump += Math.abs(s) * 1.5 * w; p.rot += s * 2 * w; },
+  'fan': (p, c, w) => { p.hRx += Math.sin(c * 12) * 5 * w; p.hRy += Math.cos(c * 12) * 2 * w; p.rot += Math.sin(c * 12) * 0.6 * w; },
+  'swim': (p, c, w) => { p.jump += Math.sin(c * 2) * 2.4 * w; p.hLx += Math.cos(c * 4) * 6 * w; p.hLy += Math.sin(c * 4) * 4 * w; p.hRx -= Math.cos(c * 4 + Math.PI) * 6 * w; p.hRy += Math.sin(c * 4 + Math.PI) * 4 * w; p.rot += Math.sin(c * 2) * 2 * w; },
+  'wave': (p, c, w) => { p.hRx += Math.sin(c * 8) * 7 * w; p.rot += Math.sin(c * 8) * 1 * w; p.earR += Math.sin(c * 8) * 3 * w; },
+});
+
+Object.assign(FX, {
+  'flash': {
+    make: g => [el('circle', { r: 14, fill: '#FFFFFF', opacity: 0 }, g), el('path', { d: STAR, fill: '#FFF3B0', opacity: 0 }, g)],
+    tick: (s, c, w, h) => { const o = h.flash || [h.x + 40, h.y + 40], k = (c % 1.6) / 1.6, on = k < 0.16 ? Math.sin(Math.PI * k / 0.16) : 0;
+      s[0].setAttribute('cx', f1(o[0])); s[0].setAttribute('cy', f1(o[1])); s[0].setAttribute('opacity', (0.75 * on * w).toFixed(2));
+      s[1].setAttribute('transform', `translate(${f1(o[0])} ${f1(o[1])}) scale(${(1 + on * 1.4).toFixed(2)})`); s[1].setAttribute('opacity', (on * w).toFixed(2)); },
+  },
+  'clink': {
+    make: g => [0, 1, 2].map(() => el('path', { d: STAR, fill: '#FFC93C', opacity: 0 }, g)),
+    tick: (s, c, w, h) => { const a = h.glass || [h.x + 30, h.y + 40], o = [(a[0] + 138) / 2 + 4, (a[1] + 108) / 2 - 8], on = Math.max(0, Math.sin(c * 2.4));
+      s.forEach((e, i) => { const pos = [[0, -6], [-8, 2], [8, 3]][i];
+        e.setAttribute('transform', `translate(${f1(o[0] + pos[0] * (1 + on * 0.5))} ${f1(o[1] + pos[1] * (1 + on * 0.5))}) scale(${(0.3 + on * 0.5).toFixed(2)})`); e.setAttribute('opacity', (on * w).toFixed(2)); }); },
+  },
+});
+
+/* ================= new in the sport decks (a2-fitness-verben, a2-sport-draussen) ================= */
+Object.assign(BUDDY_PROPS, {
+  'knoedel-coach': ['coach', 60, 0, 1], 'knoedel-stretch': ['stretch', 72, 0, 1], 'knoedel-laugh': ['laugh', 56, 0, 1],
+  'knoedel-roll': ['roll', 64, 0, 1], 'knoedel-yoga': ['yoga', 62, -3, 1], 'knoedel-dive': ['float', 64, -56, 1], 'knoedel-snow': ['snow', 60, 0, 1],
+});
+['knoedel-coach', 'knoedel-stretch', 'knoedel-laugh', 'knoedel-roll', 'knoedel-yoga', 'knoedel-dive', 'knoedel-snow'].forEach(id => {
+  const [mood, x, y, k, layer] = BUDDY_PROPS[id];
+  PROP[id] = { layer: layer || 'back', make: g => buddy(el('g', { transform: `translate(${x} ${y}) scale(${k})` }, g), mood), tick: (t, P) => t(P.c) };
+});
+
+function tree(g, x, y, s, col) {
+  el('rect', { x: x - 2.5 * s, y: y - 16 * s, width: 5 * s, height: 16 * s, fill: '#8A5A3B' }, g);
+  [[0, -30, 13], [-9, -22, 10], [9, -22, 10]].forEach(([dx, dy, r]) => el('circle', { cx: x + dx * s, cy: y + dy * s, r: r * s, fill: col || '#5BAF74' }, g));
+}
+const lerpPaw = (P, side) => { const q = side < 0 ? P.pub.pawL : P.pub.pawR; return [q[0] - P.stageX, q[1] - P.stageY]; };
+
+Object.assign(PROP, {
+  /* --- gym --- */
+  'gym': { layer: 'back', make: g => {
+    el('rect', { x: -120, y: -64, width: 280, height: 5, fill: '#FFFFFF', opacity: 0.55 }, g);
+    el('rect', { x: -120, y: 0, width: 280, height: 50, fill: '#C9CED6' }, g);
+    el('rect', { x: -120, y: 0, width: 280, height: 3, fill: '#9AA4B1' }, g);
+    const clock = el('g', { transform: 'translate(-62 -112)' }, g);
+    el('circle', { r: 11, fill: '#FFFFFF', stroke: '#6B7180', 'stroke-width': 2 }, clock);
+    const hand = el('line', { x1: 0, y1: 0, x2: 0, y2: -8, stroke: '#2B2230', 'stroke-width': 1.6, 'stroke-linecap': 'round' }, clock);
+    el('line', { x1: 0, y1: 0, x2: 5, y2: 0, stroke: '#2B2230', 'stroke-width': 1.8, 'stroke-linecap': 'round' }, clock);
+    return hand; },
+    tick: (s, P) => s.setAttribute('transform', `rotate(${f1((P.c * 60) % 360)})`) },
+  'headband': { layer: 'wear', make: g => {
+    el('path', { d: 'M-30.5 -104 Q0 -115 30.5 -104 L30.5 -97 Q0 -108 -30.5 -97 Z', fill: '#E5484D' }, g);
+    el('path', { d: 'M-30.5 -100.5 Q0 -111.5 30.5 -100.5', fill: 'none', stroke: '#FFFFFF', 'stroke-width': 1.3 }, g);
+    return el('path', { fill: '#E5484D' }, g); },
+    tick: (s, P) => { const a = Math.sin(P.c * 6) * 3; s.setAttribute('d', `M29 -103 L${f1(44)} ${f1(-100 + a)} L${f1(42)} ${f1(-95 + a)} L29 -98 Z`); } },
+  'barbell': { layer: 'hand', make: g => {
+    const s = el('g', {}, g);
+    el('line', { x1: -58, y1: 0, x2: 58, y2: 0, stroke: '#6B7180', 'stroke-width': 3.2, 'stroke-linecap': 'round' }, s);
+    [-1, 1].forEach(k => {
+      el('rect', { x: k * 44 - 4, y: -16, width: 8, height: 32, rx: 2, fill: '#3B3F4A' }, s);
+      el('rect', { x: k * 51 - 2.5, y: -11, width: 5, height: 22, rx: 1.5, fill: '#E5484D' }, s);
+      el('rect', { x: k * 38 - 1.5, y: -5, width: 3, height: 10, rx: 1, fill: '#9AA4B1' }, s);
+      const t = txt(s, 0, 0, '25', 6, '#FFFFFF'); t.setAttribute('transform', `translate(${k * 44 + 2} 0) rotate(-90)`); });
+    return s; },
+    tick: (s, P) => { const x = (P.L[0] + P.R[0]) / 2, y = (P.L[1] + P.R[1]) / 2, a = Math.atan2(P.R[1] - P.L[1], P.R[0] - P.L[0]) * 180 / Math.PI;
+      s.setAttribute('transform', `translate(${f1(x)} ${f1(y)}) rotate(${f1(a)})`); } },
+  'treadmill': { layer: 'back', make: g => {
+    el('path', { d: 'M58 -10 L66 -84', stroke: '#9AA4B1', 'stroke-width': 5, 'stroke-linecap': 'round' }, g);
+    el('path', { d: 'M64 -66 L24 -62', stroke: '#9AA4B1', 'stroke-width': 4, 'stroke-linecap': 'round' }, g);
+    el('rect', { x: 46, y: -100, width: 40, height: 18, rx: 3, fill: '#2B2230' }, g);
+    txt(g, 66, -88, '8 km/h', 7, '#5BE38A');
+    el('path', { d: 'M-58 -9 L66 -9 L72 0 L-62 0 Z', fill: '#3B3F4A' }, g);
+    const belt = el('g', {}, g);
+    const stripes = Array.from({ length: 7 }, () => el('rect', { y: -9, width: 2, height: 3, fill: '#6B7180' }, belt));
+    return stripes; },
+    tick: (s, P) => s.forEach((r, i) => r.setAttribute('x', f1(-54 + ((i * 18 - P.c * 70) % 126 + 126) % 126))) },
+  'jump-rope': { layer: 'back', make: g => ({ rope: el('path', { fill: 'none', stroke: '#E5484D', 'stroke-width': 2.4, 'stroke-linecap': 'round' }, g) }),
+    tick: (s, P) => { const [lx, ly] = lerpPaw(P, -1), [rx, ry] = lerpPaw(P, 1), k = -Math.cos(P.c * 8), dy = k > 0 ? k * 120 : k * 190;
+      s.rope.setAttribute('d', `M${f1(lx)} ${f1(ly)} Q${f1((lx + rx) / 2)} ${f1((ly + ry) / 2 + dy)} ${f1(rx)} ${f1(ry)}`); } },
+  'punching-bag': { layer: 'back', make: g => {
+    el('path', { d: 'M40 -152 L96 -152', stroke: '#6B7180', 'stroke-width': 4, 'stroke-linecap': 'round' }, g);
+    const bag = el('g', {}, g);
+    el('line', { x1: 62, y1: -152, x2: 62, y2: -124, stroke: '#6B7180', 'stroke-width': 2 }, bag);
+    el('rect', { x: 46, y: -124, width: 32, height: 86, rx: 12, fill: '#C0392B', stroke: '#8E2A20', 'stroke-width': 2 }, bag);
+    el('rect', { x: 46, y: -112, width: 32, height: 5, fill: '#2B2230' }, bag); el('rect', { x: 46, y: -54, width: 32, height: 5, fill: '#2B2230' }, bag);
+    el('rect', { x: 51, y: -104, width: 4, height: 42, rx: 2, fill: '#FFFFFF', opacity: 0.3 }, bag);
+    const pow = el('path', { d: STAR, fill: '#FFC93C', opacity: 0, transform: 'translate(48 -72) scale(1.4)' }, g);
+    return { bag, pow }; },
+    tick: (s, P) => { const hit = Math.max(0, Math.sin(P.c * 5 - 0.7)); s.bag.setAttribute('transform', `rotate(${f1(hit * hit * 9)} 62 -152)`);
+      s.pow.setAttribute('opacity', (Math.max(0, Math.sin(P.c * 5)) > 0.97 ? 1 : 0)); } },
+  'boxing-gloves': { layer: 'hand', make: g => [0, 1].map(() => { const s = el('g', {}, g);
+      el('rect', { x: -6, y: 5, width: 12, height: 6, rx: 2, fill: '#FFFFFF', stroke: '#C9CED6', 'stroke-width': 1 }, s);
+      el('ellipse', { rx: 9, ry: 8.5, fill: '#E5484D', stroke: '#B8323A', 'stroke-width': 1.6 }, s);
+      el('ellipse', { cx: -6, cy: 2, rx: 3.4, ry: 4, fill: '#E5484D', stroke: '#B8323A', 'stroke-width': 1.2 }, s);
+      el('ellipse', { cx: 2, cy: -3, rx: 3, ry: 1.6, fill: '#FFFFFF', opacity: 0.4 }, s); return s; }),
+    tick: (s, P) => { s[0].setAttribute('transform', `translate(${f1(P.L[0])} ${f1(P.L[1])})`); s[1].setAttribute('transform', `translate(${f1(P.R[0])} ${f1(P.R[1])}) scale(-1 1)`); } },
+  'mat': { layer: 'back', make: g => { el('path', { d: 'M-62 -3 L74 -3 L82 6 L-70 6 Z', fill: '#9C7AD6' }, g); el('path', { d: 'M-62 -3 L74 -3', stroke: '#7A5AC8', 'stroke-width': 1.6 }, g); return null; }, tick: () => {} },
+  'yoga-mat': { layer: 'back', make: g => { el('path', { d: 'M-62 -3 L80 -3 L88 6 L-70 6 Z', fill: '#4FB8A0' }, g); el('path', { d: 'M-62 -3 L80 -3', stroke: '#2E9A7A', 'stroke-width': 1.6 }, g); return null; }, tick: () => {} },
+  'dumbbells': { layer: 'hand', make: g => [0, 1].map(() => { const s = el('g', {}, g);
+      el('line', { x1: -8, y1: 0, x2: 8, y2: 0, stroke: '#6B7180', 'stroke-width': 2.6 }, s);
+      [-1, 1].forEach(k => el('rect', { x: k * 9 - 2.5, y: -6.5, width: 5, height: 13, rx: 1.6, fill: '#3B3F4A' }, s)); return s; }),
+    tick: (s, P) => { s[0].setAttribute('transform', `translate(${f1(P.L[0])} ${f1(P.L[1])})`); s[1].setAttribute('transform', `translate(${f1(P.R[0])} ${f1(P.R[1])})`); } },
+  'timer': { layer: 'back', make: g => {
+    el('rect', { x: 34, y: -136, width: 66, height: 30, rx: 5, fill: '#2B2230', stroke: '#6B7180', 'stroke-width': 2 }, g);
+    return txt(g, 67, -114.5, '0:20', 16, '#FF5A5A'); },
+    tick: (s, P) => { const n = Math.max(0, 20 - Math.floor(((P.c % 7.4) / 7.4) * 21)); s.textContent = '0:' + String(n).padStart(2, '0'); } },
+  'scale': { layer: 'back', make: g => {
+    el('rect', { x: -36, y: -9, width: 72, height: 10, rx: 3, fill: '#FFFFFF', stroke: '#B9BFCC', 'stroke-width': 1.6 }, g);
+    el('rect', { x: -9, y: -7, width: 18, height: 5, rx: 1, fill: '#DDF1FB' }, g);
+    const lab = el('g', {}, g);
+    el('rect', { x: -22, y: -10, width: 44, height: 20, rx: 10, fill: '#FFFFFF', stroke: '#2E9A7A', 'stroke-width': 1.8 }, lab);
+    txt(lab, 0, 5, '−5 kg', 12, '#2E9A7A');
+    return lab; },
+    tick: (s, P) => s.setAttribute('transform', `translate(66 ${f1(-76 - Math.abs(Math.sin(P.c * 2.4)) * 5)})`) },
+
+  /* --- outdoors --- */
+  'park': { layer: 'back', make: g => {
+    el('path', { d: 'M-120 -22 Q-60 -46 0 -28 Q60 -12 150 -36 L150 0 L-120 0 Z', fill: '#B2D896' }, g);
+    el('rect', { x: -120, y: -2, width: 280, height: 52, fill: '#93C474' }, g);
+    el('path', { d: 'M-120 -6 Q-40 -16 30 -8 Q90 0 150 -10 L150 0 L-120 0 Z', fill: '#93C474' }, g);
+    tree(g, -58, -16, 1.1); tree(g, 104, -22, 1.2, '#4E9E68');
+    el('circle', { cx: 84, cy: -8, r: 8, fill: '#5BAF74' }, g); el('circle', { cx: 92, cy: -6, r: 6, fill: '#4E9E68' }, g);
+    return null; }, tick: () => {} },
+  'field': { layer: 'back', make: g => {
+    el('path', { d: 'M-120 -30 Q0 -40 150 -28 L150 0 L-120 0 Z', fill: '#C9DE9A' }, g);
+    el('rect', { x: -120, y: -2, width: 280, height: 52, fill: '#A8C97A' }, g);
+    tree(g, -60, -26, 0.9, '#F2A93B'); tree(g, -40, -28, 0.7, '#E5873A');
+    const grass = [-30, -10, 20, 40, 70, 96].map(x => el('path', { stroke: '#7DA855', 'stroke-width': 1.6, fill: 'none', 'stroke-linecap': 'round' }, g));
+    return grass; },
+    tick: (s, P) => s.forEach((e, i) => { const x = [-30, -10, 20, 40, 70, 96][i], a = Math.sin(P.c * 3 + i) * 3; e.setAttribute('d', `M${x} 0 Q${x + 1} -5 ${f1(x + 3 + a)} -9 M${x + 4} 0 Q${x + 5} -4 ${f1(x + 8 + a)} -6`); }) },
+  'ball': { layer: 'hand', make: g => { const s = el('g', {}, g);
+      el('circle', { r: 9, fill: '#FFFFFF', stroke: '#2B2230', 'stroke-width': 1.4 }, s);
+      el('path', { d: 'M0 -3.4 L3.2 -1 L2 2.8 L-2 2.8 L-3.2 -1 Z', fill: '#2B2230' }, s);
+      el('path', { d: 'M0 -3.4 L0 -8.6 M3.2 -1 L8 -2.6 M2 2.8 L5 7 M-2 2.8 L-5 7 M-3.2 -1 L-8 -2.6', stroke: '#2B2230', 'stroke-width': 1 }, s); return s; },
+    tick: (s, P) => s.setAttribute('transform', `translate(${f1(P.R[0] + 4)} ${f1(P.R[1] - 6)})`) },
+  'goal': { layer: 'back', make: g => {
+    for (let x = 52; x <= 126; x += 9) el('line', { x1: x, y1: -62, x2: x + 4, y2: -2, stroke: '#FFFFFF', 'stroke-width': 1, opacity: 0.7 }, g);
+    for (let y = -54; y <= -6; y += 9) el('line', { x1: 48, y1: y, x2: 130, y2: y, stroke: '#FFFFFF', 'stroke-width': 1, opacity: 0.7 }, g);
+    const t = buddy(el('g', { transform: 'translate(90 0)' }, g), 'shock');
+    el('path', { d: 'M46 0 L46 -66 L134 -66 L134 0', fill: 'none', stroke: '#FFFFFF', 'stroke-width': 4.5, 'stroke-linejoin': 'round' }, g);
+    el('rect', { x: -120, y: 0, width: 280, height: 50, fill: '#93C474' }, g);
+    el('path', { d: 'M-120 0 L160 0', stroke: '#FFFFFF', 'stroke-width': 2, opacity: 0.7 }, g);
+    return t; }, tick: (t, P) => t(P.c) },
+  'football': { layer: 'back', make: g => { const s = el('g', {}, g);
+      el('circle', { r: 7.5, fill: '#FFFFFF', stroke: '#2B2230', 'stroke-width': 1.3 }, s);
+      el('path', { d: 'M0 -2.8 L2.7 -0.8 L1.7 2.3 L-1.7 2.3 L-2.7 -0.8 Z', fill: '#2B2230' }, s); return s; },
+    tick: (s, P) => { const u = (P.c % 1.8) / 1.8, x = 24 + u * 62, y = -9 - Math.sin(u * Math.PI) * 36;
+      s.setAttribute('transform', `translate(${f1(x)} ${f1(y)}) rotate(${f1(u * 540)})`); } },
+  'pullup-bar': { layer: 'back', make: g => {
+    el('rect', { x: -64, y: -104, width: 5, height: 104, fill: '#6B7180' }, g); el('rect', { x: 59, y: -104, width: 5, height: 104, fill: '#6B7180' }, g);
+    el('line', { x1: -62, y1: -101, x2: 62, y2: -101, stroke: '#9AA4B1', 'stroke-width': 4, 'stroke-linecap': 'round' }, g);
+    return null; }, tick: () => {} },
+  'kite': { layer: 'back', make: g => {
+    const str = el('path', { fill: 'none', stroke: '#3B2F4A', 'stroke-width': 1 }, g);
+    const k = el('g', {}, g);
+    const tail = el('path', { fill: 'none', stroke: '#3B2F4A', 'stroke-width': 1.2 }, k);
+    const bows = [0, 1, 2].map(i => el('path', { d: 'M-3 -2 L3 2 M-3 2 L3 -2', stroke: ['#E5484D', '#4BA3D9', '#F2C14E'][i], 'stroke-width': 2.6, 'stroke-linecap': 'round' }, k));
+    el('path', { d: 'M0 -20 L15 0 L0 24 Z', fill: '#E5484D' }, k); el('path', { d: 'M0 -20 L-15 0 L0 24 Z', fill: '#F2C14E' }, k);
+    el('path', { d: 'M0 -20 L0 24 M-15 0 L15 0', stroke: '#8A5A3B', 'stroke-width': 1.4 }, k);
+    const kn = buddy(el('g', { transform: 'translate(0 8) scale(0.48)' }, k), 'wow');
+    return { str, k, tail, bows, kn }; },
+    tick: (s, P) => { s.kn(P.c); const kx = 78 + Math.sin(P.c * 0.9) * 8, ky = -140 + Math.sin(P.c * 1.3) * 6;
+      s.k.setAttribute('transform', `translate(${f1(kx)} ${f1(ky)}) rotate(${f1(Math.sin(P.c * 1.1) * 8)})`);
+      let d = 'M0 24'; for (let i = 1; i <= 6; i++) d += ` L${f1(-i * 4 + Math.sin(P.c * 4 + i) * 3)} ${24 + i * 6}`;
+      s.tail.setAttribute('d', d); s.bows.forEach((b, i) => b.setAttribute('transform', `translate(${f1(-(i * 2 + 2) * 4 + Math.sin(P.c * 4 + i * 2 + 2) * 3)} ${24 + (i * 2 + 2) * 6})`));
+      const [px, py] = lerpPaw(P, 1); s.str.setAttribute('d', `M${f1(kx)} ${f1(ky + 22)} Q${f1((kx + px) / 2 + 10)} ${f1((ky + py) / 2 + 12)} ${f1(px)} ${f1(py)}`); } },
+  'underwater': { layer: 'back', make: g => {
+    [[-50, 0.5], [30, 0.4], [96, 0.45]].forEach(([x, o]) => el('path', { d: `M${x} -170 L${x + 24} -170 L${x + 6} 10 L${x - 14} 10 Z`, fill: '#FFFFFF', opacity: o * 0.4 }, g));
+    el('path', { d: 'M-120 -4 Q-60 -12 0 -4 Q60 4 150 -6 L150 50 L-120 50 Z', fill: '#F2DFB0' }, g);
+    const weeds = [[-46, '#3E8E5A'], [-36, '#5BAF74'], [92, '#3E8E5A'], [100, '#5BAF74']].map(([x, col]) => el('path', { fill: 'none', stroke: col, 'stroke-width': 4, 'stroke-linecap': 'round' }, g));
+    el('ellipse', { cx: 70, cy: -2, rx: 7, ry: 4, fill: '#F49A94' }, g); el('path', { d: 'M-14 -2 l3 -6 l3 6 Z', fill: '#E5873A' }, g);
+    const fish = [0, 1].map(i => { const f = el('g', {}, g);
+      el('path', { d: 'M8 0 L16 -6 L16 6 Z', fill: i ? '#4BA3D9' : '#F2A93B' }, f);
+      el('ellipse', { rx: 10, ry: 6, fill: i ? '#6FB8E6' : '#F7C948' }, f);
+      el('circle', { cx: -5, cy: -1.5, r: 1.4, fill: '#2B2230' }, f); return f; });
+    return { weeds, fish }; },
+    tick: (s, P) => { s.weeds.forEach((w, i) => { const x = [-46, -36, 92, 100][i], a = Math.sin(P.c * 1.6 + i) * 6;
+        w.setAttribute('d', `M${x} 0 Q${f1(x + a)} -18 ${x} -34 Q${f1(x - a)} -48 ${f1(x + a * 0.6)} ${-56 - (i % 2) * 10}`); });
+      s.fish.forEach((f, i) => { const u = ((P.c * (i ? 0.09 : 0.12) + i * 0.5) % 1), x = 140 - u * 260, y = i ? -120 : -84;
+        f.setAttribute('transform', `translate(${f1(x)} ${f1(y + Math.sin(P.c * 3 + i) * 3)})`); }); } },
+  'snorkel': { layer: 'wear', make: g => {
+    el('path', { d: 'M-22 -88 L-33 -92 M22 -88 L33 -92', stroke: '#2F7DB8', 'stroke-width': 3, 'stroke-linecap': 'round' }, g);
+    el('rect', { x: -22, y: -97, width: 44, height: 21, rx: 8, fill: '#BFE6F7', 'fill-opacity': 0.5, stroke: '#2F7DB8', 'stroke-width': 2.8 }, g);
+    el('path', { d: 'M-16 -93 L-10 -93', stroke: '#FFFFFF', 'stroke-width': 1.6, 'stroke-linecap': 'round', opacity: 0.8 }, g);
+    el('path', { d: 'M24 -76 L28 -76 L28 -128', fill: 'none', stroke: '#F28C38', 'stroke-width': 4, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, g);
+    return null; },
+    tick: (s, P) => { P.pub.tool = bodyToStage(P.p, 28, -132); } },
+  'snow-slope': { layer: 'back', make: g => {
+    el('path', { d: 'M-120 -50 Q-40 -90 40 -60 Q100 -40 150 -70 L150 0 L-120 0 Z', fill: '#EEF4FA', stroke: '#D6E2EE', 'stroke-width': 1.6 }, g);
+    el('path', { d: 'M-120 -14 Q-30 -30 60 -12 Q110 -2 150 -14 L150 50 L-120 50 Z', fill: '#FFFFFF' }, g);
+    [[-54, -34, 1], [96, -30, 1.1], [112, -46, 0.8]].forEach(([x, y, k]) => { fir(g, x, y, k, '#3E8E5A');
+      el('path', { d: `M${x} ${y - 30 * k} L${x + 6 * k} ${y - 20 * k} L${x - 6 * k} ${y - 20 * k} Z`, fill: '#FFFFFF' }, g); });
+    return null; }, tick: () => {} },
+  'skis': { layer: 'back', make: g => {
+    const s = el('g', {}, g);
+    [['#E5484D', -6], ['#4BA3D9', -2]].forEach(([col, y]) => el('path', { d: `M-46 ${y} L44 ${y} Q54 ${y} 56 ${y - 8} L52 ${y - 8} Q50 ${y - 3} 44 ${y - 3} L-46 ${y - 3} Z`, fill: col }, s));
+    return s; },
+    tick: (s, P) => s.setAttribute('transform', `translate(${f1(P.p.x - P.stageX)} 0) rotate(${f1(P.p.rot * 0.25)})`) },
+  'beanie': { layer: 'wear', make: g => {
+    el('path', { d: 'M-29 -104 Q-27 -128 0 -129 Q27 -128 29 -104 Z', fill: '#4BA3D9' }, g);
+    [-114, -121].forEach(y => el('path', { d: `M-27 ${y} Q0 ${y - 6} 27 ${y}`, fill: 'none', stroke: '#FFFFFF', 'stroke-width': 2, opacity: 0.8 }, g));
+    el('rect', { x: -31, y: -108, width: 62, height: 9, rx: 4.5, fill: '#2F7DB8' }, g);
+    return el('circle', { cx: 0, cy: -131, r: 6.5, fill: '#FFFFFF', stroke: '#D6E2EE', 'stroke-width': 1.2 }, g); },
+    tick: (s, P) => s.setAttribute('cy', f1(-131 + Math.sin(P.c * 3) * 1)) },
+  'ski-poles': { layer: 'hand', make: g => [0, 1].map(() => { const s = el('g', {}, g);
+      el('line', { x1: 0, y1: 0, x2: 0, y2: 46, stroke: '#6B7180', 'stroke-width': 2 }, s);
+      el('ellipse', { cx: 0, cy: 41, rx: 4, ry: 1.4, fill: 'none', stroke: '#3B2F4A', 'stroke-width': 1.2 }, s); return s; }),
+    tick: (s, P) => { s[0].setAttribute('transform', `translate(${f1(P.L[0])} ${f1(P.L[1])}) rotate(18)`); s[1].setAttribute('transform', `translate(${f1(P.R[0])} ${f1(P.R[1])}) rotate(-18)`); } },
+});
+
+Object.assign(MOTION, {
+  'jumping-jack': (p, c, w) => { const s = Math.abs(Math.sin(c * 4)); p.jump += s * 8 * w; p.hLx -= s * 6 * w; p.hLy -= s * 50 * w; p.hRx += s * 6 * w; p.hRy -= s * 50 * w; p.fLx -= s * 9 * w; p.fRx += s * 9 * w; },
+  'flex': (p, c, w) => { const s = Math.sin(c * 3); p.hLy += s * 3 * w; p.hRy += s * 3 * w; p.rot += s * 2 * w; },
+  'lift': (p, c, w) => { const u = ease(Math.abs(Math.sin(c * 1.4))); p.hLy += (1 - u) * 22 * w; p.hRy += (1 - u) * 22 * w; p.sy *= 1 - 0.03 * (1 - u) * w; p.x += Math.sin(c * 30) * 0.5 * u * w; },
+  'squat': (p, c, w) => { const s = (1 - Math.cos(c * 2.6)) / 2, d = s * 14 * w; p.jump -= d; p.fLy -= d; p.fRy -= d; p.fLx -= s * 18 * w; p.fRx += s * 18 * w; p.hLy -= s * 6 * w; p.hRy -= s * 6 * w; },
+  'skip': (p, c, w) => { p.jump += Math.abs(Math.sin(c * 4)) * 12 * w; p.hLx += Math.cos(c * 8) * 3 * w; p.hRx -= Math.cos(c * 8) * 3 * w; },
+  'punch': (p, c, w) => { const u = Math.max(0, Math.sin(c * 5)), k = u * u; p.hRx += k * 20 * w; p.hRy -= k * 4 * w; p.rot += k * 3 * w; },
+  'curl': (p, c, w) => { const s = (1 - Math.cos(c * 3)) / 2; p.hLy -= s * 16 * w; p.hRy -= s * 16 * w; p.hLx += s * 4 * w; p.hRx -= s * 4 * w; },
+  'stiff': (p, c, w) => { const s = Math.sin(c * 3); p.rot += s * 1.5 * w; p.fLy -= Math.max(0, s) * 2.5 * w; p.fRy -= Math.max(0, -s) * 2.5 * w; p.x += Math.sin(c * 30) * 0.5 * w; },
+  'deep-breath': (p, c, w) => { const s = (1 - Math.cos(c * 1.4)) / 2; p.sx *= 1 + s * 0.05 * w; p.sy *= 1 + s * 0.03 * w; p.hLy -= s * 8 * w; p.hRy -= s * 8 * w; },
+  'pant': (p, c, w) => { const s = Math.abs(Math.sin(c * 7)); p.sy *= 1 - s * 0.02 * w; p.mopen += s * 0.2 * w; },
+  'kick': (p, c, w) => { const u = (c % 1.8) / 1.8, k = u < 0.22 ? Math.sin(u / 0.22 * Math.PI) : 0; p.fRy -= k * 14 * w; p.fRx += k * 12 * w; p.rot -= k * 4 * w; },
+  'pullup': (p, c, w) => { const s = Math.sin(c * 2.2); p.jump += s * 8 * w; p.hLy += s * 8 * w; p.hRy += s * 8 * w; },
+  'wobble': (p, c, w) => { p.rot += Math.sin(c * 1.6) * 3 * w; p.x += Math.sin(c * 1.6) * 1.2 * w; },
+  'ski': (p, c, w) => { const s = Math.sin(c * 1.3); p.x += s * 8 * w; p.rot += s * 5 * w; },
+});
+
+Object.assign(FX, {
+  'breeze': {
+    make: g => [0, 1, 2].map(() => el('path', { d: 'M0 0 q10 -5 20 0 t20 0', fill: 'none', stroke: '#FFFFFF', 'stroke-width': 2.4, 'stroke-linecap': 'round', opacity: 0 }, g)),
+    tick: (s, c, w, h) => s.forEach((e, i) => { const k = (c * 0.35 + i / 3) % 1;
+      e.setAttribute('transform', `translate(${f1(h.x - 90 + k * 170)} ${f1(h.y + 10 + i * 28)})`); e.setAttribute('opacity', (0.85 * w * Math.sin(Math.PI * k)).toFixed(2)); }),
+  },
+  'snow': {
+    make: g => Array.from({ length: 16 }, () => el('circle', { r: 1.8, fill: '#FFFFFF', stroke: '#C9D8E8', 'stroke-width': 0.6 }, g)),
+    tick: (s, c, w, h) => s.forEach((e, i) => { const y = ((c * 16 + i * 31) % 220) - 30, x = ((i * 47) % 230) - 15 + Math.sin(c + i) * 5;
+      e.setAttribute('cx', f1(x)); e.setAttribute('cy', f1(y)); e.setAttribute('r', f1(1.4 + (i % 3) * 0.6)); }),
+  },
+});
+
+const BUBBLE = {};
+
+/* ---------- one card's animation, as the device plays it ---------- */
+const DUR = 7.4, B0 = 2.8;            /* loop length, bubble appears at B0 */
+const STAGE = { x: 76, y: 168 };       /* feet position on the 200 × 200 disc */
+const SCALE = 0.9;                     /* cat, props and effects, scaled around the feet */
+
+class KatzeScene {
+  constructor(svg, card) {
+    svg.innerHTML = '';
+    this.card = card; this.anim = card.anim || {};
+    const id = 'c' + Math.random().toString(36).slice(2, 8);
+    const clip = el('clipPath', { id }, el('defs', {}, svg)); el('circle', { cx: 100, cy: 100, r: 100 }, clip);
+    const root = el('g', { 'clip-path': `url(#${id})` }, svg);
+    el('rect', { x: 0, y: 0, width: 200, height: 200, fill: card.style.background }, root);
+    const dark = hex(card.style.background).reduce((a, v) => a + v, 0) < 300;   /* night cards: fainter decoration */
+    [[30, 40, 18], [176, 150, 30], [168, 26, 12]].forEach(([cx, cy, r]) => el('circle', { cx, cy, r, fill: '#FFFFFF', opacity: dark ? 0.06 : 0.35 }, root));
+    const charG = el('g', { transform: `translate(${STAGE.x} ${STAGE.y}) scale(${SCALE}) translate(${-STAGE.x} ${-STAGE.y})` }, root);
+    const props = (this.anim.props || []).filter(x => PROP[x]);
+    const sceneG = el('g', { transform: `translate(${STAGE.x} ${STAGE.y})` }, charG);
+    this.shadow = el('ellipse', { cx: STAGE.x, cy: STAGE.y + 1, rx: 32, ry: 4.5, fill: '#000', opacity: 0.08 }, charG);
+    const fxBack = el('g', {}, charG);
+    this.cat = makeCat(charG);
+    const frontG = el('g', { transform: `translate(${STAGE.x} ${STAGE.y})` }, charG);
+    const layer = { back: sceneG, wear: this.cat.wear, hand: this.cat.hand, behind: this.cat.behind, front: frontG };
+    this.props = props.map(x => ({ def: PROP[x], s: PROP[x].make(layer[PROP[x].layer], card, this.cat) }));
+    const fxg = el('g', {}, charG);
+    this.fx = (this.anim.fx || []).map(f => FX[f] ? { def: FX[f], s: FX[f].make(FX[f].layer === 'back' ? fxBack : fxg, card) } : null).filter(Boolean);
+    this.bub = el('g', { opacity: 0 }, root);
+    const target = Object.assign({}, N0, STAGE, this.anim.pose || {});
+    const neutral = Object.assign({}, N0, STAGE);
+    this.kf = [[0, neutral], [0.5, neutral], [1.1, target], [DUR - 0.6, target], [DUR, neutral]];
+  }
+  pose(t) {
+    const kf = this.kf;
+    for (let i = 0; i < kf.length - 1; i++) {
+      const [t0, p0] = kf[i], [t1, p1] = kf[i + 1];
+      if (t < t1) { const u = ease(clamp((t - t0) / (t1 - t0))), o = {}; for (const k in p0) o[k] = p0[k] + (p1[k] - p0[k]) * u; return o; }
+    }
+    return Object.assign({}, kf[kf.length - 1][1]);
+  }
+  render(t, c) {
+    const p = this.pose(t);
+    const w = clamp((t - 0.9) / 0.4) * clamp((DUR - 0.35 - t) / 0.45);
+    (this.anim.motion || []).forEach(m => MOTION[m] && MOTION[m](p, c, w));
+    const paws = drawCat(this.cat, p);
+    this.shadow.setAttribute('cx', f1(p.x)); this.shadow.setAttribute('rx', f1(32 * p.sx - p.jump * 0.4));
+    const top = p.y - p.jump - 134 * p.sy;
+    const h = { x: p.x, y: top, my: p.y - p.jump - 73 * p.sy, by: p.y - p.jump - 50 * p.sy, floor: p.y, stageX: STAGE.x, stageY: STAGE.y };
+    h.pawL = bodyToStage(p, ...paws.L); h.pawR = bodyToStage(p, ...paws.R);
+    const P = { p, c, L: paws.L, R: paws.R, pub: h, stageX: STAGE.x, stageY: STAGE.y };
+    this.props.forEach(x => x.def.tick(x.s, P));
+    this.fx.forEach(f => f.def.tick(f.s, c, w, h));
+  }
+}
+var Scene = KatzeScene; /* the player instantiates Scene */
+
+
+const LOCALE_NAMES = { 'zh-Hans': '中文', 'en': 'English' };
+let locale = SHOWCASE && DECK.locales.includes('en') ? 'en' : DECK.locales[0];
+if (!SHOWCASE) { try { const s = localStorage.getItem('preview-locale'); if (DECK.locales.includes(s)) locale = s; } catch (e) {} }
+
+const esc = s => s.replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
+const strip = s => s.replace(/\{\{([^}|]*)(\|[a-z]+)?\}\}/g, '$1');
+function markup(s) {
+  return esc(s).replace(/\{\{([^}|]*)(?:\|([a-z]+))?\}\}/g, (m, text, role) => {
+    if (role === 'prefix') return `<span style="color:${THEME.dark.prefix};font-weight:700">${text}</span>`;
+    if (role === 'refl') return `<span style="color:${THEME.dark.refl};font-weight:700">${text}</span>`;
+    if (role) return text;
+    return `<span class="kw">${text}</span>`;
+  });
+}
+/* same rules as tools/deckfmt.py: grammar_line() and face3_pattern() */
+function grammarLine(c) {
+  if (c.verb) {
+    const aux = c.verb.perfekt.aux === 'sein' ? 'ist' : 'hat';
+    return `${markup(c.verb.praeteritum)} · <span style="color:${THEME.dark.aux[c.verb.perfekt.aux]};font-weight:800">${aux}</span> ${markup(c.verb.perfekt.rest)}`;
+  }
+  if (c.noun) return c.noun.plural ? `die ${esc(c.noun.plural).replace(/\{\{([^}|]*)\|pl\}\}/g, (m, t) => `<span style="color:${THEME.dark.gender[c.noun.article]};font-weight:800;text-decoration:underline;text-underline-offset:3px">${t}</span>`)}` : null;
+  if (c.pattern) return pill(c.pattern);
+  return null;
+}
+const face3Pattern = c => (c.verb || c.noun) && c.pattern ? c.pattern : null;
+function pill(p) {
+  const chip = p.case ? `<span class="chip" style="color:${THEME.light.case[p.case]}">+ ${p.case}</span>` : '';
+  return `<span class="pill">${esc(p.text)}${chip}</span>`;
+}
+function missing(c) {
+  const a = c.anim || {}, out = [], REGISTRY = REGISTRIES[a.character || DECK.character];
+  Object.keys(a.pose || {}).forEach(k => { if (!(k in REGISTRY.pose)) out.push('pose:' + k); });
+  (a.motion || []).forEach(m => { if (!REGISTRY.motion.includes(m)) out.push('motion:' + m); });
+  (a.fx || []).forEach(f => { if (!REGISTRY.fx.includes(f)) out.push('fx:' + f); });
+  (a.props || []).forEach(x => { if (!(REGISTRY.prop || []).includes(x)) out.push('prop:' + x); });
+  if (a.bubble && !REGISTRY.bubble.includes(a.bubble)) out.push('bubble:' + a.bubble);
+  return out;
+}
+
+function ringSvg(index, total) {
+  let s = '<svg class="ring" viewBox="0 0 100 100" aria-hidden="true">';
+  const step = 360 / total, gap = Math.min(8, step * 0.3);
+  for (let i = 0; i < total; i++) {
+    const a0 = (-90 + i * step + gap / 2) * Math.PI / 180, a1 = (-90 + (i + 1) * step - gap / 2) * Math.PI / 180, r = 47;
+    const x0 = 50 + r * Math.cos(a0), y0 = 50 + r * Math.sin(a0), x1 = 50 + r * Math.cos(a1), y1 = 50 + r * Math.sin(a1);
+    const on = i === index;
+    s += `<path d="M${x0.toFixed(2)} ${y0.toFixed(2)} A${r} ${r} 0 0 1 ${x1.toFixed(2)} ${y1.toFixed(2)}" fill="none" stroke="${on ? 'var(--c)' : 'var(--ring)'}" stroke-width="${on ? 2.4 : 1.3}" stroke-linecap="round" opacity="${on ? 1 : 0.75}"/>`;
+  }
+  return s + '</svg>';
+}
+
+document.getElementById('title').textContent = DECK.title.de;
+document.getElementById('meta').textContent = SHOWCASE
+  ? `${DECK.title.en || ''} · ${DECK.level.replace('-', '–')} · ${DECK.cards.length} cards · Knödel Watch`
+  : `${DECK.title[locale] || ''} · ${DECK.level} · 第 ${DECK.episode || '–'} 期 · ${DECK.cards.length} 张卡 · ${DECK.review?.status || 'draft'}`;
+if (SHOWCASE) {
+  document.documentElement.lang = 'en';
+  document.getElementById('locales').setAttribute('aria-label', 'Translation');
+  document.getElementById('hint').textContent = 'Every round screen is one card as it plays on the watch. Click a card to turn it: the word, then an example, then a tip.';
+}
+
+const seg = document.getElementById('locales');
+DECK.locales.forEach(l => {
+  const b = document.createElement('button'); b.type = 'button'; b.textContent = LOCALE_NAMES[l] || l; b.dataset.l = l;
+  b.addEventListener('click', () => { locale = l; try { localStorage.setItem('preview-locale', l); } catch (e) {} renderText(); });
+  seg.appendChild(b);
+});
+
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const grid = document.getElementById('grid'), items = [];
+DECK.cards.forEach((c, i) => {
+  const item = document.createElement('div'); item.className = 'item';
+  const dev = document.createElement('div'); dev.className = 'dev'; dev.tabIndex = 0; dev.setAttribute('role', 'button');
+  dev.style.setProperty('--c', c.style.color);
+  const headLen = (c.noun ? c.noun.article.length + 1 : 0) + strip(c.headword).length;
+  const article = c.noun ? `<span style="color:${THEME.dark.gender[c.noun.article]}">${c.noun.article}</span> ` : '';
+  dev.innerHTML = ringSvg(i, DECK.cards.length) + `
+    <div class="face f1"><svg class="disc" viewBox="0 0 200 200" aria-hidden="true"></svg>
+      <div class="lead de">${esc(c.lead || '')}</div><div class="head de" style="${headLen > 14 ? `font-size:${(9.5 * 14 / headLen).toFixed(2)}cqw` : ''}">${article}${markup(c.headword)}</div><div class="gloss"></div></div>
+    <div class="face f2" hidden></div><div class="face f3" hidden></div>`;
+  const faces = [1, 2].concat(c.tip || face3Pattern(c) ? [3] : []);
+  const dots = document.createElement('div'); dots.className = 'dots'; dots.innerHTML = faces.map(() => '<i></i>').join('');
+  const todo = missing(c);
+  const cap = document.createElement('div'); cap.className = 'cap';
+  cap.innerHTML = `<code>${c.id}</code>` + (todo.length ? `<br><span class="todo">待实现：${todo.join('，')}</span>` : '');
+  item.append(dev, dots);
+  if (!SHOWCASE) item.append(cap);
+  grid.appendChild(item);
+  const scene = new Scene(dev.querySelector('.disc'), c);
+  const it = { c, dev, dots, faces, face: 0, scene, start: performance.now() - i * 620, visible: true };
+  items.push(it);
+  const flip = () => {
+    dev.classList.add('flipping');
+    setTimeout(() => { it.face = (it.face + 1) % faces.length; showFace(it); dev.classList.remove('flipping'); }, RM ? 0 : 140);
+  };
+  dev.addEventListener('click', flip);
+  dev.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flip(); } });
+});
+
+function showFace(it) {
+  const n = it.faces[it.face];
+  it.dev.querySelectorAll('.face').forEach((f, k) => f.hidden = k + 1 !== n);
+  it.dots.querySelectorAll('i').forEach((d, k) => d.classList.toggle('on', k === it.face));
+  it.dev.setAttribute('aria-label', SHOWCASE ? `${strip(it.c.headword)}, side ${it.face + 1} of ${it.faces.length}, click to turn`
+    : `${strip(it.c.headword)}，第 ${it.face + 1} 面，共 ${it.faces.length} 面，点击翻面`);
+}
+function renderText() {
+  seg.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', b.dataset.l === locale));
+  items.forEach(it => {
+    const c = it.c, g = grammarLine(c), p3 = face3Pattern(c);
+    it.dev.querySelector('.gloss').textContent = c.gloss[locale] || '';
+    it.dev.querySelector('.f2').innerHTML = (g ? `<div>${g}</div>` : '') +
+      `<div class="ex de">${markup(c.example.de)}</div><div class="tr">${esc(c.example.translations[locale] || '')}</div>`;
+    it.dev.querySelector('.f3').innerHTML = `<div class="tiplabel de">TIPP</div>` + (p3 ? `<div>${pill(p3)}</div>` : '') +
+      (c.tip ? `<div class="tip de">${markup(c.tip[locale] || '')}</div>` : '');
+    showFace(it);
+  });
+}
+renderText();
+
+const all = [...new Set(items.flatMap(it => missing(it.c)))].sort();
+document.getElementById('foot').innerHTML = SHOWCASE
+  ? '<a href="index.html" style="color:inherit">← All decks</a> · Knödel Watch: open-source German flashcards for ESP32 watches · <a href="https://github.com/yanxuceo/knoedel-watch" style="color:inherit">github.com/yanxuceo/knoedel-watch</a>'
+  : all.length
+  ? `这一期需要固件新增 ${all.length} 个编号：${all.map(x => `<code>${x}</code>`).join(' ')}<br>画法见本页源码里的 <code>MOTION</code>、<code>FX</code>、<code>PROP</code>、<code>BUBBLE</code> 条目（与 <code>tools/preview/${DECK.character}.js</code> 相同）。`
+  : '这一期用到的动画编号固件都已实现。';
+
+if ('IntersectionObserver' in window) {
+  const io = new IntersectionObserver(es => es.forEach(e => { const it = items.find(x => x.dev === e.target); if (it) it.visible = e.isIntersecting; }));
+  items.forEach(it => io.observe(it.dev));
+}
+function frame(now) {
+  items.forEach(it => {
+    if (!it.visible || it.faces[it.face] !== 1) return;
+    const t = RM ? B0 + 1 : ((now - it.start) / 1000) % DUR;
+    it.scene.render(t, RM ? 0 : now / 1000);
+  });
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>

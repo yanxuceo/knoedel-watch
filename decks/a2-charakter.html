@@ -1,0 +1,708 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Wie bist du?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: a wall of round device screens, each tappable through its faces; page chrome stays quiet. */
+:root{
+  --bg:#EEF0F4; --fg:#1A1F2B; --muted:#5E6676; --line:#D7DCE4; --chip:#E2E6EE; --warn:#B4540A;
+  --screen:#0D1015; --screen-fg:#F2F3F7; --screen-muted:#8E95A6; --screen-soft:#B9B4F0; --ring:#5C63B8;
+  --display:"Bricolage Grotesque","Avenir Next","Segoe UI",system-ui,sans-serif;
+  --body:"Noto Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --bg:#12151B; --fg:#E8EBF0; --muted:#98A1B0; --line:#2A303B; --chip:#222833; --warn:#F0A04B; color-scheme:dark }
+}
+:root[data-theme="dark"]{ --bg:#12151B; --fg:#E8EBF0; --muted:#98A1B0; --line:#2A303B; --chip:#222833; --warn:#F0A04B; color-scheme:dark }
+*,*::before,*::after{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1140px;margin:0 auto;padding-inline:clamp(16px,3vw,32px);padding-block:26px 56px}
+header{display:flex;flex-wrap:wrap;gap:14px 24px;align-items:flex-end;justify-content:space-between}
+h1{margin:0;font-family:var(--display);font-size:clamp(32px,6vw,56px);font-weight:800;letter-spacing:-.02em;line-height:1;text-wrap:balance}
+.meta{margin:8px 0 0;color:var(--muted);font-size:15px}
+.seg{display:inline-flex;background:var(--chip);border-radius:999px;padding:3px}
+.seg button{font:inherit;border:0;background:transparent;color:var(--muted);padding:7px 16px;border-radius:999px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--bg);color:var(--fg);font-weight:700}
+.hint{margin:14px 0 22px;color:var(--muted);font-size:14px;line-height:1.6}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:28px 22px}
+.item{display:flex;flex-direction:column;align-items:center;gap:10px;min-width:0}
+.dev{position:relative;width:100%;max-width:300px;aspect-ratio:1;border-radius:50%;background:var(--screen);container-type:inline-size;cursor:pointer;
+  box-shadow:0 0 0 6px #22262E,0 10px 24px rgba(0,0,0,.18);transition:transform .14s ease-in;outline:none}
+.dev:focus-visible{box-shadow:0 0 0 6px #22262E,0 0 0 9px var(--c)}
+.dev.flipping{transform:scaleX(0)}
+.ring{position:absolute;inset:0;width:100%;height:100%}
+.face{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;text-align:center;color:var(--screen-fg)}
+.face[hidden]{display:none}
+.de{font-family:var(--display)}
+.kw{color:color-mix(in srgb,var(--c) 70%,white);font-weight:800;white-space:nowrap}
+/* face 1 */
+.disc{width:58cqw;height:58cqw;margin-top:10cqw;flex:none}
+.lead{font-size:4cqw;color:var(--screen-muted);margin-top:1.6cqw;line-height:1.1;min-height:4.4cqw}
+.head{font-size:9.5cqw;font-weight:800;letter-spacing:-.01em;line-height:1.05;color:color-mix(in srgb,var(--c) 70%,white);white-space:nowrap}
+.gloss{font-size:4.4cqw;color:var(--screen-soft);margin-top:1cqw}
+/* faces 2 and 3 */
+.f2,.f3{justify-content:center;padding:0 13cqw;gap:3cqw}
+.pill{display:inline-flex;align-items:center;gap:1.6cqw;background:var(--c);color:#fff;border-radius:99px;padding:.9cqw 3.2cqw;font-size:4.5cqw;font-weight:700;white-space:nowrap}
+.chip{background:#fff;border-radius:99px;padding:.2cqw 1.6cqw;font-size:3.1cqw;font-weight:800}
+.ex{font-size:5cqw;line-height:1.32;font-weight:500;white-space:pre-line}
+.tr{font-size:3.8cqw;line-height:1.45;color:var(--screen-soft);white-space:pre-line}
+.tiplabel{font-size:3.3cqw;color:var(--screen-muted);letter-spacing:.08em}
+.tip{font-size:5cqw;line-height:1.38;font-weight:500}
+.dots{display:flex;gap:6px}
+.dots i{width:7px;height:7px;border-radius:50%;background:var(--line)}
+.dots i.on{background:var(--fg)}
+.cap{font-size:13px;color:var(--muted);text-align:center;line-height:1.5;max-width:300px}
+.cap code{font-size:12px}
+.todo{color:var(--warn)}
+footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:14px;line-height:1.7}
+footer code{background:var(--chip);padding:1px 6px;border-radius:5px;font-size:12.5px}
+@media (prefers-reduced-motion: reduce){.dev{transition:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1 class="de" id="title"></h1>
+      <p class="meta" id="meta"></p>
+    </div>
+    <div class="seg" role="group" aria-label="翻译语言" id="locales"></div>
+  </header>
+  <p class="hint" id="hint">模拟设备圆屏：点一下屏幕翻面（正面 → 例句面 → 易错点面）。动画按设备的节奏循环；卡片下方标橙色的是固件还没实现、需要照这份预览移植的编号。</p>
+  <main class="grid" id="grid"></main>
+  <footer id="foot"></footer>
+</div>
+
+<script>
+const DECK = {"format": 1, "id": "a2-charakter", "version": "0.1.0", "episode": 7, "title": {"de": "Wie bist du?", "zh-Hans": "性格", "en": "Personality"}, "level": "A2", "character": "knoedel", "locales": ["zh-Hans", "en"], "license": "CC-BY-NC-SA-4.0", "review": {"status": "draft", "notes": "Season 1 (A2), deck 2. Six pairs of opposites. Tips are written per locale (lustig: false friend only for English speakers). Please check every 'notes' entry."}, "cards": [{"id": "fleissig", "pos": "adjective", "headword": "fleißig", "gloss": {"zh-Hans": "勤奋的", "en": "hard-working"}, "example": {"de": "Meine Schwester ist sehr {{fleißig}}: Sie lernt jeden Abend zwei Stunden Deutsch.", "translations": {"zh-Hans": "我姐姐很勤奋：她每天晚上学两小时德语。", "en": "My sister is so diligent: two hours of German every evening."}}, "tip": {"zh-Hans": "反义词：{{faul}}（懒）", "en": "Opposite: {{faul}} (lazy)"}, "style": {"color": "#2F7DB8", "background": "#DCEBF7"}, "anim": {"pose": {"open": 1.1, "browY": -2, "browT": 0.2, "smile": 0.4, "armL": 60, "armR": 60}, "tint": null, "motion": ["type"], "fx": ["sweat"], "bubble": "books"}, "notes": "Schwester can be older or younger; the Chinese translation picks 姐姐."}, {"id": "faul", "pos": "adjective", "headword": "faul", "gloss": {"zh-Hans": "懒的", "en": "lazy"}, "example": {"de": "Am Sonntag bin ich gern {{faul}} und bleibe den ganzen Tag auf dem Sofa.", "translations": {"zh-Hans": "星期天我喜欢偷懒，整天待在沙发上。", "en": "On Sundays I like being lazy and stay on the sofa all day."}}, "tip": {"zh-Hans": "水果烂了也说 faul：Der Apfel ist {{faul}}.", "en": "Fruit can be faul too – rotten: Der Apfel ist {{faul}}."}, "style": {"color": "#8A7A5C", "background": "#EFE9DD"}, "anim": {"pose": {"lid": 0.65, "smile": 0.3, "sx": 1.12, "sy": 0.9, "armL": -10, "armR": -10}, "tint": null, "motion": ["sway-slow"], "fx": ["zzz"], "bubble": "sofa"}}, {"id": "ordentlich", "pos": "adjective", "headword": "ordentlich", "gloss": {"zh-Hans": "有条理、整洁", "en": "tidy, orderly"}, "example": {"de": "Mein Kollege ist sehr {{ordentlich}}: Sein Schreibtisch ist immer aufgeräumt.", "translations": {"zh-Hans": "我同事很有条理：他的办公桌总是整整齐齐。", "en": "My colleague is very tidy: his desk is always neat."}}, "tip": {"zh-Hans": "还表示“像样的”：ein {{ordentliches}} Frühstück", "en": "Also 'proper': ein {{ordentliches}} Frühstück"}, "style": {"color": "#2E9A7A", "background": "#DAF1E9"}, "anim": {"pose": {"happy": 1, "smile": 0.7, "browY": -2, "blush": 0.2, "armL": 20, "armR": 20}, "tint": null, "motion": ["breathe"], "fx": ["sparkles"], "bubble": "shelf"}}, {"id": "chaotisch", "pos": "adjective", "headword": "chaotisch", "gloss": {"zh-Hans": "乱糟糟的", "en": "chaotic, messy"}, "example": {"de": "Ich bin ein bisschen {{chaotisch}} und suche jeden Morgen meinen Schlüssel.", "translations": {"zh-Hans": "我有点丢三落四，每天早上都在找钥匙。", "en": "I'm a bit chaotic – every morning I look for my keys."}}, "tip": {"zh-Hans": "ch 在这里读 k：Chaos, {{chaotisch}}", "en": "Here ch sounds like k: Chaos, {{chaotisch}}"}, "style": {"color": "#C2553A", "background": "#F9E0D8"}, "anim": {"pose": {"open": 1.2, "browT": 0.6, "smile": -0.1, "wob": 0.3, "rot": -4, "armL": 120, "armR": 150}, "tint": null, "motion": ["eye-dart", "tremble"], "fx": ["scribble", "paper-orbit"], "bubble": "keys"}, "notes": "Level: chaotisch may be listed above A2; kept as the natural opposite of ordentlich (unordentlich is the textbook alternative)."}, {"id": "puenktlich", "pos": "adjective", "headword": "pünktlich", "gloss": {"zh-Hans": "准时的", "en": "punctual, on time"}, "example": {"de": "Sei bitte {{pünktlich}}, der Film fängt um acht an.", "translations": {"zh-Hans": "请准时，电影八点开始。", "en": "Please be on time – the film starts at eight."}}, "tip": {"zh-Hans": "{{pünktlich}} um acht＝八点整", "en": "{{pünktlich}} um acht = at eight sharp"}, "style": {"color": "#3E8E2F", "background": "#E0F3D7"}, "anim": {"pose": {"happy": 1, "smile": 0.8, "browY": -2, "armL": 14, "armR": 110}, "tint": null, "motion": ["hop"], "fx": ["sparkles"], "bubble": "clock-ok"}}, {"id": "unpuenktlich", "pos": "adjective", "headword": "unpünktlich", "gloss": {"zh-Hans": "不守时的", "en": "often late"}, "example": {"de": "Mein Bruder ist oft {{unpünktlich}}, deshalb muss ich immer auf ihn warten.", "translations": {"zh-Hans": "我哥哥经常不准时，所以我总得等他。", "en": "My brother is often late, so I always have to wait for him."}}, "tip": {"zh-Hans": "un- 构成反义词：unfreundlich, unordentlich", "en": "un- makes opposites: unfreundlich, unordentlich"}, "style": {"color": "#D2402A", "background": "#FBDCD5"}, "anim": {"pose": {"open": 1.3, "browT": 0.8, "smile": -0.4, "mopen": 0.4, "armL": 150, "armR": 150}, "tint": null, "motion": ["shiver"], "fx": ["sweat", "sweat-fly"], "bubble": "clock-late"}, "notes": "warten auf + Akk, and deshalb + inversion with a modal verb."}, {"id": "lustig", "pos": "adjective", "headword": "lustig", "gloss": {"zh-Hans": "风趣、好笑", "en": "funny"}, "example": {"de": "Mein Opa ist sehr {{lustig}} und erzählt immer Witze.", "translations": {"zh-Hans": "我爷爷很风趣，总是讲笑话。", "en": "My grandpa is really funny and always tells jokes."}}, "tip": {"zh-Hans": "说人＝风趣，说事＝好笑：Das ist {{lustig}}!", "en": "False friend: {{lustig}} = funny, not 'lustful'."}, "style": {"color": "#D9820F", "background": "#FFEBCB"}, "anim": {"pose": {"happy": 1, "smile": 1, "mopen": 0.9, "blush": 0.7, "armL": 40, "armR": 40}, "tint": null, "motion": ["bounce"], "fx": ["haha"], "bubble": "joke"}, "notes": "Opa: Chinese translation picks 爷爷 (could also be 外公)."}, {"id": "ernst", "pos": "adjective", "headword": "ernst", "gloss": {"zh-Hans": "严肃的", "en": "serious"}, "example": {"de": "Mein Chef sieht {{ernst}} aus, aber eigentlich ist er sehr nett.", "translations": {"zh-Hans": "我老板看起来很严肃，其实人很好。", "en": "My boss looks serious, but he's actually very nice."}}, "tip": {"zh-Hans": "“你认真的吗？”：Im {{Ernst}}?", "en": "'Seriously?' = Im {{Ernst}}?"}, "style": {"color": "#4A5875", "background": "#E1E5ED"}, "anim": {"pose": {"open": 0.95, "browY": 2, "browT": -0.3, "smile": -0.15, "mw": 0.7, "armL": -30, "armR": -30}, "tint": null, "motion": [], "fx": [], "bubble": "tie"}, "notes": "aussehen + adjective: sieht ernst aus (separable prefix at the end)."}, {"id": "ruhig", "pos": "adjective", "headword": "ruhig", "gloss": {"zh-Hans": "安静、文静", "en": "quiet, calm"}, "example": {"de": "Meine Nachbarin ist sehr {{ruhig}} – ich höre sie fast nie.", "translations": {"zh-Hans": "我的女邻居很安静，我几乎听不到她。", "en": "My neighbour is very quiet – I almost never hear her."}}, "tip": {"zh-Hans": "冷静点！＝ Bleib {{ruhig}}!", "en": "Stay calm! = Bleib {{ruhig}}!"}, "style": {"color": "#5B7FB0", "background": "#DFE8F4"}, "anim": {"pose": {"shut": 1, "smile": 0.4, "browY": 1, "armL": -20, "armR": -20}, "tint": null, "motion": ["breathe"], "fx": [], "bubble": "book"}}, {"id": "laut", "pos": "adjective", "headword": "laut", "gloss": {"zh-Hans": "吵闹的", "en": "loud, noisy"}, "example": {"de": "Die Kinder von nebenan sind abends oft sehr {{laut}}.", "translations": {"zh-Hans": "隔壁的孩子晚上经常很吵。", "en": "The kids next door are often very loud in the evening."}}, "tip": {"zh-Hans": "还能当“根据”：{{laut}} Wetterbericht", "en": "Also 'according to': {{laut}} Wetterbericht"}, "style": {"color": "#C23D7A", "background": "#FBE0EB"}, "anim": {"pose": {"open": 1.3, "browY": -4, "smile": 0.6, "mopen": 1.1, "mw": 0.9, "armL": 150, "armR": 150}, "tint": null, "motion": ["jump-wave"], "fx": ["noise-waves"], "bubble": "speaker"}, "notes": "laut as a preposition (laut Wetterbericht) is B1; mentioned only as a reading tip."}, {"id": "sympathisch", "pos": "adjective", "headword": "sympathisch", "gloss": {"zh-Hans": "讨人喜欢的", "en": "likeable"}, "pattern": {"text": "mir sympathisch", "case": "Dat"}, "example": {"de": "Die neue Kollegin war {{mir}} sofort {{sympathisch}}.", "translations": {"zh-Hans": "我一下子就对新来的女同事很有好感。", "en": "I liked my new colleague right away."}}, "tip": {"zh-Hans": "假朋友：{{sympathisch}}＝讨人喜欢，不是“同情”", "en": "False friend: {{sympathisch}} = likeable, not 'sympathetic'."}, "style": {"color": "#D9532F", "background": "#FFE1D6"}, "anim": {"pose": {"happy": 1, "smile": 0.9, "blush": 0.8, "armL": 14, "armR": 120}, "tint": null, "motion": ["fan"], "fx": ["sparkles"], "bubble": "handshake"}, "notes": "jemandem sympathisch sein (Dativ). The waving arm reuses motion 'fan'."}, {"id": "schuechtern", "pos": "adjective", "headword": "schüchtern", "gloss": {"zh-Hans": "害羞的", "en": "shy"}, "example": {"de": "Am Anfang war mein Sohn {{schüchtern}}, aber jetzt hat er viele Freunde.", "translations": {"zh-Hans": "我儿子一开始很害羞，现在他有很多朋友了。", "en": "At first my son was shy, but now he has lots of friends."}}, "tip": {"zh-Hans": "别害羞！＝ Sei nicht so {{schüchtern}}!", "en": "Don't be shy! = Sei nicht so {{schüchtern}}!"}, "style": {"color": "#B5487A", "background": "#F8E1EC"}, "anim": {"pose": {"lookY": 2, "lookX": -2.5, "blush": 1, "smile": 0.2, "mw": 0.6, "armL": -45, "armR": -45, "sy": 0.97}, "tint": null, "motion": ["sway-slow"], "fx": [], "bubble": "friends"}}]};
+const THEME = {"description": "Fixed colours for grammar markup. 'light' is for light backgrounds (web), 'dark' for the black round screen. The card keyword uses card.style.color instead.", "light": {"gender": {"der": "#2F6BD6", "die": "#D6435E", "das": "#B7791F"}, "prefix": "#D9620F", "refl": "#0E8C7E", "aux": {"haben": "#2A5FC4", "sein": "#D2402A"}, "case": {"Akk": "#E1601A", "Dat": "#13946A", "Gen": "#7A4FD6"}}, "dark": {"gender": {"der": "#7FA6F5", "die": "#FF7E95", "das": "#FFC24A"}, "prefix": "#FF9F43", "refl": "#4FD1BF", "aux": {"haben": "#86A9F5", "sein": "#FF8468"}, "case": {"Akk": "#FF8A47", "Dat": "#3CCB98", "Gen": "#B394FF"}}};
+const REGISTRIES = {"knoedel": {"character": "knoedel", "maintained_by": "firmware: list only what is implemented on the device", "pose": {"jump": 0, "rot": 0, "sx": 1, "sy": 1, "open": 1, "lid": 0, "happy": 0, "shut": 0, "lookX": 0, "lookY": 0, "browY": 0, "browT": 0, "smile": 0.25, "mopen": 0, "mw": 1, "wob": 0, "blush": 0, "tint": 0, "armL": 14, "armR": 14}, "motion": ["bounce", "sway-slow", "shiver", "eye-dart", "jump-wave", "tremble", "sway", "breathe", "shake", "exhale", "hop", "twitch", "yawn", "sneeze", "fan", "type", "nod", "shrug", "wave", "spin"], "fx": ["confetti", "rain-cloud", "tear", "sweat", "star-orbit", "scribble", "paper-orbit", "sigh-puffs", "music-notes", "steam", "anger-vein", "puh-cloud", "sweat-fly", "exclamation", "sparkles", "noise-waves", "zzz", "thermometer", "sneeze", "snowflakes", "swirl", "haha", "question"], "prop": [], "bubble": ["house", "sign-berlin", "exam", "beach", "calendar", "heart-broken", "no-mail", "clock-late", "exam-passed", "greeting", "phone-ok", "noise", "bed", "coffee-cups", "brezel", "water-glass", "plate-empty", "pills", "apple", "tissues", "bike", "window-open", "heater", "cake", "clock-ok", "books", "sofa", "shelf", "keys", "joke", "tie", "book", "speaker", "handshake", "friends", "lightbulb", "soup", "flowers", "clover"]}};
+const REGISTRY = REGISTRIES[DECK.character];
+/* Showcase (tools/build_showcase.py): the same cards for people who are not working
+   on them, in English, without draft status or ids still to implement. */
+const SHOWCASE = true;
+/* Knödel drawing reference. Shared by the web preview and used by the firmware as the
+   porting reference: every motion, fx and bubble is one entry keyed by its registry id.
+   Stage: 200 × 200 disc (centre 100,100, radius 100). Basic shapes only. */
+
+const NS = 'http://www.w3.org/2000/svg';
+const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
+const ease = u => -(Math.cos(Math.PI * u) - 1) / 2;
+const backOut = u => { const c = 1.7; return 1 + (c + 1) * Math.pow(u - 1, 3) + c * Math.pow(u - 1, 2); };
+const fr = (i, k) => { const x = Math.sin(i * 127.1 + k * 311.7) * 43758.5453; return x - Math.floor(x); };
+function el(tag, attrs, parent) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+const hex = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+const mixC = (a, b, u) => { const A = hex(a), B = hex(b); return 'rgb(' + A.map((v, i) => Math.round(v + (B[i] - v) * u)).join(',') + ')'; };
+
+/* ---------- character (unchanged from Ep.4) ---------- */
+const KN={base:'#EECB8C',edge:'#CFA563',spot:'#C99A55',herb:'#5E9E45',foot:'#D6AC6A',arm:'#E2BB7B',ink:'#3A2420',mouth:'#5B2D2A',blush:'#F59A9A'};
+const N0={x:100,y:164,jump:0,rot:0,sx:1,sy:1,open:1,lid:0,happy:0,shut:0,lookX:0,lookY:0,browY:0,browT:0,smile:.25,mopen:0,mw:1,wob:0,blush:0,tint:0,armL:14,armR:14};
+function makeKnoedel(parent){
+  const g=el('g',{},parent),R={g};
+  el('ellipse',{cx:-13,cy:-3,rx:10,ry:5.5,fill:KN.foot},g); el('ellipse',{cx:13,cy:-3,rx:10,ry:5.5,fill:KN.foot},g);
+  R.body=el('circle',{cx:0,cy:-37,r:36,fill:KN.base,stroke:KN.edge,'stroke-width':1.6},g);
+  [[-21,-54,3,2],[19,-21,2.6,1.8],[-9,-13,2.2,1.6],[25,-50,2.4,1.7],[-27,-28,2.2,1.5],[6,-66,2,1.4]].forEach(([cx,cy,rx,ry])=>el('ellipse',{cx,cy,rx,ry,fill:KN.spot,opacity:.55},g));
+  [[-14,-62],[12,-60],[24,-33],[-23,-19],[2,-10]].forEach(([cx,cy],i)=>el('path',{d:`M${cx} ${cy} l3 -1.5`,stroke:KN.herb,'stroke-width':2,'stroke-linecap':'round',transform:`rotate(${i*47} ${cx} ${cy})`},g));
+  el('ellipse',{cx:-15,cy:-57,rx:10,ry:5,fill:'#FFFFFF',opacity:.38,transform:'rotate(-32 -15 -57)'},g);
+  const arm=()=>{const a=el('g',{},g);el('line',{x1:0,y1:0,x2:0,y2:16,stroke:KN.arm,'stroke-width':6.5,'stroke-linecap':'round'},a);el('circle',{cx:0,cy:18,r:5,fill:KN.arm,stroke:KN.edge,'stroke-width':1},a);return a;};
+  R.armL=arm(); R.armR=arm();
+  R.blushL=el('ellipse',{cx:-19,cy:-34,rx:6,ry:3.4,fill:KN.blush,opacity:0},g);
+  R.blushR=el('ellipse',{cx:19,cy:-34,rx:6,ry:3.4,fill:KN.blush,opacity:0},g);
+  const f=R.face=el('g',{transform:'translate(0 -42)'},g);
+  R.eyes=[-1,1].map(s=>{
+    const e={g:el('g',{transform:`translate(${s*10} -3)`},f)};
+    e.ell=el('ellipse',{rx:3.5,ry:4.6,fill:KN.ink},e.g);
+    e.hl=el('circle',{r:1.15,fill:'#fff'},e.g);
+    e.lid=el('rect',{x:-5,y:-8,width:10,height:0,fill:KN.base},e.g);
+    e.happy=el('path',{d:'M-4.2 1.6 Q0 -4.4 4.2 1.6',stroke:KN.ink,'stroke-width':2.2,fill:'none','stroke-linecap':'round',opacity:0},e.g);
+    e.shut=el('path',{d:'M-4.2 -.8 Q0 3.4 4.2 -.8',stroke:KN.ink,'stroke-width':2.2,fill:'none','stroke-linecap':'round',opacity:0},e.g);
+    return e;});
+  R.browL=el('path',{stroke:KN.ink,'stroke-width':2.3,fill:'none','stroke-linecap':'round'},f);
+  R.browR=el('path',{stroke:KN.ink,'stroke-width':2.3,fill:'none','stroke-linecap':'round'},f);
+  R.mouth=el('path',{fill:KN.mouth,stroke:KN.mouth,'stroke-width':2.2,'stroke-linejoin':'round'},f);
+  R.wob=el('path',{fill:'none',stroke:KN.mouth,'stroke-width':2,'stroke-linecap':'round','stroke-linejoin':'round',opacity:0},f);
+  return R;
+}
+function drawKn(R,p,col){
+  R.g.setAttribute('transform',`translate(${p.x.toFixed(1)} ${(p.y-p.jump).toFixed(1)}) rotate(${p.rot.toFixed(2)}) scale(${p.sx.toFixed(3)} ${p.sy.toFixed(3)})`);
+  R.body.setAttribute('fill',col);
+  R.armL.setAttribute('transform',`translate(-31 -36) rotate(${p.armL.toFixed(1)})`);
+  R.armR.setAttribute('transform',`translate(31 -36) rotate(${(-p.armR).toFixed(1)})`);
+  const vis=1-Math.max(p.happy,p.shut), ry=4.6*p.open;
+  R.eyes.forEach(e=>{
+    e.ell.setAttribute('ry',ry.toFixed(2)); e.ell.setAttribute('cx',p.lookX.toFixed(2)); e.ell.setAttribute('cy',p.lookY.toFixed(2)); e.ell.setAttribute('opacity',vis.toFixed(2));
+    e.hl.setAttribute('cx',(p.lookX+1.1).toFixed(2)); e.hl.setAttribute('cy',(p.lookY-ry*.35).toFixed(2)); e.hl.setAttribute('opacity',vis.toFixed(2));
+    e.lid.setAttribute('y',(p.lookY-ry-.6).toFixed(2)); e.lid.setAttribute('height',(p.lid*ry*2+.6).toFixed(2)); e.lid.setAttribute('fill',col); e.lid.setAttribute('opacity',(p.lid>.02?vis:0).toFixed(2));
+    e.happy.setAttribute('opacity',p.happy.toFixed(2)); e.shut.setAttribute('opacity',p.shut.toFixed(2));
+  });
+  const by=-14+p.browY, t=p.browT;
+  R.browL.setAttribute('d',`M-15 ${(by+t*1.6).toFixed(1)} L-5 ${(by-t*3).toFixed(1)}`);
+  R.browR.setAttribute('d',`M15 ${(by+t*1.6).toFixed(1)} L5 ${(by-t*3).toFixed(1)}`);
+  const w=8*p.mw, c1=12+p.smile*7, c2=c1+p.mopen*11;
+  R.mouth.setAttribute('d',`M${(-w).toFixed(1)} 12 Q0 ${c1.toFixed(1)} ${w.toFixed(1)} 12 Q0 ${c2.toFixed(1)} ${(-w).toFixed(1)} 12 Z`);
+  R.mouth.setAttribute('opacity',(1-p.wob).toFixed(2));
+  R.wob.setAttribute('d',`M${(-w).toFixed(1)} 12 l${(w/3).toFixed(1)} -2.4 l${(w/3).toFixed(1)} 2.4 l${(w/3).toFixed(1)} -2.4 l${(w/3).toFixed(1)} 2.4 l${(w/3).toFixed(1)} -2.4 l${(w/3).toFixed(1)} 2.4`);
+  R.wob.setAttribute('opacity',p.wob.toFixed(2));
+  R.blushL.setAttribute('opacity',(p.blush*.75).toFixed(2)); R.blushR.setAttribute('opacity',(p.blush*.75).toFixed(2));
+}
+
+
+/* Where effects attach: h.x / h.y = top of the head, h.my = mouth, h.by = body centre. */
+function anchors(p) {
+  const top = p.y - p.jump - 74 * p.sy;
+  return { x: p.x, y: top, my: top + 44 * p.sy, by: p.y - p.jump - 37 * p.sy, sy: p.sy };
+}
+
+/* ---------- shapes reused by effects ---------- */
+const STAR = 'M0 -6 L1.6 -1.6 L6 0 L1.6 1.6 L0 6 L-1.6 1.6 L-6 0 L-1.6 -1.6 Z';
+const DROP = 'M0 -5 C2 -1 3 1 3 2.5 A3 3 0 1 1 -3 2.5 C-3 1 -2 -1 0 -5 Z';
+const FONT = 'Bricolage Grotesque, system-ui, sans-serif';
+
+/* sneeze timing, shared by motion "sneeze" and fx "sneeze" (2.8 s cycle) */
+function sneezePhase(c) {
+  const u = (c % 2.8) / 2.8;
+  const build = u < 0.55 ? ease(u / 0.55) : u < 0.62 ? 1 : Math.max(0, 1 - (u - 0.62) / 0.25);
+  const burst = u >= 0.55 && u < 0.85 ? (u - 0.55) / 0.3 : 0;
+  return { build, burst };
+}
+/* yawn timing (3.4 s cycle, mouth open for the first 45 %) */
+function yawnPhase(c) {
+  const u = (c % 3.4) / 3.4;
+  return u < 0.45 ? Math.sin(Math.PI * u / 0.45) : 0;
+}
+
+/* ---------- MOTION: (pose, clock, weight) -> mutates pose ---------- */
+const MOTION = {
+  'sway-slow': (p, c, w) => { p.rot += Math.sin(c * 1.2) * 1.5 * w; },
+  'shiver':    (p, c, w) => { p.x += Math.sin(c * 45) * 1.1 * w; },
+  'bounce':    (p, c, w) => { const s = Math.abs(Math.sin(c * 5)); p.jump += w * s * 9; p.sy *= 1 - 0.06 * w * (1 - s); p.sx *= 1 + 0.05 * w * (1 - s); },
+  'breathe':   (p, c, w) => { const k = 1 + Math.sin(c * 1.8) * 0.015 * w; p.sx *= k; p.sy *= k; },
+  'hop':       (p, c, w) => { p.jump += w * Math.max(0, Math.sin(c * 2.4)) * 3; },
+  /* new in a2-gesundheit-zustaende */
+  'yawn': (p, c, w) => {
+    const e = yawnPhase(c) * w;
+    p.mopen = Math.max(p.mopen, 1.15 * e); p.mw += (0.72 - p.mw) * e;
+    p.shut = Math.max(p.shut, e); p.rot -= 3 * e; p.sy *= 1 + 0.04 * e;
+  },
+  'sneeze': (p, c, w) => {
+    const { build, burst } = sneezePhase(c);
+    p.rot += (-7 * build + (burst > 0 ? 16 * Math.sin(Math.PI * Math.min(1, burst * 2)) : 0)) * w;
+    p.shut = Math.max(p.shut, Math.max(build, burst > 0 ? 1 : 0) * w);
+    p.mopen = Math.max(p.mopen, (0.5 * build + (burst > 0 ? 0.4 : 0)) * w);
+    p.jump += (burst > 0 ? 4 * Math.sin(Math.PI * Math.min(1, burst * 2)) : 0) * w;
+  },
+  'fan': (p, c, w) => { p.armR += Math.sin(c * 12) * 28 * w; p.rot += Math.sin(c * 12) * 1.2 * w; },
+  /* from Ep.4 */
+  'eye-dart':  (p, c, w) => { p.lookX += Math.sin(c * 2.6) * 2.6 * w; },
+  'tremble':   (p, c, w) => { p.x += Math.sin(c * 30) * 0.7 * w; },
+  'jump-wave': (p, c, w) => { const s = Math.abs(Math.sin(c * 7)); p.jump += w * s * 15; p.armL += Math.sin(c * 14) * 12 * w; p.armR += Math.sin(c * 14 + 1) * 12 * w; p.sy *= 1 - 0.07 * w * (1 - s); },
+  /* new in a2-charakter */
+  'type': (p, c, w) => { p.armL += Math.sin(c * 16) * 14 * w; p.armR += Math.sin(c * 16 + Math.PI) * 14 * w; p.jump += Math.abs(Math.sin(c * 16)) * 0.8 * w; p.lookY += 1.5 * w; },
+  /* new in a2-reaktionen */
+  'nod':   (p, c, w) => { const s = Math.max(0, Math.sin(c * 6)); p.sy *= 1 - 0.05 * s * w; p.lookY += 1.6 * s * w; p.browY += 1 * s * w; },
+  'shrug': (p, c, w) => { const s = ease(clamp(Math.sin(c * 2.2) * 1.2)); p.armL += 30 * s * w; p.armR += 30 * s * w; p.sy *= 1 - 0.04 * s * w; p.browY -= 2 * s * w; },
+  'wave':  (p, c, w) => { p.armR += Math.sin(c * 8) * 25 * w; p.rot += Math.sin(c * 8) * 1 * w; },
+};
+
+/* ---------- FX: { make(group, card) -> state, tick(state, clock, weight, anchors) } ---------- */
+const FX = {
+  'sparkles': {
+    make: g => Array.from({ length: 4 }, () => el('path', { d: STAR, fill: '#FFC93C', opacity: 0 }, g)),
+    tick: (s, c, w, h) => s.forEach((e, i) => {
+      const pos = [[-40, 20], [38, 8], [-30, 62], [44, 56]][i], tw = Math.abs(Math.sin(c * 3 + i * 1.3));
+      e.setAttribute('transform', `translate(${h.x + pos[0]} ${h.y + pos[1]}) scale(${(0.4 + tw * 0.8).toFixed(2)})`);
+      e.setAttribute('opacity', (w * tw).toFixed(2));
+    }),
+  },
+  'sweat': {
+    make: g => [0, 1].map(() => el('path', { d: DROP, fill: '#6FB8E6', opacity: 0 }, g)),
+    tick: (s, c, w, h) => s.forEach((d, i) => {
+      const k = (c * 0.7 + i * 0.5) % 1;
+      d.setAttribute('transform', `translate(${h.x + (i ? 27 : -27)} ${h.y + 12 + k * 16})`);
+      d.setAttribute('opacity', (w * (1 - k)).toFixed(2));
+    }),
+  },
+  'sigh-puffs': {
+    make: g => [0, 1, 2].map(() => el('circle', { r: 4, fill: '#E3E7EC', opacity: 0 }, g)),
+    tick: (s, c, w, h) => { const k = (c * 0.45) % 1; s.forEach((q, i) => {
+      const kk = clamp(k * 1.4 - i * 0.12);
+      q.setAttribute('cx', (h.x + 14 + kk * 30).toFixed(1)); q.setAttribute('cy', (h.y + 50 - kk * 10 + i * 2).toFixed(1));
+      q.setAttribute('r', Math.max(0.1, 2 + kk * 5 - i).toFixed(1)); q.setAttribute('opacity', (w * (1 - kk) * 0.9).toFixed(2));
+    }); },
+  },
+  'noise-waves': {
+    make: (g, card) => [0, 1, 2].map(() => el('path', { fill: 'none', stroke: card.style.color, 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', opacity: 0 }, g)),
+    tick: (s, c, w, h) => s.forEach((z, i) => {
+      const k = (c * 1.5 + i / 3) % 1, x = h.x - 60 - k * 8, y = h.y + 24 + i * 14;
+      z.setAttribute('d', `M${x} ${y} l4 -4 l4 4 l4 -4 l4 4`); z.setAttribute('opacity', (w * (1 - k)).toFixed(2));
+    }),
+  },
+  /* new in a2-gesundheit-zustaende */
+  'zzz': {
+    make: (g, card) => [9, 12, 15].map(size => { const t = el('text', { 'font-size': size, 'font-weight': 800, fill: card.style.color, 'font-family': FONT, opacity: 0 }, g); t.textContent = 'z'; return t; }),
+    tick: (s, c, w, h) => s.forEach((t, i) => {
+      const k = (c * 0.45 + i / 3) % 1;
+      t.setAttribute('x', (h.x + 24 + k * 16 + i * 3).toFixed(1)); t.setAttribute('y', (h.y + 8 - k * 30).toFixed(1));
+      t.setAttribute('opacity', (w * Math.sin(k * Math.PI) * (1 - yawnPhase(c))).toFixed(2));
+    }),
+  },
+  'thermometer': {
+    make: g => {
+      const t = el('g', { opacity: 0 }, g);
+      el('line', { x1: 0, y1: 0, x2: 22, y2: -8, stroke: '#9AA4B1', 'stroke-width': 5, 'stroke-linecap': 'round' }, t);
+      el('line', { x1: 0, y1: 0, x2: 22, y2: -8, stroke: '#FFFFFF', 'stroke-width': 3.2, 'stroke-linecap': 'round' }, t);
+      el('line', { x1: 1, y1: -0.4, x2: 14, y2: -5.1, stroke: '#E5484D', 'stroke-width': 1.6, 'stroke-linecap': 'round' }, t);
+      const lab = el('text', { x: 20, y: -13, 'font-size': 8.5, 'font-weight': 800, fill: '#E5484D', 'font-family': FONT }, t);
+      lab.textContent = '39°';
+      return { t, lab };
+    },
+    tick: (s, c, w, h) => {
+      s.t.setAttribute('transform', `translate(${h.x + 3} ${h.my}) rotate(${(Math.sin(c * 2) * 3).toFixed(1)})`);
+      s.t.setAttribute('opacity', w.toFixed(2)); s.lab.setAttribute('opacity', (0.6 + 0.4 * Math.abs(Math.sin(c * 3))).toFixed(2));
+    },
+  },
+  'sneeze': {
+    make: (g, card) => {
+      const txt = el('text', { 'font-size': 11, 'font-weight': 800, fill: card.style.color, 'font-family': FONT, 'text-anchor': 'middle', opacity: 0 }, g);
+      txt.textContent = 'Hatschi!';
+      const drops = Array.from({ length: 5 }, () => el('circle', { r: 1.4, fill: '#8FC3E6', opacity: 0 }, g));
+      return { txt, drops };
+    },
+    tick: (s, c, w, h) => {
+      const { burst } = sneezePhase(c);
+      s.txt.setAttribute('opacity', (burst > 0 ? w * (1 - burst * 0.5) : 0).toFixed(2));
+      s.txt.setAttribute('transform', `translate(${h.x + 34} ${h.y + 4 - burst * 8}) scale(${(0.7 + burst * 0.5).toFixed(2)})`);
+      s.drops.forEach((d, i) => {
+        d.setAttribute('cx', (h.x + 10 + burst * 26 * (1 + i * 0.18)).toFixed(1));
+        d.setAttribute('cy', (h.my + (i - 2) * 3 * burst + burst * burst * 8).toFixed(1));
+        d.setAttribute('opacity', (burst > 0 ? w * (1 - burst) : 0).toFixed(2));
+      });
+    },
+  },
+  'snowflakes': {
+    make: g => Array.from({ length: 18 }, () => el('circle', { r: 1.7, fill: '#FFFFFF', stroke: '#9CC3E6', 'stroke-width': 0.6, opacity: 0 }, g)),
+    tick: (s, c, w) => s.forEach((f, i) => {
+      const y = (fr(i, 2) * 220 + c * 14 * (0.8 + fr(i, 3) * 0.4)) % 220 - 10, x = fr(i, 1) * 200 + Math.sin(c + i) * 4;
+      f.setAttribute('cx', x.toFixed(1)); f.setAttribute('cy', y.toFixed(1)); f.setAttribute('opacity', (w * 0.95).toFixed(2));
+    }),
+  },
+  'swirl': {
+    make: (g, card) => {
+      let d = ''; for (let i = 0; i <= 40; i++) { const a = i * 0.42, r = 1 + i * 0.32; d += (i ? 'L' : 'M') + (Math.cos(a) * r).toFixed(2) + ' ' + (Math.sin(a) * r * 0.55).toFixed(2); }
+      return el('path', { d, fill: 'none', stroke: card.style.color, 'stroke-width': 1.8, 'stroke-linecap': 'round', opacity: 0 }, g);
+    },
+    tick: (s, c, w, h) => { s.setAttribute('transform', `translate(${h.x} ${h.y - 10}) rotate(${(c * 160 % 360).toFixed(1)})`); s.setAttribute('opacity', w.toFixed(2)); },
+  },
+  /* from Ep.4 */
+  'scribble': {
+    make: g => el('path', { fill: 'none', stroke: '#3A2420', 'stroke-width': 1.6, 'stroke-linecap': 'round', opacity: 0 }, g),
+    tick: (s, c, w, h) => { let d = ''; for (let i = 0; i < 14; i++) { const a = i * 0.9 + c * 6, r = 4 + i * 0.9; d += (i ? 'L' : 'M') + (h.x + Math.cos(a) * r * 1.3).toFixed(1) + ' ' + (h.y - 14 + Math.sin(a) * r * 0.5).toFixed(1); }
+      s.setAttribute('d', d); s.setAttribute('opacity', w.toFixed(2)); },
+  },
+  'paper-orbit': {
+    make: g => Array.from({ length: 4 }, () => { const q = el('g', { opacity: 0 }, g);
+      el('rect', { x: -5, y: -6, width: 10, height: 12, rx: 1, fill: '#fff', stroke: '#C9CED6' }, q);
+      el('line', { x1: -3, y1: -2, x2: 3, y2: -2, stroke: '#C9CED6' }, q); el('line', { x1: -3, y1: 1, x2: 3, y2: 1, stroke: '#C9CED6' }, q); return q; }),
+    tick: (s, c, w, h) => s.forEach((q, i) => { const a = c * 1.6 + i * Math.PI / 2;
+      q.setAttribute('transform', `translate(${(h.x + Math.cos(a) * 50).toFixed(1)} ${(h.y + 38 + Math.sin(a) * 20).toFixed(1)}) rotate(${((c * 90 + i * 40) % 360).toFixed(1)})`);
+      q.setAttribute('opacity', w.toFixed(2)); }),
+  },
+  'sweat-fly': {
+    make: g => el('path', { d: DROP, fill: '#6FB8E6', opacity: 0 }, g),
+    tick: (s, c, w, h) => { const k = (c * 0.6) % 1;
+      s.setAttribute('transform', `translate(${(h.x - 26 - k * 14).toFixed(1)} ${(h.y + 10 - k * 8 + k * k * 30).toFixed(1)}) rotate(${(-k * 60).toFixed(1)})`);
+      s.setAttribute('opacity', (w * (1 - k)).toFixed(2)); },
+  },
+  /* new in a2-charakter */
+  'haha': {
+    make: (g, card) => [0, 1, 2].map(() => { const t = el('text', { 'font-size': 11, 'font-weight': 800, fill: card.style.color, 'font-family': FONT, 'text-anchor': 'middle', opacity: 0 }, g); t.textContent = 'ha'; return t; }),
+    tick: (s, c, w, h) => s.forEach((t, i) => {
+      const pos = [[34, 10], [-38, 16], [40, 32]][i], k = (c * 1.2 + i / 3) % 1;
+      t.setAttribute('transform', `translate(${h.x + pos[0]} ${(h.y + pos[1] - k * 6).toFixed(1)}) scale(${(0.8 + 0.4 * k).toFixed(2)}) rotate(${(i - 1) * 12})`);
+      t.setAttribute('opacity', (w * Math.sin(k * Math.PI)).toFixed(2));
+    }),
+  },
+  /* new in a2-reaktionen */
+  'question': {
+    make: (g, card) => [0, 1].map(() => { const t = el('text', { 'text-anchor': 'middle', 'font-size': 18, 'font-weight': 800, fill: card.style.color, 'font-family': FONT, opacity: 0 }, g); t.textContent = '?'; return t; }),
+    tick: (s, c, w, h) => s.forEach((t, i) => { const k = (c * 0.7 + i * 0.5) % 1, sc = k < 0.25 ? backOut(k / 0.25) : 1;
+      t.setAttribute('transform', `translate(${(h.x + (i ? -30 : 32)).toFixed(1)} ${(h.y + (i ? 10 : 2)).toFixed(1)}) scale(${(Math.max(0.01, sc) * (i ? 0.8 : 1)).toFixed(2)})`);
+      t.setAttribute('opacity', (w * (k < 0.85 ? 1 : (1 - k) / 0.15)).toFixed(2)); }),
+  },
+  /* preview drawings of ids the firmware already has (Ep.4), so the preview shows them */
+  'exclamation': {
+    make: (g, card) => { const t = el('text', { 'text-anchor': 'middle', 'font-size': 22, 'font-weight': 800, fill: card.style.color, 'font-family': FONT, opacity: 0 }, g); t.textContent = '!'; return t; },
+    tick: (t, c, w, h) => { const k = (c * 0.8) % 1, sc = k < 0.2 ? backOut(k / 0.2) : 1;
+      t.setAttribute('transform', `translate(${(h.x + 30).toFixed(1)} ${(h.y + 6).toFixed(1)}) scale(${Math.max(0.01, sc).toFixed(2)})`); t.setAttribute('opacity', (w * (k < 0.85 ? 1 : (1 - k) / 0.15)).toFixed(2)); },
+  },
+  'confetti': {
+    make: g => Array.from({ length: 14 }, (_, i) => el('rect', { width: 4, height: 2.4, rx: 0.8, fill: ['#E5484D', '#F2C14E', '#4BA3D9', '#5E9E45', '#9C7AD6'][i % 5], opacity: 0 }, g)),
+    tick: (s, c, w) => s.forEach((r, i) => { const y = (fr(i, 2) * 200 + c * 30 * (0.7 + fr(i, 3) * 0.6)) % 200, x = fr(i, 1) * 200 + Math.sin(c * 2 + i) * 6;
+      r.setAttribute('transform', `translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${((c * 200 + i * 40) % 360).toFixed(0)})`); r.setAttribute('opacity', (w * 0.95).toFixed(2)); }),
+  },
+};
+
+/* ---------- BUBBLE: draw(group) at origin, inside about ±28 × ±22 ---------- */
+const BUBBLE = {
+  'bed': g => {
+    el('rect', { x: -27, y: -18, width: 6, height: 30, rx: 2, fill: '#8C5B3A' }, g);
+    el('rect', { x: -24, y: 2, width: 50, height: 8, rx: 2, fill: '#8C5B3A' }, g);
+    el('rect', { x: -21, y: -6, width: 46, height: 9, rx: 3, fill: '#EFE8DC' }, g);
+    el('ellipse', { cx: -13, cy: -8, rx: 7, ry: 4, fill: '#FFFFFF', stroke: '#D7CBB8' }, g);
+    el('path', { d: 'M-5 -11 Q10 -14 25 -9 L25 2 L-5 2 Z', fill: '#8FB3D9' }, g);
+    const z = el('text', { x: 10, y: -14, 'font-size': 10, 'font-weight': 800, fill: '#6B5FA8', 'font-family': FONT }, g); z.textContent = 'z';
+  },
+  'coffee-cups': g => [-12, 12].forEach(x => {
+    el('path', { d: `M${x - 8} -4 L${x + 8} -4 L${x + 6.5} 12 L${x - 6.5} 12 Z`, fill: '#FFFFFF', stroke: '#C9D3DE' }, g);
+    el('rect', { x: x - 7.3, y: -3.5, width: 14.6, height: 3, fill: '#6B3E22' }, g);
+    el('path', { d: `M${x + 7.5} -1 q5 0 5 4 q0 4 -5.6 4`, fill: 'none', stroke: '#C9D3DE', 'stroke-width': 1.6 }, g);
+    el('path', { d: `M${x - 2} -8 q-3 -4 0 -8 M${x + 3} -8 q-3 -4 0 -8`, fill: 'none', stroke: '#C9D3DE', 'stroke-width': 1.5, 'stroke-linecap': 'round' }, g);
+  }),
+  'brezel': g => {
+    el('path', { d: 'M-15 9 C-26 0 -21 -15 -8 -14 C1 -13 4 -3 0 5 C-4 -3 -1 -13 8 -14 C21 -15 26 0 15 9 M-15 9 Q0 2 15 9', fill: 'none', stroke: '#A55A1F', 'stroke-width': 5.5, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, g);
+    [[-16, -5], [-7, -11], [7, -11], [16, -5], [0, 6], [-10, 5], [10, 5]].forEach(([x, y]) => el('circle', { cx: x, cy: y, r: 0.9, fill: '#FFFFFF' }, g));
+  },
+  'water-glass': g => {
+    el('path', { d: 'M-11 -16 L11 -16 L8 15 L-8 15 Z', fill: '#EEF7FD', stroke: '#9CC3E6', 'stroke-width': 1.4 }, g);
+    el('path', { d: 'M-9.5 -2 L9.5 -2 L8 15 L-8 15 Z', fill: '#7DB8E2' }, g);
+    el('path', { d: DROP, fill: '#7DB8E2', transform: 'translate(19 -8) scale(1.2)' }, g);
+  },
+  'plate-empty': g => {
+    el('ellipse', { cx: 0, cy: 4, rx: 25, ry: 10, fill: '#FFFFFF', stroke: '#C9CED6' }, g);
+    el('ellipse', { cx: 0, cy: 4, rx: 15, ry: 5.5, fill: 'none', stroke: '#E3E7EC' }, g);
+    [[-6, 3], [4, 6], [8, 2]].forEach(([x, y]) => el('circle', { cx: x, cy: y, r: 1.2, fill: '#C8955A' }, g));
+    el('path', { d: 'M-7 -12 L-2 -7 L8 -17', fill: 'none', stroke: '#3E8E2F', 'stroke-width': 3, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, g);
+  },
+  'pills': g => {
+    const cap = (x, y, r, a, b) => { const q = el('g', { transform: `translate(${x} ${y}) rotate(${r})` }, g);
+      el('rect', { x: -12, y: -5, width: 24, height: 10, rx: 5, fill: b }, q); el('rect', { x: -12, y: -5, width: 12, height: 10, rx: 5, fill: a }, q); el('rect', { x: -6, y: -5, width: 6, height: 10, fill: a }, q); };
+    cap(-8, -6, -25, '#E5484D', '#FFFFFF'); cap(9, 7, 20, '#4BA3D9', '#FFFFFF');
+    el('circle', { cx: 14, cy: -10, r: 6, fill: '#FFFFFF', stroke: '#C9D3DE' }, g); el('line', { x1: 9, y1: -10, x2: 19, y2: -10, stroke: '#C9D3DE' }, g);
+  },
+  'apple': g => {
+    el('circle', { cx: -6, cy: 3, r: 12, fill: '#E5484D' }, g); el('circle', { cx: 6, cy: 3, r: 12, fill: '#E5484D' }, g);
+    el('path', { d: 'M0 -9 Q1 -16 4 -18', fill: 'none', stroke: '#6B4423', 'stroke-width': 2, 'stroke-linecap': 'round' }, g);
+    el('ellipse', { cx: 9, cy: -14, rx: 6, ry: 3, fill: '#5E9E45', transform: 'rotate(-25 9 -14)' }, g);
+    el('ellipse', { cx: -9, cy: -2, rx: 3, ry: 5, fill: '#FFFFFF', opacity: 0.35 }, g);
+  },
+  'tissues': g => {
+    el('path', { d: 'M-5 -2 C-9 -12 -3 -18 0 -13 C3 -19 10 -13 6 -2 Z', fill: '#FFFFFF', stroke: '#C9D3DE' }, g);
+    el('rect', { x: -18, y: -3, width: 36, height: 18, rx: 2, fill: '#8FB3D9' }, g);
+    el('ellipse', { cx: 0, cy: -3, rx: 8, ry: 2, fill: '#6F93BA' }, g);
+    el('path', { d: 'M-18 9 L18 9', stroke: '#7AA0C9', 'stroke-width': 1.2 }, g);
+  },
+  'bike': g => {
+    [-14, 14].forEach(x => el('circle', { cx: x, cy: 6, r: 9, fill: 'none', stroke: '#3A4554', 'stroke-width': 2.2 }, g));
+    el('path', { d: 'M-14 6 L-3 6 L6 -6 L-6 -6 Z M-3 6 L-8 -10 M6 -6 L14 6 M5 -9 L9 -12', fill: 'none', stroke: '#D9532F', 'stroke-width': 2.4, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }, g);
+    el('line', { x1: -11, y1: -10, x2: -5, y2: -10, stroke: '#3A4554', 'stroke-width': 2.6, 'stroke-linecap': 'round' }, g);
+  },
+  'window-open': g => {
+    el('rect', { x: -20, y: -18, width: 26, height: 34, fill: '#CFE8F7', stroke: '#9AA4B1', 'stroke-width': 2 }, g);
+    el('path', { d: 'M6 -18 L20 -12 L20 22 L6 16 Z', fill: '#EAF5FC', stroke: '#9AA4B1', 'stroke-width': 2 }, g);
+    el('path', { d: 'M-16 -6 q5 -3 10 0 t10 0 M-16 4 q5 -3 10 0 t10 0', fill: 'none', stroke: '#FFFFFF', 'stroke-width': 1.8, 'stroke-linecap': 'round' }, g);
+    el('path', { d: 'M-8 -12 v8 M-12 -8 h8 M-11 -11 l6 6 M-11 -5 l6 -6', stroke: '#7DB8E2', 'stroke-width': 1.3, 'stroke-linecap': 'round' }, g);
+  },
+  'heater': g => {
+    for (let i = 0; i < 5; i++) el('rect', { x: -19 + i * 8, y: -6, width: 6.5, height: 22, rx: 3, fill: '#E3E7EC', stroke: '#B5BDC8' }, g);
+    el('path', { d: 'M-10 -9 q-3 -4 0 -8 t0 -8 M0 -9 q-3 -4 0 -8 t0 -8 M10 -9 q-3 -4 0 -8 t0 -8', fill: 'none', stroke: '#F28C28', 'stroke-width': 1.8, 'stroke-linecap': 'round' }, g);
+  },
+  'cake': g => {
+    el('line', { x1: -24, y1: 14, x2: 24, y2: 14, stroke: '#C9CED6', 'stroke-width': 2, 'stroke-linecap': 'round' }, g);
+    el('path', { d: 'M-18 12 L18 12 L18 -2 L-18 -10 Z', fill: '#F6D7A7', stroke: '#D9B27A' }, g);
+    el('path', { d: 'M-18 2 L18 6', stroke: '#F2A0B4', 'stroke-width': 2.4 }, g);
+    el('path', { d: 'M-18 -10 L18 -2', stroke: '#FFFFFF', 'stroke-width': 3, 'stroke-linecap': 'round' }, g);
+    el('circle', { cx: 4, cy: -9, r: 4, fill: '#E5484D' }, g);
+  },
+  /* from Ep.4 */
+  'clock-late': g => {
+    el('circle', { r: 15, fill: '#fff', stroke: '#3A4554', 'stroke-width': 2 }, g);
+    el('line', { x1: 0, y1: 0, x2: 0, y2: -10, stroke: '#3A4554', 'stroke-width': 2.4, 'stroke-linecap': 'round' }, g);
+    el('line', { x1: 0, y1: 0, x2: 8, y2: 4, stroke: '#D23A2E', 'stroke-width': 2.4, 'stroke-linecap': 'round' }, g);
+    const t = el('text', { x: 19, y: -5, 'font-size': 16, 'font-weight': 800, fill: '#D23A2E', 'font-family': FONT }, g); t.textContent = '!';
+  },
+  /* new in a2-charakter */
+  'clock-ok': g => {
+    el('circle', { cx: -4, r: 15, fill: '#fff', stroke: '#3A4554', 'stroke-width': 2 }, g);
+    el('line', { x1: -4, y1: 0, x2: -4, y2: -10, stroke: '#3A4554', 'stroke-width': 2.4, 'stroke-linecap': 'round' }, g);
+    el('line', { x1: -4, y1: 0, x2: -4, y2: 9, stroke: '#3A4554', 'stroke-width': 2.4, 'stroke-linecap': 'round' }, g);
+    el('path', { d: 'M12 -2 L16 3 L24 -8', fill: 'none', stroke: '#3E8E2F', 'stroke-width': 3, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, g);
+  },
+  'books': g => {
+    [['#2F7DB8', -20, 22], ['#E5484D', -12, 20], ['#F2C14E', -4, 24]].forEach(([c, y, w]) => el('rect', { x: -w / 2, y, width: w, height: 7, rx: 1.5, fill: c }, g));
+    el('rect', { x: -14, y: 4, width: 28, height: 8, rx: 1.5, fill: '#5E9E45' }, g);
+    el('path', { d: 'M8 -22 L22 -22 L22 2 L15 -3 L8 2 Z', fill: '#fff', stroke: '#9AA4B1', transform: 'translate(2 0)' }, g);
+  },
+  'sofa': g => {
+    el('rect', { x: -24, y: -10, width: 48, height: 16, rx: 6, fill: '#B07A4E' }, g);
+    el('rect', { x: -28, y: -2, width: 10, height: 16, rx: 4, fill: '#C88D5E' }, g); el('rect', { x: 18, y: -2, width: 10, height: 16, rx: 4, fill: '#C88D5E' }, g);
+    el('rect', { x: -19, y: 2, width: 38, height: 10, rx: 3, fill: '#D9A374' }, g);
+    el('rect', { x: -24, y: 13, width: 4, height: 5, fill: '#6B4423' }, g); el('rect', { x: 20, y: 13, width: 4, height: 5, fill: '#6B4423' }, g);
+  },
+  'shelf': g => {
+    el('rect', { x: -24, y: -20, width: 48, height: 38, rx: 2, fill: 'none', stroke: '#8C5B3A', 'stroke-width': 2.4 }, g);
+    el('line', { x1: -24, y1: -1, x2: 24, y2: -1, stroke: '#8C5B3A', 'stroke-width': 2.4 }, g);
+    ['#2F7DB8', '#E5484D', '#F2C14E', '#5E9E45', '#9C7AD6'].forEach((c, i) => el('rect', { x: -20 + i * 6, y: -15, width: 5, height: 13, fill: c }, g));
+    el('rect', { x: 6, y: 5, width: 14, height: 10, rx: 1.5, fill: '#C9976A' }, g); el('circle', { cx: -12, cy: 10, r: 5, fill: '#5E9E45' }, g);
+  },
+  'keys': g => {
+    el('circle', { cx: -10, cy: -4, r: 8, fill: 'none', stroke: '#E0A526', 'stroke-width': 3 }, g);
+    el('path', { d: 'M-3 0 L18 10 M12 7 L10 12 M16 9 L14 14', fill: 'none', stroke: '#E0A526', 'stroke-width': 3, 'stroke-linecap': 'round' }, g);
+    const q = el('text', { x: 10, y: -8, 'font-size': 14, 'font-weight': 800, fill: '#C2553A', 'font-family': FONT }, g); q.textContent = '?';
+  },
+  'joke': g => {
+    el('path', { d: 'M-22 -16 h44 a6 6 0 0 1 6 6 v14 a6 6 0 0 1 -6 6 h-30 l-8 8 v-8 h-6 a6 6 0 0 1 -6 -6 v-14 a6 6 0 0 1 6 -6 z', fill: '#FFEBCB', stroke: '#D9820F', 'stroke-width': 1.4 }, g);
+    const t = el('text', { x: 0, y: 1, 'font-size': 11, 'font-weight': 800, fill: '#D9820F', 'font-family': FONT, 'text-anchor': 'middle' }, g); t.textContent = 'Witz!';
+  },
+  'tie': g => {
+    el('path', { d: 'M-16 -18 L0 -8 L16 -18 L16 18 L-16 18 Z', fill: '#4A5875' }, g);
+    el('path', { d: 'M-5 -12 L5 -12 L3 -6 L6 14 L0 19 L-6 14 L-3 -6 Z', fill: '#C2415A' }, g);
+    el('path', { d: 'M-16 -18 L0 -8 L-6 -2 Z M16 -18 L0 -8 L6 -2 Z', fill: '#fff' }, g);
+  },
+  'book': g => {
+    el('path', { d: 'M0 -12 C-8 -16 -18 -16 -24 -12 L-24 14 C-18 10 -8 10 0 14 Z', fill: '#fff', stroke: '#5B7FB0', 'stroke-width': 1.6 }, g);
+    el('path', { d: 'M0 -12 C8 -16 18 -16 24 -12 L24 14 C18 10 8 10 0 14 Z', fill: '#fff', stroke: '#5B7FB0', 'stroke-width': 1.6 }, g);
+    [-6, -1, 4].forEach(y => { el('line', { x1: -19, y1: y, x2: -5, y2: y - 1, stroke: '#C9D3DE' }, g); el('line', { x1: 5, y1: y - 1, x2: 19, y2: y, stroke: '#C9D3DE' }, g); });
+  },
+  'speaker': g => {
+    el('rect', { x: -14, y: -18, width: 22, height: 36, rx: 4, fill: '#3A4554' }, g);
+    el('circle', { cx: -3, cy: 6, r: 7, fill: '#59606C' }, g); el('circle', { cx: -3, cy: -9, r: 4, fill: '#59606C' }, g);
+    el('path', { d: 'M13 -8 q5 8 0 16 M18 -13 q8 13 0 26', fill: 'none', stroke: '#C23D7A', 'stroke-width': 2, 'stroke-linecap': 'round' }, g);
+  },
+  'handshake': g => {
+    el('path', { d: 'M-26 -2 L-10 -10 L4 -4 L-6 4 Z', fill: '#F3C9A2', stroke: '#C99A75' }, g);
+    el('path', { d: 'M26 -2 L10 -10 L-4 -2 L2 8 L10 4 Z', fill: '#E2B48A', stroke: '#B88A62' }, g);
+    el('rect', { x: -30, y: -6, width: 7, height: 12, rx: 2, fill: '#4A7FB0' }, g); el('rect', { x: 23, y: -6, width: 7, height: 12, rx: 2, fill: '#D9532F' }, g);
+    el('path', { d: 'M0 -18 C-3 -22 -8 -20 -6 -16 L0 -11 L6 -16 C8 -20 3 -22 0 -18 Z', fill: '#F06C8B' }, g);
+  },
+  'friends': g => {
+    [[-14, '#E5484D'], [0, '#F2C14E'], [14, '#4BA3D9']].forEach(([x, c], i) => {
+      el('circle', { cx: x, cy: -8 + (i === 1 ? -3 : 0), r: 6, fill: '#F3C9A2' }, g);
+      el('path', { d: `M${x - 8} 16 Q${x - 8} ${i === 1 ? -2 : 1} ${x} ${i === 1 ? -2 : 1} Q${x + 8} ${i === 1 ? -2 : 1} ${x + 8} 16 Z`, fill: c }, g);
+    });
+  },
+  /* new in a2-reaktionen */
+  'lightbulb': g => {
+    el('circle', { cy: -6, r: 12, fill: '#FFE27A', stroke: '#E0B020', 'stroke-width': 1.6 }, g);
+    el('rect', { x: -6, y: 5, width: 12, height: 8, rx: 2, fill: '#9AA4B1' }, g);
+    el('path', { d: 'M-3 -6 L0 0 L3 -6', fill: 'none', stroke: '#E0B020', 'stroke-width': 1.4 }, g);
+    [[-20, -14, -26, -18], [20, -14, 26, -18], [0, -24, 0, -30], [-18, 2, -24, 3], [18, 2, 24, 3]].forEach(([a, b, c2, d]) => el('line', { x1: a, y1: b, x2: c2, y2: d, stroke: '#F2C14E', 'stroke-width': 2, 'stroke-linecap': 'round' }, g));
+  },
+  'soup': g => {
+    el('path', { d: 'M-22 -2 L22 -2 Q20 18 0 18 Q-20 18 -22 -2 Z', fill: '#FFFFFF', stroke: '#C9CED6', 'stroke-width': 1.6 }, g);
+    el('ellipse', { cy: -2, rx: 22, ry: 4, fill: '#F6C356' }, g);
+    [[-8, -2], [6, -3]].forEach(([x, y]) => el('circle', { cx: x, cy: y, r: 2, fill: '#E5873A' }, g));
+    el('path', { d: 'M-8 -10 q-3 -4 0 -8 M0 -10 q-3 -4 0 -8 M8 -10 q-3 -4 0 -8', fill: 'none', stroke: '#C9D3DE', 'stroke-width': 1.8, 'stroke-linecap': 'round' }, g);
+  },
+  'flowers': g => {
+    el('path', { d: 'M-6 18 L-2 -4 M2 18 L4 -8 M8 18 L12 -2', stroke: '#5E9E45', 'stroke-width': 2, 'stroke-linecap': 'round' }, g);
+    [[-2, -6, '#F06C8B'], [4, -12, '#F2C14E'], [12, -5, '#9C7AD6']].forEach(([x, y, c2]) => { [0, 72, 144, 216, 288].forEach(a => el('ellipse', { cx: x, cy: y - 3.2, rx: 2.4, ry: 3.4, fill: c2, transform: `rotate(${a} ${x} ${y})` }, g)); el('circle', { cx: x, cy: y, r: 2, fill: '#FFF1C4' }, g); });
+    el('path', { d: 'M-12 8 L18 8 L10 20 L-4 20 Z', fill: '#BFE3F2', stroke: '#7FA6C4', 'stroke-width': 1.4, 'stroke-linejoin': 'round' }, g);
+  },
+  'clover': g => {
+    [0, 90, 180, 270].forEach(a => el('path', { d: 'M0 0 C-3 -6 -12 -8 -10 -14 C-8 -19 -2 -17 0 -12 C2 -17 8 -19 10 -14 C12 -8 3 -6 0 0 Z', fill: '#5E9E45', transform: `rotate(${a}) translate(0 -1)` }, g));
+    el('path', { d: 'M2 4 Q6 14 12 18', fill: 'none', stroke: '#3E7A2F', 'stroke-width': 2.2, 'stroke-linecap': 'round' }, g);
+  },
+};
+
+/* ---------- one card's animation, as the device plays it ---------- */
+const DUR = 7.4, B0 = 2.8;            /* loop length, bubble appears at B0 */
+const STAGE = { x: 90, y: 166 };       /* feet position on the 200 × 200 disc */
+const SCALE = 1.16;                    /* character + effects, scaled around the feet */
+
+class KnoedelScene {
+  constructor(svg, card) {
+    svg.innerHTML = '';
+    this.card = card; this.anim = card.anim || {};
+    const id = 'c' + Math.random().toString(36).slice(2, 8);
+    const clip = el('clipPath', { id }, el('defs', {}, svg)); el('circle', { cx: 100, cy: 100, r: 100 }, clip);
+    const root = el('g', { 'clip-path': `url(#${id})` }, svg);
+    el('rect', { x: 0, y: 0, width: 200, height: 200, fill: card.style.background }, root);
+    [[38, 46, 22], [168, 150, 32], [160, 30, 12]].forEach(([cx, cy, r]) => el('circle', { cx, cy, r, fill: '#FFFFFF', opacity: 0.35 }, root));
+    const charG = el('g', { transform: `translate(${STAGE.x} ${STAGE.y}) scale(${SCALE}) translate(${-STAGE.x} ${-STAGE.y})` }, root);
+    this.shadow = el('ellipse', { cx: STAGE.x, cy: STAGE.y + 1, rx: 30, ry: 4.5, fill: '#000', opacity: 0.08 }, charG);
+    this.kn = makeKnoedel(charG);
+    const fxg = el('g', {}, charG);
+    this.fx = (this.anim.fx || []).map(f => FX[f] ? { def: FX[f], s: FX[f].make(fxg, card) } : null).filter(Boolean);
+    this.missing = [...(this.anim.motion || []).filter(m => !MOTION[m]), ...(this.anim.fx || []).filter(f => !FX[f])];
+    this.bub = el('g', { opacity: 0 }, root);
+    if (this.anim.bubble && BUBBLE[this.anim.bubble]) {
+      el('circle', { cx: 132, cy: 84, r: 3.5, fill: '#fff' }, this.bub); el('circle', { cx: 125, cy: 92, r: 2.2, fill: '#fff' }, this.bub);
+      this.bubIn = el('g', {}, this.bub);
+      el('rect', { x: -32, y: -27, width: 64, height: 52, rx: 16, fill: '#fff' }, this.bubIn);
+      BUBBLE[this.anim.bubble](el('g', { transform: 'scale(0.85)' }, this.bubIn));
+    }
+    const target = Object.assign({}, N0, STAGE, this.anim.pose || {});
+    const neutral = Object.assign({}, N0, STAGE);
+    this.kf = [[0, neutral], [0.5, neutral], [1.1, target], [DUR - 0.6, target], [DUR, neutral]];
+  }
+  pose(t) {
+    const kf = this.kf;
+    for (let i = 0; i < kf.length - 1; i++) {
+      const [t0, p0] = kf[i], [t1, p1] = kf[i + 1];
+      if (t < t1) { const u = ease(clamp((t - t0) / (t1 - t0))), o = {}; for (const k in p0) o[k] = p0[k] + (p1[k] - p0[k]) * u; return o; }
+    }
+    return Object.assign({}, kf[kf.length - 1][1]);
+  }
+  render(t, c) {
+    const p = this.pose(t);
+    const w = clamp((t - 0.9) / 0.4) * clamp((DUR - 0.35 - t) / 0.45);
+    (this.anim.motion || []).forEach(m => MOTION[m] && MOTION[m](p, c, w));
+    const col = this.anim.tint && p.tint > 0 ? mixC(KN.base, this.anim.tint, p.tint * 0.6) : KN.base;
+    drawKn(this.kn, p, col);
+    this.shadow.setAttribute('cx', p.x.toFixed(1)); this.shadow.setAttribute('rx', (30 * p.sx - p.jump * 0.4).toFixed(1));
+    const h = anchors(p);
+    this.fx.forEach(f => f.def.tick(f.s, c, w, h));
+    if (this.bubIn) {
+      let b = clamp((t - B0 - 0.1) / 0.35) * clamp((DUR - 0.6 - t) / 0.3);
+      this.bub.setAttribute('opacity', Math.min(1, b * 1.5).toFixed(2));
+      this.bubIn.setAttribute('transform', `translate(160 ${(50 + Math.sin(c * 2) * 1.5).toFixed(1)}) scale(${Math.max(0.01, b < 1 ? backOut(b) : 1).toFixed(3)})`);
+    }
+  }
+}
+
+const PROP = {};          /* Knödel holds nothing yet */
+var Scene = KnoedelScene; /* the player instantiates Scene */
+
+
+const LOCALE_NAMES = { 'zh-Hans': '中文', 'en': 'English' };
+let locale = SHOWCASE && DECK.locales.includes('en') ? 'en' : DECK.locales[0];
+if (!SHOWCASE) { try { const s = localStorage.getItem('preview-locale'); if (DECK.locales.includes(s)) locale = s; } catch (e) {} }
+
+const esc = s => s.replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
+const strip = s => s.replace(/\{\{([^}|]*)(\|[a-z]+)?\}\}/g, '$1');
+function markup(s) {
+  return esc(s).replace(/\{\{([^}|]*)(?:\|([a-z]+))?\}\}/g, (m, text, role) => {
+    if (role === 'prefix') return `<span style="color:${THEME.dark.prefix};font-weight:700">${text}</span>`;
+    if (role === 'refl') return `<span style="color:${THEME.dark.refl};font-weight:700">${text}</span>`;
+    if (role) return text;
+    return `<span class="kw">${text}</span>`;
+  });
+}
+/* same rules as tools/deckfmt.py: grammar_line() and face3_pattern() */
+function grammarLine(c) {
+  if (c.verb) {
+    const aux = c.verb.perfekt.aux === 'sein' ? 'ist' : 'hat';
+    return `${markup(c.verb.praeteritum)} · <span style="color:${THEME.dark.aux[c.verb.perfekt.aux]};font-weight:800">${aux}</span> ${markup(c.verb.perfekt.rest)}`;
+  }
+  if (c.noun) return c.noun.plural ? `die ${esc(c.noun.plural).replace(/\{\{([^}|]*)\|pl\}\}/g, (m, t) => `<span style="color:${THEME.dark.gender[c.noun.article]};font-weight:800;text-decoration:underline;text-underline-offset:3px">${t}</span>`)}` : null;
+  if (c.pattern) return pill(c.pattern);
+  return null;
+}
+const face3Pattern = c => (c.verb || c.noun) && c.pattern ? c.pattern : null;
+function pill(p) {
+  const chip = p.case ? `<span class="chip" style="color:${THEME.light.case[p.case]}">+ ${p.case}</span>` : '';
+  return `<span class="pill">${esc(p.text)}${chip}</span>`;
+}
+function missing(c) {
+  const a = c.anim || {}, out = [], REGISTRY = REGISTRIES[a.character || DECK.character];
+  Object.keys(a.pose || {}).forEach(k => { if (!(k in REGISTRY.pose)) out.push('pose:' + k); });
+  (a.motion || []).forEach(m => { if (!REGISTRY.motion.includes(m)) out.push('motion:' + m); });
+  (a.fx || []).forEach(f => { if (!REGISTRY.fx.includes(f)) out.push('fx:' + f); });
+  (a.props || []).forEach(x => { if (!(REGISTRY.prop || []).includes(x)) out.push('prop:' + x); });
+  if (a.bubble && !REGISTRY.bubble.includes(a.bubble)) out.push('bubble:' + a.bubble);
+  return out;
+}
+
+function ringSvg(index, total) {
+  let s = '<svg class="ring" viewBox="0 0 100 100" aria-hidden="true">';
+  const step = 360 / total, gap = Math.min(8, step * 0.3);
+  for (let i = 0; i < total; i++) {
+    const a0 = (-90 + i * step + gap / 2) * Math.PI / 180, a1 = (-90 + (i + 1) * step - gap / 2) * Math.PI / 180, r = 47;
+    const x0 = 50 + r * Math.cos(a0), y0 = 50 + r * Math.sin(a0), x1 = 50 + r * Math.cos(a1), y1 = 50 + r * Math.sin(a1);
+    const on = i === index;
+    s += `<path d="M${x0.toFixed(2)} ${y0.toFixed(2)} A${r} ${r} 0 0 1 ${x1.toFixed(2)} ${y1.toFixed(2)}" fill="none" stroke="${on ? 'var(--c)' : 'var(--ring)'}" stroke-width="${on ? 2.4 : 1.3}" stroke-linecap="round" opacity="${on ? 1 : 0.75}"/>`;
+  }
+  return s + '</svg>';
+}
+
+document.getElementById('title').textContent = DECK.title.de;
+document.getElementById('meta').textContent = SHOWCASE
+  ? `${DECK.title.en || ''} · ${DECK.level.replace('-', '–')} · ${DECK.cards.length} cards · Knödel Watch`
+  : `${DECK.title[locale] || ''} · ${DECK.level} · 第 ${DECK.episode || '–'} 期 · ${DECK.cards.length} 张卡 · ${DECK.review?.status || 'draft'}`;
+if (SHOWCASE) {
+  document.documentElement.lang = 'en';
+  document.getElementById('locales').setAttribute('aria-label', 'Translation');
+  document.getElementById('hint').textContent = 'Every round screen is one card as it plays on the watch. Click a card to turn it: the word, then an example, then a tip.';
+}
+
+const seg = document.getElementById('locales');
+DECK.locales.forEach(l => {
+  const b = document.createElement('button'); b.type = 'button'; b.textContent = LOCALE_NAMES[l] || l; b.dataset.l = l;
+  b.addEventListener('click', () => { locale = l; try { localStorage.setItem('preview-locale', l); } catch (e) {} renderText(); });
+  seg.appendChild(b);
+});
+
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const grid = document.getElementById('grid'), items = [];
+DECK.cards.forEach((c, i) => {
+  const item = document.createElement('div'); item.className = 'item';
+  const dev = document.createElement('div'); dev.className = 'dev'; dev.tabIndex = 0; dev.setAttribute('role', 'button');
+  dev.style.setProperty('--c', c.style.color);
+  const headLen = (c.noun ? c.noun.article.length + 1 : 0) + strip(c.headword).length;
+  const article = c.noun ? `<span style="color:${THEME.dark.gender[c.noun.article]}">${c.noun.article}</span> ` : '';
+  dev.innerHTML = ringSvg(i, DECK.cards.length) + `
+    <div class="face f1"><svg class="disc" viewBox="0 0 200 200" aria-hidden="true"></svg>
+      <div class="lead de">${esc(c.lead || '')}</div><div class="head de" style="${headLen > 14 ? `font-size:${(9.5 * 14 / headLen).toFixed(2)}cqw` : ''}">${article}${markup(c.headword)}</div><div class="gloss"></div></div>
+    <div class="face f2" hidden></div><div class="face f3" hidden></div>`;
+  const faces = [1, 2].concat(c.tip || face3Pattern(c) ? [3] : []);
+  const dots = document.createElement('div'); dots.className = 'dots'; dots.innerHTML = faces.map(() => '<i></i>').join('');
+  const todo = missing(c);
+  const cap = document.createElement('div'); cap.className = 'cap';
+  cap.innerHTML = `<code>${c.id}</code>` + (todo.length ? `<br><span class="todo">待实现：${todo.join('，')}</span>` : '');
+  item.append(dev, dots);
+  if (!SHOWCASE) item.append(cap);
+  grid.appendChild(item);
+  const scene = new Scene(dev.querySelector('.disc'), c);
+  const it = { c, dev, dots, faces, face: 0, scene, start: performance.now() - i * 620, visible: true };
+  items.push(it);
+  const flip = () => {
+    dev.classList.add('flipping');
+    setTimeout(() => { it.face = (it.face + 1) % faces.length; showFace(it); dev.classList.remove('flipping'); }, RM ? 0 : 140);
+  };
+  dev.addEventListener('click', flip);
+  dev.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flip(); } });
+});
+
+function showFace(it) {
+  const n = it.faces[it.face];
+  it.dev.querySelectorAll('.face').forEach((f, k) => f.hidden = k + 1 !== n);
+  it.dots.querySelectorAll('i').forEach((d, k) => d.classList.toggle('on', k === it.face));
+  it.dev.setAttribute('aria-label', SHOWCASE ? `${strip(it.c.headword)}, side ${it.face + 1} of ${it.faces.length}, click to turn`
+    : `${strip(it.c.headword)}，第 ${it.face + 1} 面，共 ${it.faces.length} 面，点击翻面`);
+}
+function renderText() {
+  seg.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', b.dataset.l === locale));
+  items.forEach(it => {
+    const c = it.c, g = grammarLine(c), p3 = face3Pattern(c);
+    it.dev.querySelector('.gloss').textContent = c.gloss[locale] || '';
+    it.dev.querySelector('.f2').innerHTML = (g ? `<div>${g}</div>` : '') +
+      `<div class="ex de">${markup(c.example.de)}</div><div class="tr">${esc(c.example.translations[locale] || '')}</div>`;
+    it.dev.querySelector('.f3').innerHTML = `<div class="tiplabel de">TIPP</div>` + (p3 ? `<div>${pill(p3)}</div>` : '') +
+      (c.tip ? `<div class="tip de">${markup(c.tip[locale] || '')}</div>` : '');
+    showFace(it);
+  });
+}
+renderText();
+
+const all = [...new Set(items.flatMap(it => missing(it.c)))].sort();
+document.getElementById('foot').innerHTML = SHOWCASE
+  ? '<a href="index.html" style="color:inherit">← All decks</a> · Knödel Watch: open-source German flashcards for ESP32 watches · <a href="https://github.com/yanxuceo/knoedel-watch" style="color:inherit">github.com/yanxuceo/knoedel-watch</a>'
+  : all.length
+  ? `这一期需要固件新增 ${all.length} 个编号：${all.map(x => `<code>${x}</code>`).join(' ')}<br>画法见本页源码里的 <code>MOTION</code>、<code>FX</code>、<code>PROP</code>、<code>BUBBLE</code> 条目（与 <code>tools/preview/${DECK.character}.js</code> 相同）。`
+  : '这一期用到的动画编号固件都已实现。';
+
+if ('IntersectionObserver' in window) {
+  const io = new IntersectionObserver(es => es.forEach(e => { const it = items.find(x => x.dev === e.target); if (it) it.visible = e.isIntersecting; }));
+  items.forEach(it => io.observe(it.dev));
+}
+function frame(now) {
+  items.forEach(it => {
+    if (!it.visible || it.faces[it.face] !== 1) return;
+    const t = RM ? B0 + 1 : ((now - it.start) / 1000) % DUR;
+    it.scene.render(t, RM ? 0 : now / 1000);
+  });
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>
