@@ -19,3 +19,4 @@ release/
 .vscode/
 content/*/preview.html
 sim/out*/
+showcase/

@@ -13,6 +13,7 @@ It writes:
   release/site/      a static web page with ESP Web Tools: open it in Chrome or Edge,
                      choose the board, plug it in, press Install. Publish it with GitHub
                      Pages (or any HTTPS host); the firmware files sit next to the page.
+                     site/decks/ shows the pack's cards (tools/build_showcase.py).
   release/knoedel-watch-<version>-installer.zip
                      the same page to run offline: unzip, python3 -m http.server -d <folder>,
                      open http://localhost:8000 in Chrome or Edge.
@@ -25,7 +26,7 @@ The version comes from PROJECT_VER in the top CMakeLists.txt.
 """
 import argparse, importlib.util, json, os, re, shutil, subprocess, sys
 from pathlib import Path
-import contentpack
+import build_showcase, contentpack
 
 ROOT = contentpack.ROOT
 OUT = ROOT / "release"
@@ -123,6 +124,8 @@ def main():
     (site / "index.html").write_text(page.replace("{{VERSION}}", version).replace("{{PACK}}", pack_name), encoding="utf-8")
     if (ROOT / "web" / "img").exists():
         shutil.copytree(ROOT / "web" / "img", site / "img")
+    # The cards of the pack, to browse before installing (built from the same library).
+    n_decks = build_showcase.build(site / "decks", Path(a.library))
 
     # The installer page as a zip, for installing without a network.
     installer = OUT / f"knoedel-watch-{version}-installer"
@@ -130,7 +133,7 @@ def main():
 
     size = sum(p.stat().st_size for p in (site / "firmware").rglob("*") if p.is_file())
     print(f"\nrelease {version} in {OUT.relative_to(ROOT)}/:")
-    print(f"  site/            web installer for {len(builds)} boards, {size // 1024} KB")
+    print(f"  site/            web installer for {len(builds)} boards, {size // 1024} KB; decks/: {n_decks} deck pages")
     print("\n".join(summary))
     print(f"  {installer.name}.zip  {(OUT / (installer.name + '.zip')).stat().st_size // 1024} KB")
     print("Try the installer locally: python3 -m http.server -d release/site 8000, then open http://localhost:8000"

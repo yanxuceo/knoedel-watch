@@ -14,9 +14,10 @@ TEMPLATES = {"knoedel": ("player.html", ["knoedel.js"]), "katze": ("player.html"
              "dinge": ("player.html", ["katze.js", "dinge.js"])}  # dinge cards may be drawn by the cat
 
 
-def main(deck_dir):
-    deck_dir = Path(deck_dir)
-    deck = load_json(deck_dir / "deck.json")
+def render(deck_dir, showcase=False):
+    """The preview page of a deck, as HTML. `showcase`: the version for people who
+    are not working on the deck (tools/build_showcase.py)."""
+    deck = load_json(Path(deck_dir) / "deck.json")
     if deck["character"] not in TEMPLATES:
         sys.exit(f"no preview template for character '{deck['character']}' yet")
     page, libs = TEMPLATES[deck["character"]]
@@ -29,6 +30,14 @@ def main(deck_dir):
                 .replace("/*__THEME__*/", dump(load_json(ROOT / "theme.json")))
                 .replace("/*__REGISTRY__*/", dump({ch: load_registry(ch) for ch in chars}))
                 .replace("/*__CHARACTER__*/", "\n".join((pv / lib).read_text(encoding="utf-8") for lib in libs)))
+    if showcase:
+        html = html.replace("false /*__SHOWCASE__*/", "true")
+    return html
+
+
+def main(deck_dir):
+    deck_dir = Path(deck_dir)
+    html = render(deck_dir)
     out = deck_dir / "preview.html"
     out.write_text(html, encoding="utf-8")
     print(f"wrote {out} ({len(html) // 1024} KB)")

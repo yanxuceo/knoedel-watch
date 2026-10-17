@@ -148,6 +148,8 @@ The first pack, `a2-start`, has 15 decks of 12 cards, 180 cards in all, at level
 
 The last five are two little series: a hiking trip to the Dolomites, where German is spoken and Knödel is the local dish, and a sports double episode with Knödel as the coach.
 
+**[Browse all the cards](https://yanxuceo.github.io/knoedel-watch/decks/)** in your browser: click a card to turn it.
+
 **More decks are on the way.** New ones come out in new content packs, installed from the [web installer](https://yanxuceo.github.io/knoedel-watch/) like the firmware. Is there a topic you would like? [Open an issue](https://github.com/yanxuceo/knoedel-watch/issues).
 
 ## Build and flash

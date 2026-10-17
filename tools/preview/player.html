@@ -69,7 +69,7 @@ footer code{background:var(--chip);padding:1px 6px;border-radius:5px;font-size:1
     </div>
     <div class="seg" role="group" aria-label="翻译语言" id="locales"></div>
   </header>
-  <p class="hint">模拟设备圆屏：点一下屏幕翻面（正面 → 例句面 → 易错点面）。动画按设备的节奏循环；卡片下方标橙色的是固件还没实现、需要照这份预览移植的编号。</p>
+  <p class="hint" id="hint">模拟设备圆屏：点一下屏幕翻面（正面 → 例句面 → 易错点面）。动画按设备的节奏循环；卡片下方标橙色的是固件还没实现、需要照这份预览移植的编号。</p>
   <main class="grid" id="grid"></main>
   <footer id="foot"></footer>
 </div>
@@ -79,11 +79,14 @@ const DECK = /*__DECK__*/;
 const THEME = /*__THEME__*/;
 const REGISTRIES = /*__REGISTRY__*/;
 const REGISTRY = REGISTRIES[DECK.character];
+/* Showcase (tools/build_showcase.py): the same cards for people who are not working
+   on them, in English, without draft status or ids still to implement. */
+const SHOWCASE = false /*__SHOWCASE__*/;
 /*__CHARACTER__*/
 
 const LOCALE_NAMES = { 'zh-Hans': '中文', 'en': 'English' };
-let locale = DECK.locales[0];
-try { const s = localStorage.getItem('preview-locale'); if (DECK.locales.includes(s)) locale = s; } catch (e) {}
+let locale = SHOWCASE && DECK.locales.includes('en') ? 'en' : DECK.locales[0];
+if (!SHOWCASE) { try { const s = localStorage.getItem('preview-locale'); if (DECK.locales.includes(s)) locale = s; } catch (e) {} }
 
 const esc = s => s.replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
 const strip = s => s.replace(/\{\{([^}|]*)(\|[a-z]+)?\}\}/g, '$1');
@@ -133,7 +136,14 @@ function ringSvg(index, total) {
 }
 
 document.getElementById('title').textContent = DECK.title.de;
-document.getElementById('meta').textContent = `${DECK.title[locale] || ''} · ${DECK.level} · 第 ${DECK.episode || '–'} 期 · ${DECK.cards.length} 张卡 · ${DECK.review?.status || 'draft'}`;
+document.getElementById('meta').textContent = SHOWCASE
+  ? `${DECK.title.en || ''} · ${DECK.level.replace('-', '–')} · ${DECK.cards.length} cards · Knödel Watch`
+  : `${DECK.title[locale] || ''} · ${DECK.level} · 第 ${DECK.episode || '–'} 期 · ${DECK.cards.length} 张卡 · ${DECK.review?.status || 'draft'}`;
+if (SHOWCASE) {
+  document.documentElement.lang = 'en';
+  document.getElementById('locales').setAttribute('aria-label', 'Translation');
+  document.getElementById('hint').textContent = 'Every round screen is one card as it plays on the watch. Click a card to turn it: the word, then an example, then a tip.';
+}
 
 const seg = document.getElementById('locales');
 DECK.locales.forEach(l => {
@@ -159,7 +169,9 @@ DECK.cards.forEach((c, i) => {
   const todo = missing(c);
   const cap = document.createElement('div'); cap.className = 'cap';
   cap.innerHTML = `<code>${c.id}</code>` + (todo.length ? `<br><span class="todo">待实现：${todo.join('，')}</span>` : '');
-  item.append(dev, dots, cap); grid.appendChild(item);
+  item.append(dev, dots);
+  if (!SHOWCASE) item.append(cap);
+  grid.appendChild(item);
   const scene = new Scene(dev.querySelector('.disc'), c);
   const it = { c, dev, dots, faces, face: 0, scene, start: performance.now() - i * 620, visible: true };
   items.push(it);
@@ -175,7 +187,8 @@ function showFace(it) {
   const n = it.faces[it.face];
   it.dev.querySelectorAll('.face').forEach((f, k) => f.hidden = k + 1 !== n);
   it.dots.querySelectorAll('i').forEach((d, k) => d.classList.toggle('on', k === it.face));
-  it.dev.setAttribute('aria-label', `${strip(it.c.headword)}，第 ${it.face + 1} 面，共 ${it.faces.length} 面，点击翻面`);
+  it.dev.setAttribute('aria-label', SHOWCASE ? `${strip(it.c.headword)}, side ${it.face + 1} of ${it.faces.length}, click to turn`
+    : `${strip(it.c.headword)}，第 ${it.face + 1} 面，共 ${it.faces.length} 面，点击翻面`);
 }
 function renderText() {
   seg.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', b.dataset.l === locale));
@@ -192,7 +205,9 @@ function renderText() {
 renderText();
 
 const all = [...new Set(items.flatMap(it => missing(it.c)))].sort();
-document.getElementById('foot').innerHTML = all.length
+document.getElementById('foot').innerHTML = SHOWCASE
+  ? '<a href="index.html" style="color:inherit">← All decks</a> · Knödel Watch: open-source German flashcards for ESP32 watches · <a href="https://github.com/yanxuceo/knoedel-watch" style="color:inherit">github.com/yanxuceo/knoedel-watch</a>'
+  : all.length
   ? `这一期需要固件新增 ${all.length} 个编号：${all.map(x => `<code>${x}</code>`).join(' ')}<br>画法见本页源码里的 <code>MOTION</code>、<code>FX</code>、<code>PROP</code>、<code>BUBBLE</code> 条目（与 <code>tools/preview/${DECK.character}.js</code> 相同）。`
   : '这一期用到的动画编号固件都已实现。';
 

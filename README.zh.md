@@ -148,6 +148,8 @@
 
 最后五个卡组是两个小系列：一个是去多洛米蒂徒步（那里说德语，Knödel 就是当地的特色菜），一个是运动双集，Knödel 当教练。
 
+**[在浏览器里看看所有卡片](https://yanxuceo.github.io/knoedel-watch/decks/)**：点一下卡片就能翻面。
+
 **更多卡组正在制作中。** 新卡组会放进新的内容包里，和固件一样，在[网页安装器](https://yanxuceo.github.io/knoedel-watch/)上安装。想学什么主题？欢迎[提 issue](https://github.com/yanxuceo/knoedel-watch/issues)。
 
 ## 编译和烧录
