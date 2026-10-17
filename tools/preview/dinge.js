@@ -231,6 +231,185 @@ const OBJ = {
   },
 };
 
+/* ---------- new in a2-berg-nomen (absolute 200 × 200 coordinates; Knödel cameos use buddy() from katze.js) ---------- */
+Object.assign(OBJ, {
+  'berg': g => {
+    const P = el('g', { transform: 'translate(100 158) scale(0.78)' }, g);
+    el('path', { d: 'M-120 0 L-96 -60 L-84 -52 L-66 -104 L-50 -80 L-34 -118 L-18 -150 L-2 -122 L12 -136 L30 -96 L46 -112 L64 -70 L80 -84 L120 0 Z', fill: '#EEE7DD', stroke: '#C9BBA8', 'stroke-width': 2, 'stroke-linejoin': 'round' }, P);
+    const glow = el('path', { d: 'M-120 0 L-96 -60 L-84 -52 L-66 -104 L-50 -80 L-34 -118 L-18 -150 L-2 -122 L12 -136 L30 -96 L46 -112 L64 -70 L80 -84 L120 0 Z', fill: '#F59AA8', opacity: 0 }, P);
+    el('path', { d: 'M-18 -150 L-12 -104 L-2 -122 Z M-66 -104 L-60 -70 L-50 -80 Z M12 -136 L18 -100 L30 -96 Z M46 -112 L52 -78 L64 -70 Z', fill: '#DDD2C2', opacity: 0.9 }, P);
+    el('path', { d: 'M-24 -140 L-18 -150 L-12 -138 L-18 -141 Z M8 -128 L12 -136 L17 -126 Z M-70 -96 L-66 -104 L-61 -94 Z', fill: '#FFFFFF' }, P);
+    el('path', { d: 'M-120 -6 Q-60 -34 0 -16 Q60 0 120 -22 L120 30 L-120 30 Z', fill: '#A8D08D' }, P);
+    el('path', { d: 'M-120 10 Q-30 -6 40 6 Q90 14 120 4 L120 30 L-120 30 Z', fill: '#8CC06E' }, P);
+    fir(P, -70, -6, 0.9); fir(P, -54, -2, 0.7, '#4E9E68'); fir(P, 70, -4, 0.8);
+    const cloud = el('g', {}, g);
+    [[0, 0, 9], [10, 2, 7], [-9, 3, 6]].forEach(([cx, cy, r]) => el('circle', { cx, cy, r, fill: '#FFFFFF', opacity: 0.95 }, cloud));
+    return c => { glow.setAttribute('opacity', (0.28 * (0.5 + 0.5 * Math.sin(c * 0.9))).toFixed(2));
+      cloud.setAttribute('transform', `translate(${f1(40 + ((c * 9) % 140))} 62)`); };
+  },
+  'wanderschuh': g => {
+    el('ellipse', { cx: 100, cy: 156, rx: 64, ry: 5, fill: '#000', opacity: 0.08 }, g);
+    const boot = (x, y, col) => { const b = el('g', {}, g);
+      el('path', { d: 'M0 0 L0 -54 Q0 -60 6 -60 L30 -60 Q36 -60 36 -54 L36 -28 Q60 -24 66 -12 L66 0 Z', fill: col, stroke: '#6E4528', 'stroke-width': 2, 'stroke-linejoin': 'round' }, b);
+      el('path', { d: 'M-2 0 L68 0 L68 8 Q68 10 66 10 L0 10 Q-2 10 -2 8 Z', fill: '#3B2F4A' }, b);
+      for (let i = 0; i < 8; i++) el('rect', { x: 2 + i * 8.4, y: 8, width: 4, height: 4, fill: '#3B2F4A' }, b);
+      el('path', { d: 'M36 -26 Q44 -20 52 -18', fill: 'none', stroke: '#6E4528', 'stroke-width': 1.6 }, b);
+      el('path', { d: 'M0 -12 L66 -12', stroke: '#6E4528', 'stroke-width': 1.4, opacity: 0.6 }, b);
+      el('rect', { x: -1, y: -62, width: 38, height: 8, rx: 3, fill: '#E5484D' }, b);
+      [-48, -40, -32].forEach(yy => el('path', { d: `M26 ${yy} L36 ${yy + 3}`, stroke: '#F2C14E', 'stroke-width': 2, 'stroke-linecap': 'round' }, b));
+      const bow = el('path', { d: 'M36 -30 Q44 -38 46 -30 Q44 -24 36 -30 Q30 -40 26 -32 Q30 -24 36 -30 Z', fill: '#F2C14E' }, b);
+      b.setAttribute('transform', `translate(${x} ${y})`); return { b, bow, x, y }; };
+    const back = boot(76, 146, '#B07A4F'), front = boot(46, 154, '#C68B59');
+    return c => { const k = Math.max(0, Math.sin(c * 3)), t = Math.pow(k, 2);
+      front.b.setAttribute('transform', `translate(46 ${f1(154 - t * 8)}) rotate(${f1(-t * 6)} 0 0)`);
+      back.bow.setAttribute('transform', `rotate(${f1(Math.sin(c * 4) * 6)} 36 -30)`); };
+  },
+  'weg': g => {
+    const P = el('g', { transform: 'translate(100 124) scale(0.82 0.55)' }, g);
+    peaks(P, DAY);
+    el('path', { d: 'M20 200 Q30 136 96 120 Q134 110 112 102 Q98 96 108 90', fill: 'none', stroke: '#E8D3A8', 'stroke-width': 12, 'stroke-linecap': 'round' }, g);
+    const steps = [[30, 176], [44, 150], [64, 132], [92, 116], [122, 102], [140, 86]].map(([x, y], i) => el('ellipse', { cx: x + (i % 2 ? 4 : -4), cy: y, rx: 3.4 - i * 0.3, ry: 2 - i * 0.15, fill: '#B0915E', opacity: 0 }, g));
+    el('rect', { x: 140, y: 90, width: 6, height: 80, fill: '#A86B48' }, g);
+    const sign = el('g', {}, g);
+    el('path', { d: 'M108 96 L168 96 L178 106 L168 116 L108 116 Z', fill: '#FFFFFF', stroke: '#C9CED6', 'stroke-width': 1.4, 'stroke-linejoin': 'round' }, sign);
+    el('path', { d: 'M168 96 L178 106 L168 116 Z', fill: '#E5484D' }, sign);
+    txt(sign, 112, 110, 'Hütte', 9, '#2B2230', 'start'); txt(sign, 164, 110, '1 h', 9, '#2B2230', 'end');
+    el('path', { d: 'M30 152 Q36 140 50 142 Q58 136 64 146 Q70 154 60 160 L34 160 Q26 158 30 152 Z', fill: '#BDB7AE', stroke: '#8E8880', 'stroke-width': 1.4 }, g);
+    el('rect', { x: 40, y: 146, width: 14, height: 3, fill: '#E5484D' }, g); el('rect', { x: 40, y: 149, width: 14, height: 3, fill: '#FFFFFF' }, g); el('rect', { x: 40, y: 152, width: 14, height: 3, fill: '#E5484D' }, g);
+    return c => { const u = loop(c, 3.6);
+      steps.forEach((s, i) => s.setAttribute('opacity', (window_(u, i * 0.1, i * 0.1 + 0.45, 0.06) * 0.85).toFixed(2)));
+      sign.setAttribute('transform', `rotate(${f1(Math.sin(c * 1.5) * 1.5)} 143 106)`); };
+  },
+  'wald': g => {
+    el('path', { d: 'M0 150 Q100 136 200 150 L200 200 L0 200 Z', fill: '#8CC06E' }, g);
+    const trees = [[48, 150, 1.5, '#4E9E68'], [150, 148, 1.6, '#3E8E5A'], [100, 156, 2.2, '#3E8E5A'], [72, 162, 1.2, '#5BAF74'], [128, 164, 1.25, '#4E9E68']].map(([x, y, s, col]) => {
+      const t = el('g', {}, g); fir(t, 0, 0, s, col); return [t, x, y]; });
+    const shroom = el('g', { transform: 'translate(150 170)' }, g);
+    el('rect', { x: -2, y: -6, width: 4, height: 7, rx: 1.5, fill: '#FFF6DA' }, shroom);
+    el('path', { d: 'M-7 -5 Q0 -14 7 -5 Z', fill: '#E5484D' }, shroom);
+    el('circle', { cx: -2, cy: -8, r: 1, fill: '#FFFFFF' }, shroom); el('circle', { cx: 2.5, cy: -7, r: 0.9, fill: '#FFFFFF' }, shroom);
+    const bird = el('path', { d: 'M-6 0 Q-3 -4 0 0 Q3 -4 6 0', fill: 'none', stroke: '#3B2F4A', 'stroke-width': 1.8, 'stroke-linecap': 'round' }, g);
+    return c => { trees.forEach(([t, x, y], i) => t.setAttribute('transform', `translate(${x} ${y}) rotate(${f1(Math.sin(c * 1.4 + i) * 1.6)})`));
+      const u = loop(c, 5); bird.setAttribute('transform', `translate(${f1(20 + u * 170)} ${f1(56 - Math.sin(u * Math.PI) * 14)}) scale(1 ${(0.6 + 0.4 * Math.abs(Math.sin(c * 9))).toFixed(2)})`); };
+  },
+  'wiese': g => {
+    const P = el('g', { transform: 'translate(100 112) scale(0.8 0.5)' }, g);
+    peaks(P, DAY);
+    el('path', { d: 'M0 118 Q60 100 120 108 Q170 114 200 104 L200 200 L0 200 Z', fill: '#A8D08D' }, g);
+    el('path', { d: 'M0 150 Q80 136 200 146 L200 200 L0 200 Z', fill: '#8CC06E' }, g);
+    const bl = el('g', { transform: 'translate(104 150) skewX(-20)' }, g);
+    el('rect', { x: -26, y: -10, width: 52, height: 20, fill: '#FFFFFF' }, bl);
+    for (let i = 0; i < 6; i++) for (let j = 0; j < 2; j++) if ((i + j) % 2 === 0) el('rect', { x: -26 + i * 8.66, y: -10 + j * 10, width: 8.66, height: 10, fill: '#E5484D', opacity: 0.85 }, bl);
+    el('path', { d: 'M96 132 L118 132 L115 146 L99 146 Z', fill: '#C68B59', stroke: '#8A5A3B', 'stroke-width': 1.4 }, g);
+    el('path', { d: 'M100 132 Q107 120 114 132', fill: 'none', stroke: '#8A5A3B', 'stroke-width': 2 }, g);
+    const fl = [[34, 166, '#F28CA8'], [52, 176, '#FFFFFF'], [150, 170, '#F2C14E'], [168, 160, '#F28CA8'], [70, 160, '#9C7AD6'], [134, 180, '#FFFFFF'], [44, 140, '#F2C14E'], [160, 138, '#FFFFFF']].map(([x, y, col]) => {
+      const f = el('g', {}, g);
+      el('path', { d: 'M0 0 L0 10', stroke: '#5E9E45', 'stroke-width': 1.6 }, f);
+      [0, 72, 144, 216, 288].forEach(a => el('ellipse', { cx: 0, cy: -3.2, rx: 2.4, ry: 3.4, fill: col, transform: `rotate(${a})` }, f));
+      el('circle', { r: 1.8, fill: '#F2A93B' }, f); return [f, x, y]; });
+    const bf = el('g', {}, g);
+    el('path', { d: 'M0 0 C-5 -8 -12 -4 -8 1 C-10 5 -4 8 0 1 C4 8 10 5 8 1 C12 -4 5 -8 0 0 Z', fill: '#9C7AD6' }, bf);
+    return c => { fl.forEach(([f, x, y], i) => f.setAttribute('transform', `translate(${x} ${y}) rotate(${f1(Math.sin(c * 2 + i) * 9)})`));
+      const k = c * 0.7; bf.setAttribute('transform', `translate(${f1(100 + Math.sin(k) * 44)} ${f1(96 + Math.sin(k * 2.3) * 12)}) scale(1 ${(0.55 + 0.45 * Math.abs(Math.sin(c * 12))).toFixed(2)})`); };
+  },
+  'kuh': g => {
+    el('path', { d: 'M0 158 Q100 146 200 158 L200 200 L0 200 Z', fill: '#A8D08D' }, g);
+    const cow = el('g', {}, g);
+    const tail = el('path', { d: 'M0 0 Q10 10 6 26', fill: 'none', stroke: '#F6F3EE', 'stroke-width': 3.4, 'stroke-linecap': 'round' }, cow);
+    [[70, 128], [84, 132], [118, 132], [132, 128]].forEach(([x, y]) => { el('rect', { x: x - 5, y, width: 10, height: 30, rx: 3, fill: '#F6F3EE', stroke: '#B9B4AD', 'stroke-width': 1.4 }, cow); el('rect', { x: x - 5, y: y + 24, width: 10, height: 6, rx: 2, fill: '#5B4A44' }, cow); });
+    el('ellipse', { cx: 100, cy: 116, rx: 44, ry: 26, fill: '#F6F3EE', stroke: '#B9B4AD', 'stroke-width': 1.8 }, cow);
+    el('path', { d: 'M70 102 Q80 94 90 104 Q86 116 74 114 Z M114 112 Q128 104 136 116 Q128 128 116 124 Z M96 126 Q104 122 108 130 Q100 136 94 132 Z', fill: '#3B2F4A' }, cow);
+    const head = el('g', {}, cow);
+    el('path', { d: 'M84 66 Q78 56 72 58 M116 66 Q122 56 128 58', fill: 'none', stroke: '#E8D9B8', 'stroke-width': 4, 'stroke-linecap': 'round' }, head);
+    el('ellipse', { cx: 76, cy: 74, rx: 9, ry: 5, fill: '#F6F3EE', stroke: '#B9B4AD', 'stroke-width': 1.4, transform: 'rotate(-20 76 74)' }, head);
+    el('ellipse', { cx: 124, cy: 74, rx: 9, ry: 5, fill: '#F6F3EE', stroke: '#B9B4AD', 'stroke-width': 1.4, transform: 'rotate(20 124 74)' }, head);
+    el('ellipse', { cx: 100, cy: 80, rx: 22, ry: 20, fill: '#F6F3EE', stroke: '#B9B4AD', 'stroke-width': 1.8 }, head);
+    el('path', { d: 'M88 66 Q96 60 100 68 Q94 74 88 66 Z', fill: '#3B2F4A' }, head);
+    el('ellipse', { cx: 100, cy: 92, rx: 16, ry: 10, fill: '#F7B9C2', stroke: '#E08C9A', 'stroke-width': 1.4 }, head);
+    el('ellipse', { cx: 94, cy: 92, rx: 2, ry: 2.6, fill: '#C9707E' }, head); el('ellipse', { cx: 106, cy: 92, rx: 2, ry: 2.6, fill: '#C9707E' }, head);
+    [92, 108].forEach(x => { el('ellipse', { cx: x, cy: 78, rx: 2.6, ry: 3.2, fill: '#2B2230' }, head); el('circle', { cx: x + 0.9, cy: 76.8, r: 0.9, fill: '#FFFFFF' }, head); });
+    el('ellipse', { cx: 86, cy: 84, rx: 3, ry: 1.6, fill: '#F49A94', opacity: 0.6 }, head); el('ellipse', { cx: 114, cy: 84, rx: 3, ry: 1.6, fill: '#F49A94', opacity: 0.6 }, head);
+    const bell = el('g', {}, cow);
+    el('path', { d: 'M90 100 Q100 106 110 100', fill: 'none', stroke: '#E5484D', 'stroke-width': 3 }, bell);
+    el('path', { d: 'M94 104 L106 104 L108 118 L92 118 Z', fill: '#F2C14E', stroke: '#C99227', 'stroke-width': 1.4, 'stroke-linejoin': 'round' }, bell);
+    el('circle', { cx: 100, cy: 119.5, r: 2, fill: '#C99227' }, bell);
+    const ding = [-1, 1].map(s => el('path', { d: `M${100 + s * 14} 108 l${s * 5} -2 M${100 + s * 15} 114 l${s * 6} 1`, stroke: '#C99227', 'stroke-width': 1.8, 'stroke-linecap': 'round', opacity: 0 }, g));
+    return c => { const a = Math.sin(c * 4) * 14; bell.setAttribute('transform', `rotate(${f1(a)} 100 100)`);
+      const on = Math.abs(Math.sin(c * 4)) > 0.85 ? 1 : 0; ding.forEach(d => d.setAttribute('opacity', on));
+      head.setAttribute('transform', `rotate(${f1(Math.sin(c * 1.2) * 3)} 100 96)`);
+      tail.setAttribute('transform', `translate(142 108) rotate(${f1(Math.sin(c * 2.5) * 18)})`); };
+  },
+  'see': g => {
+    const P = el('g', { transform: 'translate(100 120) scale(0.82 0.55)' }, g);
+    peaks(P, DAY);
+    el('ellipse', { cx: 100, cy: 148, rx: 96, ry: 40, fill: '#7FC4EA' }, g);
+    const refl = el('g', { transform: 'translate(100 122) scale(0.82 -0.3)', opacity: 0.25 }, g);
+    peaks(refl, DAY);
+    const rip = [0, 1, 2].map(i => el('path', { d: 'M-10 0 Q0 -3 10 0', fill: 'none', stroke: '#FFFFFF', 'stroke-width': 1.6, 'stroke-linecap': 'round', opacity: 0.7 }, g));
+    const boat = el('g', {}, g);
+    const kn = buddy(el('g', { transform: 'translate(0 -4) scale(0.78)' }, boat), 'float');
+    el('path', { d: 'M-26 -6 L26 -6 Q22 8 0 8 Q-22 8 -26 -6 Z', fill: '#C68B59', stroke: '#8A5A3B', 'stroke-width': 1.8, 'stroke-linejoin': 'round' }, boat);
+    el('path', { d: 'M-24 -2 L24 -2', stroke: '#8A5A3B', 'stroke-width': 1.2 }, boat);
+    el('path', { d: 'M16 -8 L34 10', stroke: '#8A5A3B', 'stroke-width': 2.4, 'stroke-linecap': 'round' }, boat);
+    return c => { kn(c); boat.setAttribute('transform', `translate(${f1(104 + Math.sin(c * 0.6) * 18)} ${f1(150 + Math.sin(c * 2) * 1.5)}) rotate(${f1(Math.sin(c * 1.7) * 3)})`);
+      rip.forEach((r, i) => { const k = (c * 0.4 + i / 3) % 1; r.setAttribute('transform', `translate(${[50, 150, 80][i]} ${[138, 150, 172][i]}) scale(${(1 + k).toFixed(2)})`); r.setAttribute('opacity', (0.7 * (1 - k)).toFixed(2)); }); };
+  },
+  'huette': g => {
+    el('path', { d: 'M0 156 Q100 146 200 156 L200 200 L0 200 Z', fill: '#A8D08D' }, g);
+    const smoke = [0, 1, 2].map(() => el('circle', { r: 5, fill: '#FFFFFF', opacity: 0 }, g));
+    el('rect', { x: 128, y: 40, width: 12, height: 26, fill: '#9AA4B1' }, g);
+    el('rect', { x: 50, y: 92, width: 100, height: 64, fill: '#C68B59', stroke: '#8A5A3B', 'stroke-width': 2 }, g);
+    for (let y = 100; y < 156; y += 9) el('line', { x1: 50, y1: y, x2: 150, y2: y, stroke: '#A8703F', 'stroke-width': 1.4 }, g);
+    el('path', { d: 'M36 96 L100 52 L164 96 L156 100 L100 62 L44 100 Z', fill: '#8A5A3B', stroke: '#6E4528', 'stroke-width': 2, 'stroke-linejoin': 'round' }, g);
+    el('path', { d: 'M56 96 L100 66 L144 96 Z', fill: '#E0B07E' }, g);
+    el('rect', { x: 88, y: 116, width: 24, height: 40, rx: 2, fill: '#8A5A3B', stroke: '#6E4528', 'stroke-width': 1.6 }, g);
+    el('path', { d: 'M100 128 C98 124 93 126 95 130 L100 134 L105 130 C107 126 102 124 100 128 Z', fill: '#F3D2A6' }, g);
+    const win = [[60, 108], [120, 108]].map(([x, y]) => { el('rect', { x, y, width: 20, height: 18, fill: '#DDF1FB', stroke: '#6E4528', 'stroke-width': 1.8 }, g);
+      el('path', { d: `M${x + 10} ${y} L${x + 10} ${y + 18}`, stroke: '#6E4528', 'stroke-width': 1.4 }, g);
+      el('rect', { x: x - 2, y: y + 18, width: 24, height: 5, rx: 1.5, fill: '#8A5A3B' }, g);
+      return [0, 1, 2].map(i => el('circle', { cx: x + 3 + i * 7, cy: y + 17, r: 2.8, fill: '#E5484D' }, g)); });
+    el('rect', { x: 84, y: 76, width: 32, height: 11, rx: 2.5, fill: '#F3D2A6', stroke: '#8A5A3B', 'stroke-width': 1.2 }, g);
+    txt(g, 100, 84.5, 'Hütte', 7.5, '#6E4528');
+    return c => { smoke.forEach((s, i) => { const k = (c * 0.35 + i / 3) % 1; s.setAttribute('cx', f1(134 + Math.sin(k * 5) * 4 + k * 10)); s.setAttribute('cy', f1(36 - k * 34)); s.setAttribute('r', f1(4 + k * 6)); s.setAttribute('opacity', (0.85 * Math.sin(Math.PI * k)).toFixed(2)); });
+      win.flat().forEach((f, i) => f.setAttribute('r', f1(2.8 + Math.sin(c * 3 + i) * 0.35))); };
+  },
+  'seilbahn': g => {
+    const P = el('g', { transform: 'translate(100 176) scale(0.7)' }, g);
+    peaks(P, DAY);
+    el('path', { d: 'M150 22 L160 22 L166 96 L144 96 Z', fill: '#9AA4B1', stroke: '#6B7180', 'stroke-width': 1.6 }, g);
+    el('path', { d: 'M140 22 L170 22', stroke: '#6B7180', 'stroke-width': 3, 'stroke-linecap': 'round' }, g);
+    el('line', { x1: -10, y1: 104, x2: 210, y2: 14, stroke: '#3B2F4A', 'stroke-width': 1.8 }, g);
+    const cab = el('g', {}, g);
+    el('path', { d: 'M0 -26 L0 -12', stroke: '#3B2F4A', 'stroke-width': 2 }, cab);
+    el('circle', { cx: 0, cy: -27, r: 3, fill: '#3B2F4A' }, cab);
+    el('rect', { x: -22, y: -12, width: 44, height: 36, rx: 7, fill: '#E5484D', stroke: '#B8323A', 'stroke-width': 2 }, cab);
+    el('rect', { x: -17, y: -6, width: 34, height: 15, rx: 3, fill: '#DDF1FB' }, cab);
+    const kn = buddy(el('g', { transform: 'translate(-1 14) scale(0.62)' }, cab), 'happy');
+    el('rect', { x: -22, y: 9, width: 44, height: 15, rx: 4, fill: '#E5484D' }, cab);
+    el('rect', { x: -22, y: 9, width: 44, height: 3, fill: '#FFFFFF', opacity: 0.6 }, cab);
+    return c => { kn(c); const u = loop(c, 7.4), x = -20 + u * 240, y = 108 - (x + 10) * (90 / 220) + 26;
+      cab.setAttribute('transform', `translate(${f1(x)} ${f1(y)}) rotate(${f1(Math.sin(c * 2) * 3)} 0 -26)`); };
+  },
+  'tal': g => {
+    el('path', { d: 'M-10 40 L40 30 L100 132 L160 26 L210 36 L210 200 L-10 200 Z', fill: '#EEE7DD', stroke: '#C9BBA8', 'stroke-width': 2, 'stroke-linejoin': 'round' }, g);
+    el('path', { d: 'M28 34 L40 30 L46 46 Z M154 36 L160 26 L170 40 Z', fill: '#FFFFFF' }, g);
+    el('path', { d: 'M-10 96 Q40 92 100 150 Q160 92 210 96 L210 200 L-10 200 Z', fill: '#A8D08D' }, g);
+    el('path', { d: 'M-10 150 Q60 140 100 160 Q140 140 210 150 L210 200 L-10 200 Z', fill: '#8CC06E' }, g);
+    el('path', { d: 'M100 156 Q90 172 104 186 Q114 196 108 210', fill: 'none', stroke: '#7FC4EA', 'stroke-width': 6, 'stroke-linecap': 'round' }, g);
+    fir(g, 34, 112, 0.8); fir(g, 166, 110, 0.8, '#4E9E68'); fir(g, 52, 124, 0.6);
+    const house = (x, y, roof) => { el('rect', { x: x - 8, y: y - 10, width: 16, height: 11, fill: '#FFFFFF', stroke: '#C9CED6', 'stroke-width': 1 }, g);
+      el('path', { d: `M${x - 10} ${y - 9} L${x} ${y - 17} L${x + 10} ${y - 9} Z`, fill: roof }, g); el('rect', { x: x - 2, y: y - 6, width: 4, height: 4, fill: '#7FB6E0' }, g); };
+    house(80, 158, '#C2553A'); house(122, 160, '#C2553A'); house(140, 150, '#B8323A'); house(66, 150, '#B8323A');
+    el('rect', { x: 96, y: 136, width: 12, height: 26, fill: '#FFFFFF', stroke: '#C9CED6', 'stroke-width': 1 }, g);
+    el('path', { d: 'M96 136 Q102 120 108 136 Z', fill: '#5E9E45' }, g);
+    el('ellipse', { cx: 102, cy: 128, rx: 4, ry: 5, fill: '#5E9E45' }, g);
+    el('path', { d: 'M102 123 L102 115', stroke: '#C99227', 'stroke-width': 1.4 }, g);
+    el('circle', { cx: 102, cy: 146, r: 2.6, fill: '#F2C14E' }, g);
+    const smoke = [0, 1, 2].map(() => el('circle', { r: 2.6, fill: '#FFFFFF', opacity: 0 }, g));
+    return c => smoke.forEach((s, i) => { const k = (c * 0.35 + i / 3) % 1; s.setAttribute('cx', f1(142 + Math.sin(k * 6) * 2 + k * 6)); s.setAttribute('cy', f1(134 - k * 26)); s.setAttribute('r', f1(2 + k * 4)); s.setAttribute('opacity', (0.9 * Math.sin(Math.PI * k)).toFixed(2)); });
+  },
+});
+
 /* small placement corrections, applied to the whole object */
 const SHIFT = { 'lampe': [0, 14], 'arzt': [0, -16], 'medikament': [0, -16], 'tablette': [0, 4] };
 

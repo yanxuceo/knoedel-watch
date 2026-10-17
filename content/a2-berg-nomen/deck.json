@@ -1,0 +1,526 @@
+{
+  "format": 1,
+  "id": "a2-berg-nomen",
+  "version": "0.1.0",
+  "episode": 15,
+  "title": {
+    "de": "In den Bergen",
+    "zh-Hans": "在山里",
+    "en": "In the mountains"
+  },
+  "level": "A2",
+  "character": "dinge",
+  "locales": [
+    "zh-Hans",
+    "en"
+  ],
+  "license": "CC-BY-NC-SA-4.0",
+  "review": {
+    "status": "draft",
+    "notes": "Mini-series \"Ab in die Berge!\" (Ep. 15–17): the cat takes Knödel hiking in the Dolomites / South Tyrol. Nouns, character dinge; Rucksack and Gipfel are acted by the cat. Thread: Wohin? (Akk.) vs Wo? (Dat.), durch + Akk., mit + Dat.; plural umlauts. Please check every notes entry."
+  },
+  "cards": [
+    {
+      "id": "berg",
+      "pos": "noun",
+      "headword": "Berg",
+      "gloss": {
+        "zh-Hans": "山",
+        "en": "mountain"
+      },
+      "noun": {
+        "article": "der",
+        "plural": "Berg{{e|pl}}"
+      },
+      "example": {
+        "de": "Am Wochenende fahren wir in die {{Berge}}.",
+        "translations": {
+          "zh-Hans": "周末我们去山里。",
+          "en": "At the weekend we're going to the mountains."
+        }
+      },
+      "tip": {
+        "zh-Hans": "去山里 in die {{Berge}}，在山里 in den {{Bergen}}",
+        "en": "Going there: in die {{Berge}}. Being there: in den {{Bergen}}."
+      },
+      "style": {
+        "color": "#2F6BD6",
+        "background": "#DCE6F7"
+      },
+      "anim": {
+        "pose": {},
+        "tint": null,
+        "motion": [],
+        "fx": [],
+        "props": [
+          "berg"
+        ],
+        "bubble": null
+      },
+      "notes": "Wohin? in die Berge (Akk.) / Wo? in den Bergen (Dat. plural + n)."
+    },
+    {
+      "id": "rucksack",
+      "pos": "noun",
+      "headword": "Rucksack",
+      "gloss": {
+        "zh-Hans": "背包",
+        "en": "backpack"
+      },
+      "noun": {
+        "article": "der",
+        "plural": "Rucks{{ä|pl}}ck{{e|pl}}"
+      },
+      "example": {
+        "de": "Mein {{Rucksack}} ist viel zu schwer!",
+        "translations": {
+          "zh-Hans": "我的背包实在太重了！",
+          "en": "My backpack is way too heavy!"
+        }
+      },
+      "tip": {
+        "zh-Hans": "背 Rücken + 袋子 Sack → der {{Rucksack}}",
+        "en": "Back (Rücken) + bag (Sack) → der {{Rucksack}}"
+      },
+      "style": {
+        "color": "#2F6BD6",
+        "background": "#DCE6F7"
+      },
+      "anim": {
+        "character": "katze",
+        "pose": {
+          "rot": 7,
+          "sy": 0.95,
+          "sx": 1.03,
+          "lid": 0.35,
+          "smile": -0.4,
+          "mopen": 0.25,
+          "hLx": -30,
+          "hLy": -62,
+          "hRx": 30,
+          "hRy": -62,
+          "earL": -10,
+          "earR": -10
+        },
+        "tint": null,
+        "motion": [
+          "tremble",
+          "breathe"
+        ],
+        "fx": [
+          "sweat"
+        ],
+        "props": [
+          "backpack",
+          "knoedel-on-pack",
+          "backpack-straps"
+        ],
+        "bubble": null
+      },
+      "notes": "Rucksack comes from the Alemannic Rucken (= Rücken) + Sack, so the mnemonic holds. The joke: Knödel rides on top."
+    },
+    {
+      "id": "wanderschuh",
+      "pos": "noun",
+      "headword": "Wanderschuh",
+      "gloss": {
+        "zh-Hans": "登山鞋",
+        "en": "hiking boot"
+      },
+      "noun": {
+        "article": "der",
+        "plural": "Wanderschuh{{e|pl}}"
+      },
+      "example": {
+        "de": "Meine neuen {{Wanderschuhe}} sind super bequem.",
+        "translations": {
+          "zh-Hans": "我的新登山鞋超级舒服。",
+          "en": "My new hiking boots are super comfortable."
+        }
+      },
+      "tip": {
+        "zh-Hans": "一双登山鞋：ein Paar {{Wanderschuhe}}",
+        "en": "A pair of hiking boots: ein Paar {{Wanderschuhe}}"
+      },
+      "style": {
+        "color": "#2F6BD6",
+        "background": "#DCE6F7"
+      },
+      "anim": {
+        "pose": {},
+        "tint": null,
+        "motion": [],
+        "fx": [],
+        "props": [
+          "wanderschuh"
+        ],
+        "bubble": null
+      },
+      "notes": "ein Paar (a pair, capital P) vs ein paar (a few)."
+    },
+    {
+      "id": "weg",
+      "pos": "noun",
+      "headword": "Weg",
+      "gloss": {
+        "zh-Hans": "路、小路",
+        "en": "path, way"
+      },
+      "noun": {
+        "article": "der",
+        "plural": "Weg{{e|pl}}"
+      },
+      "example": {
+        "de": "Entschuldigung, ist das der {{Weg}} zur Hütte?",
+        "translations": {
+          "zh-Hans": "请问，这是去小屋的路吗？",
+          "en": "Excuse me, is this the way to the hut?"
+        }
+      },
+      "tip": {
+        "zh-Hans": "der Weg 是小路、路线；马路是 die Straße",
+        "en": "Weg: a path or route. A road for cars: die Straße"
+      },
+      "style": {
+        "color": "#2F6BD6",
+        "background": "#DCE6F7"
+      },
+      "anim": {
+        "pose": {},
+        "tint": null,
+        "motion": [],
+        "fx": [],
+        "props": [
+          "weg"
+        ],
+        "bubble": null
+      },
+      "notes": "zur = zu der."
+    },
+    {
+      "id": "wald",
+      "pos": "noun",
+      "headword": "Wald",
+      "gloss": {
+        "zh-Hans": "森林",
+        "en": "forest"
+      },
+      "noun": {
+        "article": "der",
+        "plural": "W{{ä|pl}}ld{{er|pl}}"
+      },
+      "example": {
+        "de": "Der Weg führt durch einen schönen {{Wald}}.",
+        "translations": {
+          "zh-Hans": "这条路穿过一片美丽的森林。",
+          "en": "The path goes through a beautiful forest."
+        }
+      },
+      "tip": {
+        "zh-Hans": "durch + Akk.：durch {{den Wald}}",
+        "en": "durch takes the accusative: durch {{den Wald}}"
+      },
+      "style": {
+        "color": "#2F6BD6",
+        "background": "#DCE6F7"
+      },
+      "anim": {
+        "pose": {},
+        "tint": null,
+        "motion": [],
+        "fx": [],
+        "props": [
+          "wald"
+        ],
+        "bubble": null
+      }
+    },
+    {
+      "id": "wiese",
+      "pos": "noun",
+      "headword": "Wiese",
+      "gloss": {
+        "zh-Hans": "草地",
+        "en": "meadow"
+      },
+      "noun": {
+        "article": "die",
+        "plural": "Wiese{{n|pl}}"
+      },
+      "example": {
+        "de": "Auf der {{Wiese}} machen wir ein Picknick.",
+        "translations": {
+          "zh-Hans": "我们在草地上野餐。",
+          "en": "We're having a picnic in the meadow."
+        }
+      },
+      "tip": {
+        "zh-Hans": "去 auf {{die Wiese}}，在 auf {{der Wiese}}",
+        "en": "Wohin? auf {{die Wiese}} · Wo? auf {{der Wiese}}"
+      },
+      "style": {
+        "color": "#D6435E",
+        "background": "#FBE1E7"
+      },
+      "anim": {
+        "pose": {},
+        "tint": null,
+        "motion": [],
+        "fx": [],
+        "props": [
+          "wiese"
+        ],
+        "bubble": null
+      }
+    },
+    {
+      "id": "kuh",
+      "pos": "noun",
+      "headword": "Kuh",
+      "gloss": {
+        "zh-Hans": "母牛、奶牛",
+        "en": "cow"
+      },
+      "noun": {
+        "article": "die",
+        "plural": "K{{ü|pl}}h{{e|pl}}"
+      },
+      "example": {
+        "de": "Hörst du das? Die {{Kühe}} tragen Glocken!",
+        "translations": {
+          "zh-Hans": "你听到了吗？奶牛都戴着铃铛！",
+          "en": "Hear that? The cows are wearing bells!"
+        }
+      },
+      "tip": {
+        "zh-Hans": "复数变音加 -e：die Kuh → die {{Kühe}}",
+        "en": "Umlaut plus -e: die Kuh → die {{Kühe}}"
+      },
+      "style": {
+        "color": "#D6435E",
+        "background": "#FBE1E7"
+      },
+      "anim": {
+        "pose": {},
+        "tint": null,
+        "motion": [],
+        "fx": [],
+        "props": [
+          "kuh"
+        ],
+        "bubble": null
+      }
+    },
+    {
+      "id": "see",
+      "pos": "noun",
+      "headword": "See",
+      "gloss": {
+        "zh-Hans": "湖",
+        "en": "lake"
+      },
+      "noun": {
+        "article": "der",
+        "plural": "See{{n|pl}}"
+      },
+      "example": {
+        "de": "Das Wasser im {{See}} ist ganz klar und kalt.",
+        "translations": {
+          "zh-Hans": "湖水特别清，也很冷。",
+          "en": "The water in the lake is really clear and cold."
+        }
+      },
+      "tip": {
+        "zh-Hans": "{{der See}} 是湖，die See 是海（= das Meer）",
+        "en": "{{der See}} is a lake; die See is the sea (das Meer)"
+      },
+      "style": {
+        "color": "#2F6BD6",
+        "background": "#DCE6F7"
+      },
+      "anim": {
+        "pose": {},
+        "tint": null,
+        "motion": [],
+        "fx": [],
+        "props": [
+          "see"
+        ],
+        "bubble": null
+      },
+      "notes": "Plural Seen, spoken in two syllables: See-en."
+    },
+    {
+      "id": "huette",
+      "pos": "noun",
+      "headword": "Hütte",
+      "gloss": {
+        "zh-Hans": "山间小屋",
+        "en": "mountain hut"
+      },
+      "noun": {
+        "article": "die",
+        "plural": "Hütte{{n|pl}}"
+      },
+      "example": {
+        "de": "Auf der {{Hütte}} gibt es Suppe und Kuchen.",
+        "translations": {
+          "zh-Hans": "山间小屋里有汤和蛋糕。",
+          "en": "There's soup and cake at the mountain hut."
+        }
+      },
+      "tip": {
+        "zh-Hans": "山间小屋常用 auf：auf der {{Hütte}} essen",
+        "en": "Mountain huts often take auf: auf der {{Hütte}} essen"
+      },
+      "style": {
+        "color": "#D6435E",
+        "background": "#FBE1E7"
+      },
+      "anim": {
+        "pose": {},
+        "tint": null,
+        "motion": [],
+        "fx": [],
+        "props": [
+          "huette"
+        ],
+        "bubble": null
+      },
+      "notes": "auf der Hütte (essen, übernachten) is the usual Alpine phrasing; in der Hütte = physically inside."
+    },
+    {
+      "id": "seilbahn",
+      "pos": "noun",
+      "headword": "Seilbahn",
+      "gloss": {
+        "zh-Hans": "缆车",
+        "en": "cable car"
+      },
+      "noun": {
+        "article": "die",
+        "plural": "Seilbahn{{en|pl}}"
+      },
+      "example": {
+        "de": "Wir fahren mit der {{Seilbahn}} nach oben.",
+        "translations": {
+          "zh-Hans": "我们坐缆车上山。",
+          "en": "We're taking the cable car up."
+        }
+      },
+      "tip": {
+        "zh-Hans": "mit+Dat.：mit {{der Seilbahn}} / dem Bus",
+        "en": "mit takes the dative: mit {{der Seilbahn}}, mit dem Bus"
+      },
+      "style": {
+        "color": "#D6435E",
+        "background": "#FBE1E7"
+      },
+      "anim": {
+        "pose": {},
+        "tint": null,
+        "motion": [],
+        "fx": [],
+        "props": [
+          "seilbahn"
+        ],
+        "bubble": null
+      }
+    },
+    {
+      "id": "gipfel",
+      "pos": "noun",
+      "headword": "Gipfel",
+      "gloss": {
+        "zh-Hans": "山顶",
+        "en": "summit, peak"
+      },
+      "noun": {
+        "article": "der",
+        "plural": "Gipfel"
+      },
+      "example": {
+        "de": "Nach drei Stunden sind wir endlich auf dem {{Gipfel}}.",
+        "translations": {
+          "zh-Hans": "三个小时后，我们终于登上了山顶。",
+          "en": "After three hours we're finally at the summit."
+        }
+      },
+      "tip": {
+        "zh-Hans": "山顶上的十字架：das Gipfelkreuz",
+        "en": "The summit cross: das Gipfelkreuz"
+      },
+      "style": {
+        "color": "#2F6BD6",
+        "background": "#DCE6F7"
+      },
+      "anim": {
+        "character": "katze",
+        "pose": {
+          "hLx": -34,
+          "hLy": -80,
+          "hRx": 34,
+          "hRy": -80,
+          "happy": 1,
+          "smile": 1,
+          "mopen": 0.5,
+          "blush": 0.5,
+          "earL": 8,
+          "earR": 8
+        },
+        "tint": null,
+        "motion": [
+          "bounce",
+          "tail-wag"
+        ],
+        "fx": [
+          "sparkles"
+        ],
+        "props": [
+          "summit",
+          "knoedel-wow"
+        ],
+        "bubble": null
+      },
+      "notes": "Plural same as singular: die Gipfel."
+    },
+    {
+      "id": "tal",
+      "pos": "noun",
+      "headword": "Tal",
+      "gloss": {
+        "zh-Hans": "山谷",
+        "en": "valley"
+      },
+      "noun": {
+        "article": "das",
+        "plural": "T{{ä|pl}}l{{er|pl}}"
+      },
+      "example": {
+        "de": "Unten im {{Tal}} liegt ein kleines Dorf.",
+        "translations": {
+          "zh-Hans": "下面的山谷里有个小村庄。",
+          "en": "Down in the valley there's a little village."
+        }
+      },
+      "tip": {
+        "zh-Hans": "复数变音加 -er：das Tal → die {{Täler}}",
+        "en": "Umlaut plus -er: das Tal → die {{Täler}}"
+      },
+      "style": {
+        "color": "#B7791F",
+        "background": "#FFF0C9"
+      },
+      "anim": {
+        "pose": {},
+        "tint": null,
+        "motion": [],
+        "fx": [],
+        "props": [
+          "tal"
+        ],
+        "bubble": null
+      }
+    }
+  ]
+}

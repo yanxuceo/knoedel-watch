@@ -89,4 +89,23 @@ Ordered so the device always has something to play. Phase A uses what the firmwa
 | 11 | `a2-wetter` | nouns + *es*-sentences | illustration | rebuild of web Ep.3 at A2 |
 | 12 | `sich-mich-mir` | grammar | web first | *Ich ziehe mich an* or *Ich ziehe mir den Pullover an*: the question a viewer asked about Ep.5 |
 
+### Mini-series "Ab in die Berge!" (A2, Ep. 15–17)
+
+The cat takes Knödel hiking in the Dolomites / South Tyrol, where German is spoken and Knödel is the local dish. Knödel appears as the cat's buddy (props `knoedel-*`).
+
+| # | Deck | Kind | Needs | Words |
+|---|---|---|---|---|
+| 15 | `a2-berg-nomen` | nouns | dinge (+Katze) | draft 0.1.0: Berg, Rucksack, Wanderschuh, Weg, Wald, Wiese, Kuh, See, Hütte, Seilbahn, Gipfel, Tal (thread: Wohin? Akk. / Wo? Dat., durch + Akk., mit + Dat.; plural umlauts) |
+| 16 | `a2-wandern-verben` | verbs | Katze | draft 0.1.0: packen, tanken, wandern, steigen, klettern, schwitzen, sich ausruhen, fotografieren, genießen, schwimmen, übernachten, sich erholen (all examples in the Perfekt; haben or sein, revisits deck 5; no ge- for -ieren and inseparable verbs) |
+| 17 | `a2-huette-phrasen` | expressions | Katze | draft 0.1.0: Auf geht's!, Wie weit ist es noch?, Ich kann nicht mehr!, Gleich sind wir oben!, Was für eine Aussicht!, Grüß Gott!, Ist hier noch frei?, Was können Sie empfehlen?, Guten Appetit!, Prost!, Zahlen, bitte!, Das hat sich gelohnt! (dialogues; regional and table customs) |
+
+### Sport double episode (A2–B1, Ep. 18–19)
+
+The cat works out, Knödel coaches. B1 extras are marked in the notes.
+
+| # | Deck | Kind | Needs | Words |
+|---|---|---|---|---|
+| 18 | `a2-fitness-verben` | verbs | Katze | draft 0.1.0: sich aufwärmen, trainieren, Gewichte heben, Kniebeugen machen, (auf dem Laufband) laufen, Seil springen, boxen, sich dehnen, sich anstrengen (B1), durchhalten (B1), Muskelkater haben (B1), abnehmen |
+| 19 | `a2-sport-draussen` | verbs | Katze | draft 0.1.0: Sport treiben (B1), sich bewegen, frische Luft schnappen (B1), joggen, außer Atem sein (B1), um die Wette rennen (B1), Fußball spielen, Klimmzüge machen, Yoga machen, Drachen steigen lassen (B1, Ersatzinfinitiv), tauchen, Ski fahren |
+
 What this asks of the firmware, in order: the Katze renderer and props (before deck 4), an illustration card type plus an `art` field in the format (before deck 9).

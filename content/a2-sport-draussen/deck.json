@@ -1,0 +1,715 @@
+{
+  "format": 1,
+  "id": "a2-sport-draussen",
+  "version": "0.1.0",
+  "episode": 19,
+  "title": {
+    "de": "Sport im Freien",
+    "zh-Hans": "户外运动",
+    "en": "Outdoor sports"
+  },
+  "level": "A2-B1",
+  "character": "katze",
+  "locales": [
+    "zh-Hans",
+    "en"
+  ],
+  "license": "CC-BY-NC-SA-4.0",
+  "review": {
+    "status": "draft",
+    "notes": "Sport double episode 2/2 (A2 with B1 extras: Sport treiben, frische Luft schnappen, außer Atem sein, um die Wette rennen, Drachen steigen lassen). Please check every notes entry."
+  },
+  "cards": [
+    {
+      "id": "sport-treiben",
+      "pos": "verb",
+      "lead": "Sport",
+      "headword": "treiben",
+      "gloss": {
+        "zh-Hans": "做运动",
+        "en": "to do sport"
+      },
+      "verb": {
+        "reflexive": null,
+        "praeteritum": "trieb",
+        "perfekt": {
+          "aux": "haben",
+          "rest": "getrieben"
+        }
+      },
+      "example": {
+        "de": "– {{Treibst}} du {{Sport}}?\n– Ja, ich jogge zweimal pro Woche.",
+        "translations": {
+          "zh-Hans": "—你平时运动吗？\n—嗯，我每周慢跑两次。",
+          "en": "– Do you do any sport?\n– Yes, I jog twice a week."
+        }
+      },
+      "tip": {
+        "zh-Hans": "口语也说：Sport {{machen}}",
+        "en": "In everyday speech: Sport {{machen}}"
+      },
+      "style": {
+        "color": "#3E8E2F",
+        "background": "#E1F3DA"
+      },
+      "anim": {
+        "pose": {
+          "happy": 1,
+          "smile": 1,
+          "hRx": 36,
+          "hRy": -60,
+          "hLx": -30,
+          "hLy": -40
+        },
+        "tint": null,
+        "motion": [
+          "hop",
+          "tail-wag"
+        ],
+        "fx": [],
+        "props": [
+          "park",
+          "headband",
+          "ball",
+          "knoedel"
+        ],
+        "bubble": null
+      },
+      "notes": "Sport treiben is the standard collocation (B1); Sport machen is everyday speech."
+    },
+    {
+      "id": "sich-bewegen",
+      "pos": "verb",
+      "lead": "sich",
+      "headword": "bewegen",
+      "gloss": {
+        "zh-Hans": "活动身体",
+        "en": "to move, exercise"
+      },
+      "verb": {
+        "reflexive": "acc",
+        "praeteritum": "bewegte {{sich|refl}}",
+        "perfekt": {
+          "aux": "haben",
+          "rest": "{{sich|refl}} bewegt"
+        }
+      },
+      "example": {
+        "de": "Der Arzt sagt, ich soll {{mich|refl}} mehr {{bewegen}}.",
+        "translations": {
+          "zh-Hans": "医生说我应该多活动。",
+          "en": "The doctor says I should get more exercise."
+        }
+      },
+      "tip": {
+        "zh-Hans": "名词 die {{Bewegung}}：Bewegung tut gut.",
+        "en": "Noun: die {{Bewegung}} – Bewegung tut gut."
+      },
+      "style": {
+        "color": "#2E8FA8",
+        "background": "#D8F0F5"
+      },
+      "anim": {
+        "pose": {
+          "smile": 0.7,
+          "happy": 1
+        },
+        "tint": null,
+        "motion": [
+          "walk",
+          "tail-wag"
+        ],
+        "fx": [],
+        "props": [
+          "park",
+          "knoedel-walk"
+        ],
+        "bubble": null
+      }
+    },
+    {
+      "id": "frische-luft",
+      "pos": "verb",
+      "lead": "frische Luft",
+      "headword": "schnappen",
+      "gloss": {
+        "zh-Hans": "透透气",
+        "en": "to get fresh air"
+      },
+      "verb": {
+        "reflexive": null,
+        "praeteritum": "schnappte",
+        "perfekt": {
+          "aux": "haben",
+          "rest": "geschnappt"
+        }
+      },
+      "example": {
+        "de": "Ich gehe kurz raus, {{frische Luft schnappen}}.",
+        "translations": {
+          "zh-Hans": "我出去一下，透透气。",
+          "en": "I'm popping out to get some fresh air."
+        }
+      },
+      "tip": {
+        "zh-Hans": "schnappen 本义是“一口咬住”，猫最会了！",
+        "en": "schnappen = to snap at – very cat-like!"
+      },
+      "style": {
+        "color": "#5E8C31",
+        "background": "#E5F1D6"
+      },
+      "anim": {
+        "pose": {
+          "shut": 1,
+          "smile": 0.9,
+          "hLx": -42,
+          "hLy": -60,
+          "hRx": 42,
+          "hRy": -60,
+          "lookY": -1,
+          "rot": -2
+        },
+        "tint": null,
+        "motion": [
+          "deep-breath"
+        ],
+        "fx": [
+          "breeze"
+        ],
+        "props": [
+          "park",
+          "knoedel"
+        ],
+        "bubble": null
+      },
+      "notes": "B1 idiom. raus = colloquial for hinaus."
+    },
+    {
+      "id": "joggen",
+      "pos": "verb",
+      "headword": "joggen",
+      "gloss": {
+        "zh-Hans": "慢跑",
+        "en": "to jog"
+      },
+      "verb": {
+        "reflexive": null,
+        "praeteritum": "joggte",
+        "perfekt": {
+          "aux": "sein",
+          "rest": "gejoggt"
+        }
+      },
+      "example": {
+        "de": "Heute Morgen bin ich fünf Kilometer {{gejoggt}}.",
+        "translations": {
+          "zh-Hans": "今天早上我慢跑了五公里。",
+          "en": "This morning I jogged five kilometres."
+        }
+      },
+      "tip": {
+        "zh-Hans": "也常说：{{laufen gehen}}",
+        "en": "Also common: {{laufen gehen}}"
+      },
+      "style": {
+        "color": "#D6435E",
+        "background": "#FBE1E7"
+      },
+      "anim": {
+        "pose": {
+          "rot": 5,
+          "smile": 0.6,
+          "lookX": 0.8
+        },
+        "tint": null,
+        "motion": [
+          "run"
+        ],
+        "fx": [
+          "speed-lines"
+        ],
+        "props": [
+          "park",
+          "headband",
+          "knoedel-walk"
+        ],
+        "bubble": null
+      },
+      "notes": "joggen takes sein for a distance or direction; haben is also used for the activity."
+    },
+    {
+      "id": "ausser-atem",
+      "pos": "verb",
+      "lead": "außer Atem",
+      "headword": "sein",
+      "gloss": {
+        "zh-Hans": "上气不接下气",
+        "en": "to be out of breath"
+      },
+      "verb": {
+        "reflexive": null,
+        "praeteritum": "war",
+        "perfekt": {
+          "aux": "sein",
+          "rest": "gewesen"
+        }
+      },
+      "example": {
+        "de": "Nach zwei Kilometern war ich schon total {{außer Atem}}.",
+        "translations": {
+          "zh-Hans": "才两公里，我就上气不接下气了。",
+          "en": "After two kilometres I was already totally out of breath."
+        }
+      },
+      "tip": {
+        "zh-Hans": "大口喘气：nach Luft {{schnappen}}",
+        "en": "Gasping: nach Luft {{schnappen}}"
+      },
+      "style": {
+        "color": "#C2553A",
+        "background": "#F9E0D8"
+      },
+      "anim": {
+        "pose": {
+          "rot": 8,
+          "sy": 0.94,
+          "sx": 1.04,
+          "hLx": -20,
+          "hLy": -24,
+          "hRx": 22,
+          "hRy": -24,
+          "lid": 0.5,
+          "mopen": 0.6,
+          "smile": -0.2,
+          "earL": -10,
+          "earR": -10
+        },
+        "tint": null,
+        "motion": [
+          "pant"
+        ],
+        "fx": [
+          "sweat",
+          "sigh-puffs"
+        ],
+        "props": [
+          "park",
+          "headband",
+          "knoedel-flat"
+        ],
+        "bubble": null
+      },
+      "notes": "B1."
+    },
+    {
+      "id": "um-die-wette",
+      "pos": "verb",
+      "lead": "um die Wette",
+      "headword": "rennen",
+      "gloss": {
+        "zh-Hans": "赛跑",
+        "en": "to race each other"
+      },
+      "verb": {
+        "reflexive": null,
+        "praeteritum": "rannte",
+        "perfekt": {
+          "aux": "sein",
+          "rest": "gerannt"
+        }
+      },
+      "example": {
+        "de": "Komm, wir rennen {{um die Wette}}! Wer zuerst am Baum ist, hat gewonnen!",
+        "translations": {
+          "zh-Hans": "来，我们赛跑吧！看谁先跑到那棵树！",
+          "en": "Come on, let's race! First one to the tree wins!"
+        }
+      },
+      "tip": {
+        "zh-Hans": "rennen 比 laufen 快：全力奔跑",
+        "en": "rennen is faster than laufen: running flat out"
+      },
+      "style": {
+        "color": "#B7791F",
+        "background": "#FFF0C9"
+      },
+      "anim": {
+        "pose": {
+          "rot": 8,
+          "mopen": 0.4,
+          "smile": 0.6,
+          "lookX": 1.6,
+          "earL": -8,
+          "earR": -8
+        },
+        "tint": null,
+        "motion": [
+          "run"
+        ],
+        "fx": [
+          "speed-lines"
+        ],
+        "props": [
+          "park",
+          "knoedel-roll"
+        ],
+        "bubble": null
+      },
+      "notes": "B1."
+    },
+    {
+      "id": "fussball",
+      "pos": "verb",
+      "lead": "Fußball",
+      "headword": "spielen",
+      "gloss": {
+        "zh-Hans": "踢足球",
+        "en": "to play football"
+      },
+      "verb": {
+        "reflexive": null,
+        "praeteritum": "spielte",
+        "perfekt": {
+          "aux": "haben",
+          "rest": "gespielt"
+        }
+      },
+      "example": {
+        "de": "Am Sonntag spielen wir im Park {{Fußball}}.",
+        "translations": {
+          "zh-Hans": "周日我们在公园踢足球。",
+          "en": "On Sunday we're playing football in the park."
+        }
+      },
+      "tip": {
+        "zh-Hans": "进球啦：Tor! 守门员：der {{Torwart}}",
+        "en": "Goal! – Tor! Goalkeeper: der {{Torwart}}"
+      },
+      "style": {
+        "color": "#2F6BD6",
+        "background": "#DCE6F7"
+      },
+      "anim": {
+        "pose": {
+          "rot": -4,
+          "hLx": -40,
+          "hLy": -52,
+          "hRx": 34,
+          "hRy": -40,
+          "smile": 0.8,
+          "lookX": 1.6
+        },
+        "tint": null,
+        "motion": [
+          "kick"
+        ],
+        "fx": [],
+        "props": [
+          "goal",
+          "football"
+        ],
+        "bubble": null
+      }
+    },
+    {
+      "id": "klimmzuege",
+      "pos": "verb",
+      "lead": "Klimmzüge",
+      "headword": "machen",
+      "gloss": {
+        "zh-Hans": "做引体向上",
+        "en": "to do pull-ups"
+      },
+      "verb": {
+        "reflexive": null,
+        "praeteritum": "machte",
+        "perfekt": {
+          "aux": "haben",
+          "rest": "gemacht"
+        }
+      },
+      "example": {
+        "de": "Wie viele {{Klimmzüge}} schaffst du?",
+        "translations": {
+          "zh-Hans": "你能做几个引体向上？",
+          "en": "How many pull-ups can you do?"
+        }
+      },
+      "tip": {
+        "zh-Hans": "schaffen = 做到：Ich {{schaffe}} das!",
+        "en": "schaffen = to manage: Ich {{schaffe}} das!"
+      },
+      "style": {
+        "color": "#7A4FD6",
+        "background": "#ECE4F8"
+      },
+      "anim": {
+        "pose": {
+          "jump": 20,
+          "hLx": -18,
+          "hLy": -80,
+          "hRx": 18,
+          "hRy": -80,
+          "fLx": -10,
+          "fLy": 6,
+          "fRx": 10,
+          "fRy": 6,
+          "shut": 1,
+          "mopen": 0.3,
+          "smile": -0.2
+        },
+        "tint": null,
+        "motion": [
+          "pullup"
+        ],
+        "fx": [],
+        "props": [
+          "park",
+          "pullup-bar",
+          "knoedel-coach"
+        ],
+        "bubble": null
+      },
+      "notes": "der Klimmzug (B1), plural Klimmzüge."
+    },
+    {
+      "id": "yoga",
+      "pos": "verb",
+      "lead": "Yoga",
+      "headword": "machen",
+      "gloss": {
+        "zh-Hans": "做瑜伽",
+        "en": "to do yoga"
+      },
+      "verb": {
+        "reflexive": null,
+        "praeteritum": "machte",
+        "perfekt": {
+          "aux": "haben",
+          "rest": "gemacht"
+        }
+      },
+      "example": {
+        "de": "Im Sommer machen wir morgens im Park {{Yoga}}.",
+        "translations": {
+          "zh-Hans": "夏天我们早上在公园做瑜伽。",
+          "en": "In summer we do yoga in the park in the mornings."
+        }
+      },
+      "tip": {
+        "zh-Hans": "瑜伽垫：die {{Yogamatte}}",
+        "en": "Yoga mat: die {{Yogamatte}}"
+      },
+      "style": {
+        "color": "#9C7AD6",
+        "background": "#F0E9FA"
+      },
+      "anim": {
+        "pose": {
+          "hLx": -5,
+          "hLy": -54,
+          "hRx": 5,
+          "hRy": -54,
+          "fRx": 20,
+          "fRy": -16,
+          "shut": 1,
+          "smile": 0.7,
+          "jump": 3
+        },
+        "tint": null,
+        "motion": [
+          "wobble"
+        ],
+        "fx": [],
+        "props": [
+          "park",
+          "yoga-mat",
+          "knoedel-yoga"
+        ],
+        "bubble": null
+      }
+    },
+    {
+      "id": "drachen",
+      "pos": "verb",
+      "lead": "Drachen",
+      "headword": "steigen lassen",
+      "gloss": {
+        "zh-Hans": "放风筝",
+        "en": "to fly a kite"
+      },
+      "verb": {
+        "reflexive": null,
+        "praeteritum": "ließ steigen",
+        "perfekt": {
+          "aux": "haben",
+          "rest": "steigen lassen"
+        }
+      },
+      "example": {
+        "de": "Im Herbst lassen wir {{Drachen steigen}}.",
+        "translations": {
+          "zh-Hans": "秋天我们放风筝。",
+          "en": "In autumn we fly kites."
+        }
+      },
+      "tip": {
+        "zh-Hans": "der {{Drachen}} 风筝，der Drache 龙",
+        "en": "der {{Drachen}} = kite, der Drache = dragon"
+      },
+      "style": {
+        "color": "#2E8FA8",
+        "background": "#DCEFFA"
+      },
+      "anim": {
+        "pose": {
+          "hRx": 36,
+          "hRy": -76,
+          "hLx": -24,
+          "hLy": -48,
+          "happy": 1,
+          "smile": 1,
+          "lookX": 1.2,
+          "lookY": -1.6
+        },
+        "tint": null,
+        "motion": [
+          "tail-wag",
+          "breathe"
+        ],
+        "fx": [
+          "breeze"
+        ],
+        "props": [
+          "field",
+          "kite"
+        ],
+        "bubble": null
+      },
+      "notes": "B1: Perfekt usually with Ersatzinfinitiv – wir haben Drachen steigen lassen (steigen gelassen is less standard). Flying kites is a typical autumn activity in Germany."
+    },
+    {
+      "id": "tauchen",
+      "pos": "verb",
+      "headword": "tauchen",
+      "gloss": {
+        "zh-Hans": "潜水",
+        "en": "to dive (underwater)"
+      },
+      "verb": {
+        "reflexive": null,
+        "praeteritum": "tauchte",
+        "perfekt": {
+          "aux": "sein",
+          "rest": "getaucht"
+        }
+      },
+      "example": {
+        "de": "Im Urlaub {{tauche}} ich jeden Tag im Meer.",
+        "translations": {
+          "zh-Hans": "度假时我每天都在海里潜水。",
+          "en": "On holiday I go diving in the sea every day."
+        }
+      },
+      "tip": {
+        "zh-Hans": "浮潜：{{schnorcheln}}",
+        "en": "Snorkelling: {{schnorcheln}}"
+      },
+      "style": {
+        "color": "#1F7FC4",
+        "background": "#CDEBFA"
+      },
+      "anim": {
+        "pose": {
+          "jump": 22,
+          "hLx": -38,
+          "hLy": -52,
+          "hRx": 38,
+          "hRy": -52,
+          "happy": 1,
+          "smile": 0.8,
+          "fLx": -16,
+          "fLy": 4,
+          "fRx": 16,
+          "fRy": 4
+        },
+        "tint": null,
+        "motion": [
+          "swim"
+        ],
+        "fx": [
+          "bubbles"
+        ],
+        "props": [
+          "underwater",
+          "snorkel",
+          "knoedel-dive"
+        ],
+        "bubble": null
+      },
+      "notes": "tauchen takes sein for movement (ist getaucht); haben is also heard for the activity."
+    },
+    {
+      "id": "ski-fahren",
+      "pos": "verb",
+      "lead": "Ski",
+      "headword": "fahren",
+      "gloss": {
+        "zh-Hans": "滑雪",
+        "en": "to ski"
+      },
+      "verb": {
+        "reflexive": null,
+        "praeteritum": "fuhr",
+        "perfekt": {
+          "aux": "sein",
+          "rest": "gefahren"
+        }
+      },
+      "example": {
+        "de": "Im Winter fahren wir in den Alpen {{Ski}}.",
+        "translations": {
+          "zh-Hans": "冬天我们去阿尔卑斯山滑雪。",
+          "en": "In winter we go skiing in the Alps."
+        }
+      },
+      "tip": {
+        "zh-Hans": "Ski 读作 Schi，同英语 she",
+        "en": "Ski is pronounced Schi, like 'she'"
+      },
+      "style": {
+        "color": "#3B6BB0",
+        "background": "#E6F0FA"
+      },
+      "anim": {
+        "pose": {
+          "rot": -6,
+          "hLx": -34,
+          "hLy": -40,
+          "hRx": 34,
+          "hRy": -40,
+          "happy": 1,
+          "smile": 1,
+          "blush": 0.8,
+          "jump": 4
+        },
+        "tint": null,
+        "motion": [
+          "ski"
+        ],
+        "fx": [
+          "snow"
+        ],
+        "props": [
+          "snow-slope",
+          "skis",
+          "beanie",
+          "ski-poles",
+          "knoedel-snow"
+        ],
+        "bubble": null
+      }
+    }
+  ]
+}

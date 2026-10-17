@@ -126,7 +126,29 @@ The program and the learning content are separate:
 
 So new content does not need a new firmware, and a watch can be moved from one pack to another (say, from A2 to B1) in under a minute.
 
-The first pack, `a2-start`, has ten decks of 12 cards at level A2: moods and emotions, body and health, personality, household chores, on the go, quick reactions, shopping, appointments, at home (nouns), at the doctor's (nouns). Translations are in English and Chinese.
+The first pack, `a2-start`, has 15 decks of 12 cards, 180 cards in all, at level A2 (two with some B1 words). Translations are in English and Chinese.
+
+| Deck | Topic | Kind | Examples | Level | Acted by |
+|---|---|---|---|---|---|
+| Wie fühlst du dich? | Moods and emotions | adjectives | glücklich, traurig, nervös | A2–B1 | Knödel |
+| Wie geht's dir? | Body and health | adjectives | müde, hungrig, durstig | A2 | Knödel |
+| Wie bist du? | Personality | adjectives | fleißig, faul, ordentlich | A2 | Knödel |
+| Hausarbeit | Household chores | verbs | aufräumen, putzen, staubsaugen | A2 | Brezel |
+| Unterwegs | On the go | verbs | Fahrrad fahren, sich beeilen, verpassen | A2 | Brezel |
+| Reaktionen | Quick reactions | phrases | Wie bitte?, Ach so!, Echt? | A2 | Knödel |
+| Einkaufen | Shopping | verbs | aussuchen, anprobieren, passen | A2 | Brezel |
+| Termine | Appointments | verbs | anrufen, zurückrufen, bestätigen | A2 | Brezel |
+| Meine Wohnung | At home | nouns | das Sofa, der Teppich, die Lampe | A2 | the things themselves |
+| Beim Arzt | At the doctor's | nouns | der Arzt, die Praxis, das Fieber | A2 | the things themselves |
+| In den Bergen | In the mountains | nouns | der Berg, der Rucksack, die Hütte | A2 | the things themselves |
+| Wir waren wandern! | Hiking | verbs | packen, wandern, klettern | A2 | Brezel and Knödel |
+| Auf der Hütte | At the mountain hut | phrases | Grüß Gott!, Prost!, Zahlen, bitte! | A2 | Brezel and Knödel |
+| Im Fitnessstudio | At the gym | verbs | sich aufwärmen, trainieren, Gewichte heben | A2–B1 | Brezel and Knödel |
+| Sport im Freien | Outdoor sports | verbs | joggen, Fußball spielen, Ski fahren | A2–B1 | Brezel and Knödel |
+
+The last five are two little series: a hiking trip to the Dolomites, where German is spoken and Knödel is the local dish, and a sports double episode with Knödel as the coach.
+
+**More decks are on the way.** New ones come out in new content packs, installed from the [web installer](https://yanxuceo.github.io/knoedel-watch/) like the firmware. Is there a topic you would like? [Open an issue](https://github.com/yanxuceo/knoedel-watch/issues).
 
 ## Build and flash
 

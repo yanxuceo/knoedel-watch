@@ -1,0 +1,694 @@
+{
+  "format": 1,
+  "id": "a2-wandern-verben",
+  "version": "0.1.0",
+  "episode": 16,
+  "title": {
+    "de": "Wir waren wandern!",
+    "zh-Hans": "去徒步啦",
+    "en": "We went hiking!"
+  },
+  "level": "A2",
+  "character": "katze",
+  "locales": [
+    "zh-Hans",
+    "en"
+  ],
+  "license": "CC-BY-NC-SA-4.0",
+  "review": {
+    "status": "draft",
+    "notes": "Mini-series \"Ab in die Berge!\" (Ep. 15–17): the cat takes Knödel hiking in the Dolomites / South Tyrol. Every example is in the Perfekt, so the deck retells the trip. Thread: haben or sein? (4 × sein: wandern, steigen, klettern, schwimmen), -ieren and inseparable verbs without ge-. Please check every notes entry."
+  },
+  "cards": [
+    {
+      "id": "packen",
+      "pos": "verb",
+      "headword": "packen",
+      "gloss": {
+        "zh-Hans": "收拾（行李）",
+        "en": "to pack"
+      },
+      "verb": {
+        "reflexive": null,
+        "praeteritum": "packte",
+        "perfekt": {
+          "aux": "haben",
+          "rest": "gepackt"
+        }
+      },
+      "example": {
+        "de": "Den Rucksack habe ich schon gestern Abend {{gepackt}}.",
+        "translations": {
+          "zh-Hans": "背包我昨晚就收拾好了。",
+          "en": "I already packed my backpack last night."
+        }
+      },
+      "tip": {
+        "zh-Hans": "大多数动词完成时用 {{haben}}：hat gepackt",
+        "en": "Most verbs form the Perfekt with {{haben}}: hat gepackt"
+      },
+      "style": {
+        "color": "#7A5AC8",
+        "background": "#ECE5F8"
+      },
+      "anim": {
+        "pose": {
+          "hRx": 40,
+          "hRy": -40,
+          "lookX": 1.6,
+          "lookY": 1,
+          "smile": 0.6,
+          "rot": 4
+        },
+        "tint": null,
+        "motion": [
+          "drop",
+          "tail-wag"
+        ],
+        "fx": [],
+        "props": [
+          "backpack-open",
+          "water-bottle"
+        ],
+        "bubble": null
+      }
+    },
+    {
+      "id": "tanken",
+      "pos": "verb",
+      "headword": "tanken",
+      "gloss": {
+        "zh-Hans": "加油",
+        "en": "to fill up (fuel)"
+      },
+      "verb": {
+        "reflexive": null,
+        "praeteritum": "tankte",
+        "perfekt": {
+          "aux": "haben",
+          "rest": "getankt"
+        }
+      },
+      "example": {
+        "de": "Auf dem Weg nach Italien haben wir {{getankt}}.",
+        "translations": {
+          "zh-Hans": "去意大利的路上，我们加了油。",
+          "en": "We filled up on the way to Italy."
+        }
+      },
+      "tip": {
+        "zh-Hans": "加油站：die {{Tankstelle}}",
+        "en": "Petrol station: die {{Tankstelle}}"
+      },
+      "style": {
+        "color": "#D9620F",
+        "background": "#FFE6D1"
+      },
+      "anim": {
+        "pose": {
+          "hRx": 42,
+          "hRy": -44,
+          "lookX": 1.4,
+          "smile": 0.5
+        },
+        "tint": null,
+        "motion": [
+          "tail-wag",
+          "breathe"
+        ],
+        "fx": [],
+        "props": [
+          "car",
+          "fuel-nozzle"
+        ],
+        "bubble": null
+      }
+    },
+    {
+      "id": "wandern",
+      "pos": "verb",
+      "headword": "wandern",
+      "gloss": {
+        "zh-Hans": "徒步、远足",
+        "en": "to hike"
+      },
+      "verb": {
+        "reflexive": null,
+        "praeteritum": "wanderte",
+        "perfekt": {
+          "aux": "sein",
+          "rest": "gewandert"
+        }
+      },
+      "example": {
+        "de": "Am Samstag sind wir sechs Stunden {{gewandert}}.",
+        "translations": {
+          "zh-Hans": "周六我们徒步了六个小时。",
+          "en": "On Saturday we hiked for six hours."
+        }
+      },
+      "tip": {
+        "zh-Hans": "位置移动用 {{sein}}：ist gewandert",
+        "en": "Moving from place to place takes {{sein}}: ist gewandert"
+      },
+      "style": {
+        "color": "#3E8E2F",
+        "background": "#E1F3DA"
+      },
+      "anim": {
+        "pose": {
+          "happy": 1,
+          "smile": 0.9,
+          "hRx": 34,
+          "hRy": -44
+        },
+        "tint": null,
+        "motion": [
+          "walk",
+          "tail-wag"
+        ],
+        "fx": [],
+        "props": [
+          "hills",
+          "hiking-pole",
+          "knoedel-walk"
+        ],
+        "bubble": null
+      }
+    },
+    {
+      "id": "steigen",
+      "pos": "verb",
+      "headword": "steigen",
+      "gloss": {
+        "zh-Hans": "登、往上爬",
+        "en": "to climb (up)"
+      },
+      "verb": {
+        "reflexive": null,
+        "praeteritum": "stieg",
+        "perfekt": {
+          "aux": "sein",
+          "rest": "gestiegen"
+        }
+      },
+      "example": {
+        "de": "Früh am Morgen sind wir auf den Berg {{gestiegen}}.",
+        "translations": {
+          "zh-Hans": "一大早我们就爬上了山。",
+          "en": "Early in the morning we climbed up the mountain."
+        }
+      },
+      "tip": {
+        "zh-Hans": "价格上涨也用它：Die Preise {{steigen}}.",
+        "en": "Prices go up too: Die Preise {{steigen}}."
+      },
+      "style": {
+        "color": "#B7791F",
+        "background": "#FFF0C9"
+      },
+      "anim": {
+        "pose": {
+          "rot": 9,
+          "lookX": 1.4,
+          "lookY": -1,
+          "smile": 0.1,
+          "mopen": 0.2,
+          "hRx": 36,
+          "hRy": -46
+        },
+        "tint": null,
+        "motion": [
+          "walk"
+        ],
+        "fx": [
+          "sweat"
+        ],
+        "props": [
+          "slope",
+          "hiking-pole"
+        ],
+        "bubble": null
+      }
+    },
+    {
+      "id": "klettern",
+      "pos": "verb",
+      "headword": "klettern",
+      "gloss": {
+        "zh-Hans": "攀爬",
+        "en": "to climb, scramble"
+      },
+      "verb": {
+        "reflexive": null,
+        "praeteritum": "kletterte",
+        "perfekt": {
+          "aux": "sein",
+          "rest": "geklettert"
+        }
+      },
+      "example": {
+        "de": "Ich bin auf einen großen Stein {{geklettert}}.",
+        "translations": {
+          "zh-Hans": "我爬上了一块大石头。",
+          "en": "I climbed onto a big rock."
+        }
+      },
+      "tip": {
+        "zh-Hans": "steigen 用脚走上去，{{klettern}} 要手脚并用",
+        "en": "steigen: on foot. {{klettern}}: with hands and feet."
+      },
+      "style": {
+        "color": "#8A5A3B",
+        "background": "#F1E4DA"
+      },
+      "anim": {
+        "pose": {
+          "hLx": -22,
+          "hLy": -50,
+          "hRx": 24,
+          "hRy": -52,
+          "lookY": -1.4,
+          "smile": 0.2,
+          "mopen": 0.3,
+          "earL": -4,
+          "earR": -4,
+          "rot": -2
+        },
+        "tint": null,
+        "motion": [
+          "climb"
+        ],
+        "fx": [],
+        "props": [
+          "boulder",
+          "knoedel-top"
+        ],
+        "bubble": null
+      }
+    },
+    {
+      "id": "schwitzen",
+      "pos": "verb",
+      "headword": "schwitzen",
+      "gloss": {
+        "zh-Hans": "出汗",
+        "en": "to sweat"
+      },
+      "verb": {
+        "reflexive": null,
+        "praeteritum": "schwitzte",
+        "perfekt": {
+          "aux": "haben",
+          "rest": "geschwitzt"
+        }
+      },
+      "example": {
+        "de": "In der Sonne haben wir richtig {{geschwitzt}}.",
+        "translations": {
+          "zh-Hans": "在太阳底下我们出了好多汗。",
+          "en": "We really sweated in the sun."
+        }
+      },
+      "tip": {
+        "zh-Hans": "反义：{{frieren}}（觉得冷）",
+        "en": "The opposite: {{frieren}} (to be cold)"
+      },
+      "style": {
+        "color": "#E0602A",
+        "background": "#FFE9C7"
+      },
+      "anim": {
+        "pose": {
+          "lid": 0.45,
+          "smile": -0.2,
+          "mopen": 0.45,
+          "hRx": 30,
+          "hRy": -80,
+          "earL": -6,
+          "earR": -6,
+          "sy": 0.97
+        },
+        "tint": null,
+        "motion": [
+          "fan",
+          "breathe"
+        ],
+        "fx": [
+          "sweat"
+        ],
+        "props": [
+          "big-sun",
+          "knoedel-tired"
+        ],
+        "bubble": null
+      }
+    },
+    {
+      "id": "sich-ausruhen",
+      "pos": "verb",
+      "lead": "sich",
+      "headword": "{{aus|prefix}}ruhen",
+      "gloss": {
+        "zh-Hans": "休息、歇会儿",
+        "en": "to rest"
+      },
+      "verb": {
+        "reflexive": "acc",
+        "praeteritum": "ruhte {{sich|refl}} {{aus|prefix}}",
+        "perfekt": {
+          "aux": "haben",
+          "rest": "{{sich|refl}} {{aus|prefix}}geruht"
+        }
+      },
+      "example": {
+        "de": "Auf einer Bank haben wir {{uns|refl}} kurz {{ausgeruht}}.",
+        "translations": {
+          "zh-Hans": "我们在一张长椅上歇了一会儿。",
+          "en": "We had a short rest on a bench."
+        }
+      },
+      "tip": {
+        "zh-Hans": "也可以说：eine {{Pause}} machen",
+        "en": "Also: eine {{Pause}} machen"
+      },
+      "style": {
+        "color": "#2E8FA8",
+        "background": "#D8F0F5"
+      },
+      "anim": {
+        "pose": {
+          "jump": 23,
+          "shut": 1,
+          "smile": 0.8,
+          "hLx": -26,
+          "hLy": -26,
+          "hRx": 26,
+          "hRy": -26,
+          "fLx": -19,
+          "fLy": 17,
+          "fRx": 19,
+          "fRy": 17
+        },
+        "tint": null,
+        "motion": [
+          "breathe",
+          "tail-wag"
+        ],
+        "fx": [
+          "sigh-puffs"
+        ],
+        "props": [
+          "bench",
+          "knoedel-bench"
+        ],
+        "bubble": null
+      }
+    },
+    {
+      "id": "fotografieren",
+      "pos": "verb",
+      "headword": "fotografieren",
+      "gloss": {
+        "zh-Hans": "拍照",
+        "en": "to take photos"
+      },
+      "verb": {
+        "reflexive": null,
+        "praeteritum": "fotografierte",
+        "perfekt": {
+          "aux": "haben",
+          "rest": "fotografiert"
+        }
+      },
+      "example": {
+        "de": "Oben habe ich die ganze Zeit {{fotografiert}}.",
+        "translations": {
+          "zh-Hans": "到了上面我一直在拍照。",
+          "en": "At the top I was taking photos the whole time."
+        }
+      },
+      "tip": {
+        "zh-Hans": "-ieren 动词完成时不加 ge-：hat {{fotografiert}}",
+        "en": "-ieren verbs take no ge-: hat {{fotografiert}}"
+      },
+      "style": {
+        "color": "#C0567A",
+        "background": "#FBE3EC"
+      },
+      "anim": {
+        "pose": {
+          "hLx": 16,
+          "hLy": -58,
+          "hRx": 36,
+          "hRy": -60,
+          "lookX": 1.8,
+          "shut": 0,
+          "lid": 0.2,
+          "smile": 0.7,
+          "rot": -3
+        },
+        "tint": null,
+        "motion": [
+          "tail-wag"
+        ],
+        "fx": [
+          "flash"
+        ],
+        "props": [
+          "mountains",
+          "knoedel-pose",
+          "camera"
+        ],
+        "bubble": null
+      }
+    },
+    {
+      "id": "geniessen",
+      "pos": "verb",
+      "headword": "genießen",
+      "gloss": {
+        "zh-Hans": "享受",
+        "en": "to enjoy"
+      },
+      "verb": {
+        "reflexive": null,
+        "praeteritum": "genoss",
+        "perfekt": {
+          "aux": "haben",
+          "rest": "genossen"
+        }
+      },
+      "example": {
+        "de": "Wir haben die Aussicht lange {{genossen}}.",
+        "translations": {
+          "zh-Hans": "我们欣赏了很久的风景。",
+          "en": "We enjoyed the view for a long time."
+        }
+      },
+      "tip": {
+        "zh-Hans": "常用祝福：{{Genieß}} den Tag!",
+        "en": "A nice wish: {{Genieß}} den Tag!"
+      },
+      "style": {
+        "color": "#C77B12",
+        "background": "#FFEBC6"
+      },
+      "anim": {
+        "pose": {
+          "happy": 1,
+          "smile": 1,
+          "blush": 0.7,
+          "hLx": -40,
+          "hLy": -60,
+          "hRx": 40,
+          "hRy": -60,
+          "lookY": -1
+        },
+        "tint": null,
+        "motion": [
+          "breathe",
+          "tail-wag"
+        ],
+        "fx": [
+          "hearts"
+        ],
+        "props": [
+          "sunset",
+          "knoedel"
+        ],
+        "bubble": null
+      }
+    },
+    {
+      "id": "schwimmen",
+      "pos": "verb",
+      "headword": "schwimmen",
+      "gloss": {
+        "zh-Hans": "游泳",
+        "en": "to swim"
+      },
+      "verb": {
+        "reflexive": null,
+        "praeteritum": "schwamm",
+        "perfekt": {
+          "aux": "sein",
+          "rest": "geschwommen"
+        }
+      },
+      "example": {
+        "de": "Danach bin ich im See {{geschwommen}} – eiskalt!",
+        "translations": {
+          "zh-Hans": "之后我还在湖里游了泳，水冰冷！",
+          "en": "Afterwards I swam in the lake – ice-cold!"
+        }
+      },
+      "tip": {
+        "zh-Hans": "去游泳：{{schwimmen gehen}}",
+        "en": "Go for a swim: {{schwimmen gehen}}"
+      },
+      "style": {
+        "color": "#1F7FC4",
+        "background": "#D6ECFA"
+      },
+      "anim": {
+        "pose": {
+          "jump": -14,
+          "open": 1.25,
+          "mopen": 0.45,
+          "smile": 0.3,
+          "hLx": -38,
+          "hLy": -60,
+          "hRx": 38,
+          "hRy": -60,
+          "earL": -6,
+          "earR": -6
+        },
+        "tint": null,
+        "motion": [
+          "swim"
+        ],
+        "fx": [],
+        "props": [
+          "lake-back",
+          "knoedel-float",
+          "lake-water"
+        ],
+        "bubble": null
+      },
+      "notes": "schwimmen takes sein in the Perfekt (haben is also heard in the north for the activity)."
+    },
+    {
+      "id": "uebernachten",
+      "pos": "verb",
+      "headword": "übernachten",
+      "gloss": {
+        "zh-Hans": "过夜",
+        "en": "to stay overnight"
+      },
+      "verb": {
+        "reflexive": null,
+        "praeteritum": "übernachtete",
+        "perfekt": {
+          "aux": "haben",
+          "rest": "übernachtet"
+        }
+      },
+      "example": {
+        "de": "Wir haben auf einer Hütte {{übernachtet}}.",
+        "translations": {
+          "zh-Hans": "我们在一个山间小屋过了一夜。",
+          "en": "We spent the night in a mountain hut."
+        }
+      },
+      "tip": {
+        "zh-Hans": "这里 über- 不可分，没有 ge-：hat {{übernachtet}}",
+        "en": "Here über- doesn't split, so no ge-: hat {{übernachtet}}"
+      },
+      "style": {
+        "color": "#5B5FC7",
+        "background": "#2E3566"
+      },
+      "anim": {
+        "pose": {
+          "shut": 1,
+          "mopen": 0.85,
+          "smile": 0,
+          "hLx": -30,
+          "hLy": -34,
+          "hRx": 18,
+          "hRy": -74,
+          "rot": -4
+        },
+        "tint": null,
+        "motion": [
+          "breathe"
+        ],
+        "fx": [],
+        "props": [
+          "night-window",
+          "bed",
+          "knoedel-sleep",
+          "nightcap"
+        ],
+        "bubble": null
+      }
+    },
+    {
+      "id": "sich-erholen",
+      "pos": "verb",
+      "lead": "sich",
+      "headword": "erholen",
+      "gloss": {
+        "zh-Hans": "恢复、休养",
+        "en": "to recover, rest"
+      },
+      "verb": {
+        "reflexive": "acc",
+        "praeteritum": "erholte {{sich|refl}}",
+        "perfekt": {
+          "aux": "haben",
+          "rest": "{{sich|refl}} erholt"
+        }
+      },
+      "example": {
+        "de": "Drei Tage in den Bergen – ich habe {{mich|refl}} super {{erholt}}!",
+        "translations": {
+          "zh-Hans": "在山里待了三天，我完全恢复了元气！",
+          "en": "Three days in the mountains – I've really recharged!"
+        }
+      },
+      "tip": {
+        "zh-Hans": "歇一下 sich ausruhen；度假恢复 sich {{erholen}}",
+        "en": "A short rest: sich ausruhen. Recharging on holiday: sich {{erholen}}"
+      },
+      "style": {
+        "color": "#2E9A7A",
+        "background": "#DAF1E9"
+      },
+      "anim": {
+        "pose": {
+          "smile": 1,
+          "hLx": -22,
+          "hLy": -86,
+          "hRx": 22,
+          "hRy": -86,
+          "rot": -3
+        },
+        "tint": null,
+        "motion": [
+          "breathe",
+          "tail-wag"
+        ],
+        "fx": [],
+        "props": [
+          "meadow",
+          "knoedel-cool",
+          "sunglasses"
+        ],
+        "bubble": null
+      },
+      "notes": "er- is inseparable, so no ge-: hat sich erholt."
+    }
+  ]
+}

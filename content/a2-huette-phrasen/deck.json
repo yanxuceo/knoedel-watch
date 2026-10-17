@@ -1,0 +1,600 @@
+{
+  "format": 1,
+  "id": "a2-huette-phrasen",
+  "version": "0.1.0",
+  "episode": 17,
+  "title": {
+    "de": "Auf der Hütte",
+    "zh-Hans": "山间小屋",
+    "en": "At the mountain hut"
+  },
+  "level": "A2",
+  "character": "katze",
+  "locales": [
+    "zh-Hans",
+    "en"
+  ],
+  "license": "CC-BY-NC-SA-4.0",
+  "review": {
+    "status": "draft",
+    "notes": "Mini-series \"Ab in die Berge!\" (Ep. 15–17): the cat takes Knödel hiking in the Dolomites / South Tyrol. Phrases as dialogues, from the trail to the hut table. Knödel appears as the buddy prop; the menu card (Speckknödel) is the joke of the series. Please check every notes entry."
+  },
+  "cards": [
+    {
+      "id": "auf-gehts",
+      "pos": "phrase",
+      "headword": "Auf geht's!",
+      "gloss": {
+        "zh-Hans": "出发！",
+        "en": "Let's go!"
+      },
+      "example": {
+        "de": "– Hast du alles? Wasser, Jacke, Karte?\n– Ja! {{Auf geht's}}!",
+        "translations": {
+          "zh-Hans": "—都带齐了吗？水、外套、地图？\n—齐了！出发！",
+          "en": "– Got everything? Water, jacket, map?\n– Yes! Let's go!"
+        }
+      },
+      "tip": {
+        "zh-Hans": "意思一样：{{Los geht's}}!",
+        "en": "Same meaning: {{Los geht's}}!"
+      },
+      "style": {
+        "color": "#3E8E2F",
+        "background": "#E1F3DA"
+      },
+      "anim": {
+        "pose": {
+          "happy": 1,
+          "smile": 1,
+          "mopen": 0.5,
+          "hRx": 46,
+          "hRy": -74,
+          "earL": 6,
+          "earR": 6
+        },
+        "tint": null,
+        "motion": [
+          "hop",
+          "tail-wag"
+        ],
+        "fx": [],
+        "props": [
+          "mountains",
+          "backpack",
+          "knoedel-wow",
+          "backpack-straps"
+        ],
+        "bubble": null
+      }
+    },
+    {
+      "id": "wie-weit",
+      "pos": "phrase",
+      "lead": "Wie weit",
+      "headword": "ist es noch?",
+      "gloss": {
+        "zh-Hans": "还有多远？",
+        "en": "How far is it?"
+      },
+      "example": {
+        "de": "– {{Wie weit ist es noch}} bis zur Hütte?\n– Ungefähr eine Stunde.",
+        "translations": {
+          "zh-Hans": "—到小屋还有多远？\n—大约一个小时。",
+          "en": "– How much further to the hut?\n– About an hour."
+        }
+      },
+      "tip": {
+        "zh-Hans": "问时间：Wie lange {{dauert}} es noch?",
+        "en": "Asking about time: Wie lange {{dauert}} es noch?"
+      },
+      "style": {
+        "color": "#3B6BB0",
+        "background": "#DCE6F3"
+      },
+      "anim": {
+        "pose": {
+          "lookX": 1.8,
+          "lookY": -1.4,
+          "lid": 0.25,
+          "smile": 0,
+          "hRx": 34,
+          "hRy": -48,
+          "rot": -3
+        },
+        "tint": null,
+        "motion": [
+          "look-around"
+        ],
+        "fx": [
+          "question"
+        ],
+        "props": [
+          "signpost",
+          "hiking-pole",
+          "knoedel-tired"
+        ],
+        "bubble": null
+      }
+    },
+    {
+      "id": "nicht-mehr",
+      "pos": "phrase",
+      "lead": "Ich kann",
+      "headword": "nicht mehr!",
+      "gloss": {
+        "zh-Hans": "我走不动了！",
+        "en": "I can't go on!"
+      },
+      "example": {
+        "de": "– Nur noch zehn Minuten!\n– {{Ich kann nicht mehr}}!",
+        "translations": {
+          "zh-Hans": "—就剩十分钟了！\n—我走不动了！",
+          "en": "– Only ten more minutes!\n– I can't go on!"
+        }
+      },
+      "tip": {
+        "zh-Hans": "没有了：Ich habe {{kein}} Wasser {{mehr}}.",
+        "en": "None left: Ich habe {{kein}} Wasser {{mehr}}."
+      },
+      "style": {
+        "color": "#C2553A",
+        "background": "#F9E0D8"
+      },
+      "anim": {
+        "pose": {
+          "rot": 6,
+          "lid": 0.5,
+          "smile": -0.5,
+          "mopen": 0.4,
+          "hLx": -26,
+          "hLy": -26,
+          "hRx": 34,
+          "hRy": -46,
+          "sy": 0.95,
+          "sx": 1.04,
+          "earL": -12,
+          "earR": -12
+        },
+        "tint": null,
+        "motion": [
+          "tremble",
+          "breathe"
+        ],
+        "fx": [
+          "sweat"
+        ],
+        "props": [
+          "hiking-pole",
+          "knoedel-flat"
+        ],
+        "bubble": null
+      }
+    },
+    {
+      "id": "gleich-oben",
+      "pos": "phrase",
+      "lead": "Gleich sind wir",
+      "headword": "oben!",
+      "gloss": {
+        "zh-Hans": "马上就到顶了！",
+        "en": "Almost at the top!"
+      },
+      "example": {
+        "de": "– Mir tun die Beine weh.\n– Komm, {{gleich sind wir oben}}!",
+        "translations": {
+          "zh-Hans": "—我腿好疼。\n—加油，马上就到顶了！",
+          "en": "– My legs hurt.\n– Come on, we're almost at the top!"
+        }
+      },
+      "tip": {
+        "zh-Hans": "oben 上面 / {{unten}} 下面",
+        "en": "oben (up there) / {{unten}} (down there)"
+      },
+      "style": {
+        "color": "#B7791F",
+        "background": "#FFF1C4"
+      },
+      "anim": {
+        "pose": {
+          "smile": 0.9,
+          "happy": 1,
+          "mopen": 0.35,
+          "hRx": 46,
+          "hRy": -76,
+          "lookX": 1.6,
+          "rot": 4
+        },
+        "tint": null,
+        "motion": [
+          "hop",
+          "tail-wag"
+        ],
+        "fx": [],
+        "props": [
+          "slope",
+          "knoedel-tired"
+        ],
+        "bubble": null
+      }
+    },
+    {
+      "id": "aussicht",
+      "pos": "phrase",
+      "lead": "Was für eine",
+      "headword": "Aussicht!",
+      "gloss": {
+        "zh-Hans": "风景真美！",
+        "en": "What a view!"
+      },
+      "example": {
+        "de": "– Wahnsinn, {{was für eine Aussicht}}!\n– Schau mal, da unten ist der See!",
+        "translations": {
+          "zh-Hans": "—哇，风景太美了！\n—看，下面就是那个湖！",
+          "en": "– Amazing, what a view!\n– Look, there's the lake down there!"
+        }
+      },
+      "tip": {
+        "zh-Hans": "多么…啊：Was für ein {{Tag}}!",
+        "en": "Was für ein(e) + noun = what a …: Was für ein {{Tag}}!"
+      },
+      "style": {
+        "color": "#D9620F",
+        "background": "#FFE3CC"
+      },
+      "anim": {
+        "pose": {
+          "open": 1.3,
+          "mopen": 0.7,
+          "smile": 0.8,
+          "hLx": -40,
+          "hLy": -62,
+          "hRx": 40,
+          "hRy": -62,
+          "lookY": -1.2,
+          "earL": 8,
+          "earR": 8
+        },
+        "tint": null,
+        "motion": [
+          "hop"
+        ],
+        "fx": [
+          "sparkles"
+        ],
+        "props": [
+          "mountains",
+          "knoedel-wow"
+        ],
+        "bubble": null
+      },
+      "notes": "Wahnsinn! = Amazing! (colloquial)."
+    },
+    {
+      "id": "gruess-gott",
+      "pos": "phrase",
+      "headword": "Grüß Gott!",
+      "gloss": {
+        "zh-Hans": "您好（南部）",
+        "en": "Hello (in the south)"
+      },
+      "example": {
+        "de": "– {{Grüß Gott}}!\n– Grüß Gott! Haben Sie noch Platz für zwei?",
+        "translations": {
+          "zh-Hans": "—您好！\n—您好！还有两个人的位子吗？",
+          "en": "– Hello!\n– Hello! Have you got room for two?"
+        }
+      },
+      "tip": {
+        "zh-Hans": "南德、奥地利、南蒂罗尔常用；北德说 Moin",
+        "en": "Used in the south, Austria and South Tyrol; up north: Moin"
+      },
+      "style": {
+        "color": "#2E8FA8",
+        "background": "#D8F0F5"
+      },
+      "anim": {
+        "pose": {
+          "happy": 1,
+          "smile": 1,
+          "hRx": 46,
+          "hRy": -74,
+          "lookX": 0.6
+        },
+        "tint": null,
+        "motion": [
+          "wave",
+          "tail-wag"
+        ],
+        "fx": [],
+        "props": [
+          "hut-door",
+          "knoedel"
+        ],
+        "bubble": null
+      }
+    },
+    {
+      "id": "ist-hier-frei",
+      "pos": "phrase",
+      "lead": "Ist hier",
+      "headword": "noch frei?",
+      "gloss": {
+        "zh-Hans": "这儿有人吗？",
+        "en": "Is this seat free?"
+      },
+      "example": {
+        "de": "– Entschuldigung, {{ist hier noch frei}}?\n– Ja, klar! Setzen Sie sich.",
+        "translations": {
+          "zh-Hans": "—请问，这儿有人吗？\n—没人，请坐！",
+          "en": "– Excuse me, is this seat free?\n– Sure! Have a seat."
+        }
+      },
+      "tip": {
+        "zh-Hans": "有人了：Hier ist {{besetzt}}.",
+        "en": "Taken: Hier ist {{besetzt}}."
+      },
+      "style": {
+        "color": "#7A4FD6",
+        "background": "#ECE4F8"
+      },
+      "anim": {
+        "pose": {
+          "smile": 0.6,
+          "hRx": 40,
+          "hRy": -40,
+          "lookX": 1.6,
+          "rot": 4,
+          "open": 1.1
+        },
+        "tint": null,
+        "motion": [
+          "tail-wag"
+        ],
+        "fx": [
+          "question"
+        ],
+        "props": [
+          "hut-bench",
+          "knoedel-guest"
+        ],
+        "bubble": null
+      }
+    },
+    {
+      "id": "empfehlen",
+      "pos": "phrase",
+      "lead": "Was können Sie",
+      "headword": "empfehlen?",
+      "gloss": {
+        "zh-Hans": "您推荐什么？",
+        "en": "What's good here?"
+      },
+      "example": {
+        "de": "– {{Was können Sie empfehlen}}?\n– Heute haben wir Speckknödel!",
+        "translations": {
+          "zh-Hans": "—您推荐什么？\n—今天有熏肉丸子！",
+          "en": "– What do you recommend?\n– Today we have bacon dumplings!"
+        }
+      },
+      "tip": {
+        "zh-Hans": "empfehlen 不规则：er {{empfiehlt}}",
+        "en": "Irregular: er {{empfiehlt}}"
+      },
+      "style": {
+        "color": "#C0567A",
+        "background": "#FBE3EC"
+      },
+      "anim": {
+        "pose": {
+          "lookX": 1.8,
+          "open": 1.2,
+          "smile": 0.4,
+          "mopen": 0.25,
+          "hLx": -10,
+          "hLy": -56,
+          "rot": 3
+        },
+        "tint": null,
+        "motion": [
+          "tail-wag"
+        ],
+        "fx": [],
+        "props": [
+          "menu-board",
+          "knoedel-shock"
+        ],
+        "bubble": null
+      },
+      "notes": "Speckknödel: dumplings with Speck (cured, smoked ham), zh keeps 丸子 for the joke (Knödel = 小丸子); a Tyrolean and South Tyrolean classic. The joke: Knödel reads the menu."
+    },
+    {
+      "id": "guten-appetit",
+      "pos": "phrase",
+      "lead": "Guten",
+      "headword": "Appetit!",
+      "gloss": {
+        "zh-Hans": "祝好胃口",
+        "en": "Enjoy your meal!"
+      },
+      "example": {
+        "de": "– {{Guten Appetit}}!\n– Danke, gleichfalls!",
+        "translations": {
+          "zh-Hans": "—祝你好胃口！\n—谢谢，你也是！",
+          "en": "– Enjoy your meal!\n– Thanks, you too!"
+        }
+      },
+      "tip": {
+        "zh-Hans": "同事中午见面常说 {{Mahlzeit}}!",
+        "en": "Colleagues greet each other at lunchtime with {{Mahlzeit}}!"
+      },
+      "style": {
+        "color": "#5E8C31",
+        "background": "#E5F1D6"
+      },
+      "anim": {
+        "pose": {
+          "happy": 1,
+          "smile": 1,
+          "blush": 0.6,
+          "hRx": 30,
+          "hRy": -62
+        },
+        "tint": null,
+        "motion": [
+          "hop",
+          "tail-wag"
+        ],
+        "fx": [
+          "steam"
+        ],
+        "props": [
+          "knoedel-table",
+          "table-food",
+          "fork"
+        ],
+        "bubble": null
+      }
+    },
+    {
+      "id": "prost",
+      "pos": "phrase",
+      "headword": "Prost!",
+      "gloss": {
+        "zh-Hans": "干杯！",
+        "en": "Cheers!"
+      },
+      "example": {
+        "de": "– {{Prost}}! Auf uns!\n– Prost!",
+        "translations": {
+          "zh-Hans": "—干杯！敬我们！\n—干杯！",
+          "en": "– Cheers! To us!\n– Cheers!"
+        }
+      },
+      "tip": {
+        "zh-Hans": "碰杯时要看着对方的眼睛！",
+        "en": "Look each other in the eye when you clink glasses!"
+      },
+      "style": {
+        "color": "#C9730C",
+        "background": "#FFEBCB"
+      },
+      "anim": {
+        "pose": {
+          "happy": 1,
+          "smile": 1,
+          "mopen": 0.4,
+          "hRx": 36,
+          "hRy": -66,
+          "rot": 4
+        },
+        "tint": null,
+        "motion": [
+          "hop"
+        ],
+        "fx": [
+          "clink"
+        ],
+        "props": [
+          "knoedel-cheers",
+          "table-drinks",
+          "glass"
+        ],
+        "bubble": null
+      }
+    },
+    {
+      "id": "zahlen-bitte",
+      "pos": "phrase",
+      "headword": "Zahlen, bitte!",
+      "gloss": {
+        "zh-Hans": "买单！",
+        "en": "The bill, please!"
+      },
+      "example": {
+        "de": "– {{Zahlen, bitte}}!\n– Zusammen oder getrennt?",
+        "translations": {
+          "zh-Hans": "—买单！\n—一起付还是分开付？",
+          "en": "– The bill, please!\n– Together or separately?"
+        }
+      },
+      "tip": {
+        "zh-Hans": "更礼貌：Wir möchten bitte {{zahlen}}.",
+        "en": "Politer: Wir möchten bitte {{zahlen}}."
+      },
+      "style": {
+        "color": "#6B5FA8",
+        "background": "#E6E2F3"
+      },
+      "anim": {
+        "pose": {
+          "smile": 0.6,
+          "hRx": 46,
+          "hRy": -74,
+          "lookX": 1,
+          "lookY": -0.8
+        },
+        "tint": null,
+        "motion": [
+          "wave"
+        ],
+        "fx": [],
+        "props": [
+          "knoedel-full",
+          "table-empty"
+        ],
+        "bubble": null
+      },
+      "notes": "Getrennt (separately) is very common in Germany and Austria, especially among friends and colleagues."
+    },
+    {
+      "id": "gelohnt",
+      "pos": "phrase",
+      "lead": "Das hat sich",
+      "headword": "gelohnt!",
+      "gloss": {
+        "zh-Hans": "值了！",
+        "en": "It was worth it!"
+      },
+      "example": {
+        "de": "– Sechs Stunden sind wir gewandert!\n– Ja, aber {{das hat sich gelohnt}}!",
+        "translations": {
+          "zh-Hans": "—我们走了六个小时！\n—是啊，但是值了！",
+          "en": "– We hiked for six hours!\n– Yes, but it was worth it!"
+        }
+      },
+      "tip": {
+        "zh-Hans": "现在时：Das {{lohnt sich}}.（值得）",
+        "en": "Present tense: Das {{lohnt sich}}. (It's worth it.)"
+      },
+      "style": {
+        "color": "#D9467A",
+        "background": "#FDE2EC"
+      },
+      "anim": {
+        "pose": {
+          "happy": 1,
+          "smile": 1,
+          "blush": 0.8,
+          "hLx": -12,
+          "hLy": -46,
+          "hRx": 12,
+          "hRy": -46
+        },
+        "tint": null,
+        "motion": [
+          "breathe",
+          "tail-wag"
+        ],
+        "fx": [
+          "hearts"
+        ],
+        "props": [
+          "sunset",
+          "knoedel-hug"
+        ],
+        "bubble": null
+      }
+    }
+  ]
+}

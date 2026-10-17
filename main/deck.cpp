@@ -5,7 +5,7 @@
 namespace {
 
 // Layout written by tools/import_decks.py; all fields little-endian.
-constexpr uint32_t PACK_VERSION = 3;
+constexpr uint32_t PACK_VERSION = 4;
 constexpr int MAX_POSE = character::MAX_POSE;
 
 struct __attribute__((packed)) RawHeader {

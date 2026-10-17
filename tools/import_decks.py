@@ -37,7 +37,7 @@ SIM = ROOT / "sim" / "build" / "card_sim"
 WORK = ROOT / "sim" / "build" / "import"  # scratch space, next to the checker
 
 LATIN = "".join(chr(c) for c in range(0x20, 0x7F)) + "ÄÖÜäöüßéè„“”’–…·°"
-UI_TEXT = "Super! Toll! Klasse! Spitze! Wahnsinn! Prima! Pause! Weiter! Montag Dienstag Mittwoch Donnerstag Freitag Samstag Sonntag Januar Februar März April Mai Juni Juli August September Oktober November Dezember T I P P Karten + Akk Dat Gen Hatschi! 39° puh ! ? Berlin Grüß Gott! Wie geht's? BRRRR"
+UI_TEXT = "Super! Toll! Klasse! Spitze! Wahnsinn! Prima! Pause! Weiter! Montag Dienstag Mittwoch Donnerstag Freitag Samstag Sonntag Januar Februar März April Mai Juni Juli August September Oktober November Dezember T I P P Karten + Akk Dat Gen Hatschi! 39° puh ! ? Berlin Grüß Gott! Wie geht's? BRRRR € Hütte Gipfel Heute Speck- knödel −5 kg 8 km/h ha"
 
 BRICOLAGE, NOTO = "BricolageGrotesque.ttf", "NotoSansSC.ttf"
 # name: (ttf, pixel size, variation axes). "loc" fonts depend on the locale.
@@ -60,7 +60,7 @@ LOC_FONTS = {
 AXIS_ORDER = {"Optical size": "opsz", "Weight": "wght", "Width": "wdth"}
 KASUS = {None: 0, "Akk": 1, "Dat": 2, "Gen": 3}
 GRAMMAR = {"verb": 1, "noun": 2, "pattern": 3}
-MAX_POSE, MAX_LAYERS = 24, 4
+MAX_POSE, MAX_LAYERS = 24, 6
 
 
 def is_cjk_locale(locale):
@@ -201,7 +201,7 @@ def build_pack(decks, locale, clips):
     decks_off = head_size
     cards_off = decks_off + sum(map(len, deck_recs))
     strings_off = cards_off + sum(map(len, card_recs))
-    head = b"KDP1" + struct.pack("<7I", 3, len(deck_recs), len(card_recs), decks_off, cards_off, strings_off, st.add(locale))
+    head = b"KDP1" + struct.pack("<7I", 4, len(deck_recs), len(card_recs), decks_off, cards_off, strings_off, st.add(locale))
     head += struct.pack("<10I", *map(rgb, colours))
     return head + b"".join(deck_recs) + b"".join(card_recs) + bytes(st.blob), texts
 

@@ -16,7 +16,7 @@ file(GLOB_RECURSE GFX_SRC ${GFX}/src/*.cpp ${GFX}/src/*.c)
 find_package(SDL2 REQUIRED)
 
 add_executable(card_sim sim_main.cpp
-    ${ROOT}/main/character.cpp ${ROOT}/main/knoedel.cpp ${ROOT}/main/knoedel_bubbles.cpp ${ROOT}/main/katze.cpp ${ROOT}/main/dinge.cpp ${ROOT}/main/card_ui.cpp ${ROOT}/main/deck.cpp ${ROOT}/main/progress.cpp ${GFX_SRC})
+    ${ROOT}/main/character.cpp ${ROOT}/main/knoedel.cpp ${ROOT}/main/knoedel_bubbles.cpp ${ROOT}/main/katze.cpp ${ROOT}/main/dinge.cpp ${ROOT}/main/scenery.cpp ${ROOT}/main/card_ui.cpp ${ROOT}/main/deck.cpp ${ROOT}/main/progress.cpp ${GFX_SRC})
 target_include_directories(card_sim PRIVATE ${GFX}/src ${ROOT}/main ${SDL2_INCLUDE_DIRS} ${SDL2_INCLUDE_DIRS}/..)
 target_compile_definitions(card_sim PRIVATE LGFX_SDL)
 target_compile_options(card_sim PRIVATE -w)

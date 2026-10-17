@@ -3,6 +3,7 @@
 #include <initializer_list>
 
 #include "gfx_util.h"
+#include "scenery.h"
 #include "vec.h"
 
 using namespace gfxu;
@@ -475,6 +476,383 @@ void o_tablette(const Ctx &x)
     }
 }
 
+// ---- a2-berg-nomen --------------------------------------------------------------------
+
+// A small flower nodding, its foot at the origin of `q`.
+void flower(const Pen &q, float stem, float rx, float ry, float centre, uint32_t col)
+{
+    q.line(0, 0, 0, stem, 1.6f, 0x5E9E45);
+    for (int a = 0; a < 360; a += 72) {
+        q.turn(a).oval(0, -3.2f * ry / 3.4f, rx, ry, col);
+    }
+    q.ell(0, 0, centre, centre, 0xF2A93B);
+}
+
+// A mountain with its morning glow and a passing cloud.
+void o_berg(const Ctx &x)
+{
+    const Pen &p = x.p;
+    const Pen m = p.move(100, 158).scale(0.78f);
+    const Path range = poly({-120, 0, -96, -60, -84, -52, -66, -104, -50, -80, -34, -118, -18, -150, -2, -122, 12, -136, 30, -96,
+                             46, -112, 64, -70, 80, -84, 120, 0});
+    m.area(range, 0xEEE7DD, 0xC9BBA8, 2);
+    m.area(range, x.fade(0xF59AA8, 0.28f * (0.5f + 0.5f * sinf(x.c * 0.9f)), 0xEEE7DD));
+    const uint32_t shade = mix(0xEEE7DD, 0xDDD2C2, 0.9f);
+    m.fill(poly({-18, -150, -12, -104, -2, -122}), shade);
+    m.fill(poly({-66, -104, -60, -70, -50, -80}), shade);
+    m.fill(poly({12, -136, 18, -100, 30, -96}), shade);
+    m.fill(poly({46, -112, 52, -78, 64, -70}), shade);
+    m.fill(poly({-24, -140, -18, -150, -12, -138, -18, -141}), WHITE);
+    m.fill(poly({8, -128, 12, -136, 17, -126}), WHITE);
+    m.fill(poly({-70, -96, -66, -104, -61, -94}), WHITE);
+    Path hill, hill2;
+    hill.to(-120, -6).quad(-60, -34, 0, -16, 8).quad(60, 0, 120, -22, 8).to(120, 30).to(-120, 30);
+    hill2.to(-120, 10).quad(-30, -6, 40, 6, 8).quad(90, 14, 120, 4, 6).to(120, 30).to(-120, 30);
+    m.area(hill, 0xA8D08D);
+    m.area(hill2, 0x8CC06E);
+    scenery::fir(m, -70, -6, 0.9f);
+    scenery::fir(m, -54, -2, 0.7f, 0x4E9E68);
+    scenery::fir(m, 70, -4, 0.8f);
+    const Pen cloud = p.move(40 + fmodf(x.c * 9, 140), 62);
+    const uint32_t white = x.fade(WHITE, 0.95f);
+    cloud.ell(0, 0, 9, 9, white);
+    cloud.ell(10, 2, 7, 7, white);
+    cloud.ell(-9, 3, 6, 6, white);
+}
+
+// One hiking boot, its heel at the origin of `b`.
+void boot(const Ctx &x, const Pen &b, uint32_t col, float bow_turn)
+{
+    Path upper;
+    upper.to(0, 0).to(0, -54).quad(0, -60, 6, -60, 3).to(30, -60).quad(36, -60, 36, -54, 3).to(36, -28).quad(60, -24, 66, -12, 5).to(66, 0);
+    b.area(upper, col, 0x6E4528, 2);
+    Path sole;
+    sole.to(-2, 0).to(68, 0).to(68, 8).quad(68, 10, 66, 10, 2).to(0, 10).quad(-2, 10, -2, 8, 2);
+    b.fill(sole, 0x3B2F4A);
+    for (int i = 0; i < 8; i++) {
+        b.rect(2 + i * 8.4f, 8, 4, 4, 0, 0x3B2F4A);
+    }
+    Path seam;
+    seam.to(36, -26).quad(44, -20, 52, -18, 4);
+    b.stroke(seam, 1.6f, 0x6E4528);
+    b.line(0, -12, 66, -12, 1.4f, mix(col, 0x6E4528, 0.6f));
+    b.rect(-1, -62, 38, 8, 3, 0xE5484D);
+    for (int yy = -48; yy <= -32; yy += 8) {
+        b.line(26, yy, 36, yy + 3, 2, 0xF2C14E);
+    }
+    Path loops;
+    loops.to(36, -30).quad(44, -38, 46, -30, 3).quad(44, -24, 36, -30, 3).quad(30, -40, 26, -32, 3).quad(30, -24, 36, -30, 3);
+    b.turn(bow_turn, 36, -30).area(loops, 0xF2C14E);
+    (void)x;
+}
+
+// A pair of hiking boots; the front one taps.
+void o_wanderschuh(const Ctx &x)
+{
+    const Pen &p = x.p;
+    p.ell(100, 156, 64, 5, 0x000000, 0.08f);
+    boot(x, p.move(76, 146), 0xB07A4F, sinf(x.c * 4) * 6);
+    const float k = fmaxf(0, sinf(x.c * 3)), t = k * k;
+    boot(x, p.move(46, 154 - t * 8).turn(-t * 6), 0xC68B59, 0);
+}
+
+// A trail to the hut, footsteps appearing one by one.
+void o_weg(const Ctx &x)
+{
+    const Pen &p = x.p;
+    scenery::peaks(p.move(100, 124).scale(0.82f, 0.55f), scenery::DAY);
+    Path trail;
+    trail.to(20, 200).quad(30, 136, 96, 120, 8).quad(134, 110, 112, 102, 6).quad(98, 96, 108, 90, 4);
+    p.stroke(trail, 12, 0xE8D3A8);
+    const float u = loop(x.c, 3.6f);
+    static const float STEPS[6][2] = {{30, 176}, {44, 150}, {64, 132}, {92, 116}, {122, 102}, {140, 86}};
+    for (int i = 0; i < 6; i++) {
+        const float a = window(u, i * 0.1f, i * 0.1f + 0.45f, 0.06f) * 0.85f;
+        if (a > 0.05f) {
+            p.ell(STEPS[i][0] + (i % 2 ? 4 : -4), STEPS[i][1], 3.4f - i * 0.3f, 2 - i * 0.15f, x.fade(0xB0915E, a, 0xE8D3A8));
+        }
+    }
+    p.rect(140, 90, 6, 80, 0, 0xA86B48);
+    const Pen sign = p.turn(sinf(x.c * 1.5f) * 1.5f, 143, 106);
+    sign.fill(poly({108, 96, 168, 96, 178, 106, 168, 116, 108, 116}), WHITE, 0xC9CED6, 1.4f);
+    sign.fill(poly({168, 96, 178, 106, 168, 116}), 0xE5484D);
+    x.text(sign, "Hütte", 112, 110, 9, 0x2B2230, lgfx::baseline_left);
+    x.text(sign, "1 h", 164, 110, 9, 0x2B2230, lgfx::baseline_right);
+    Path stone;
+    stone.to(30, 152).quad(36, 140, 50, 142, 4).quad(58, 136, 64, 146, 4).quad(70, 154, 60, 160, 4).to(34, 160).quad(26, 158, 30, 152, 3);
+    p.fill(stone, 0xBDB7AE, 0x8E8880, 1.4f);
+    p.rect(40, 146, 14, 3, 0, 0xE5484D);
+    p.rect(40, 149, 14, 3, 0, WHITE);
+    p.rect(40, 152, 14, 3, 0, 0xE5484D);
+}
+
+// A forest swaying, a mushroom, a bird crossing.
+void o_wald(const Ctx &x)
+{
+    const Pen &p = x.p;
+    Path ground;
+    ground.to(0, 150).quad(100, 136, 200, 150, 8).to(200, 200).to(0, 200);
+    p.area(ground, 0x8CC06E);
+    static const float TREES[5][4] = {{48, 150, 1.5f, 0x4E9E68}, {150, 148, 1.6f, 0x3E8E5A}, {100, 156, 2.2f, 0x3E8E5A},
+                                      {72, 162, 1.2f, 0x5BAF74}, {128, 164, 1.25f, 0x4E9E68}};
+    for (int i = 0; i < 5; i++) {
+        scenery::fir(p.move(TREES[i][0], TREES[i][1]).turn(sinf(x.c * 1.4f + i) * 1.6f), 0, 0, TREES[i][2], (uint32_t)TREES[i][3]);
+    }
+    const Pen shroom = p.move(150, 170);
+    shroom.rect(-2, -6, 4, 7, 1.5f, 0xFFF6DA);
+    Path cap;
+    cap.to(-7, -5).quad(0, -14, 7, -5, 5);
+    shroom.fill(cap, 0xE5484D);
+    shroom.ell(-2, -8, 1, 1, WHITE);
+    shroom.ell(2.5f, -7, 0.9f, 0.9f, WHITE);
+    const float u = loop(x.c, 5);
+    const Pen bird = p.move(20 + u * 170, 56 - sinf(u * PI_F) * 14).scale(1, 0.6f + 0.4f * fabsf(sinf(x.c * 9)));
+    Path wings;
+    wings.to(-6, 0).quad(-3, -4, 0, 0, 3).quad(3, -4, 6, 0, 3);
+    bird.stroke(wings, 1.8f, INK);
+}
+
+// A meadow with a picnic, nodding flowers and a butterfly.
+void o_wiese(const Ctx &x)
+{
+    const Pen &p = x.p;
+    scenery::peaks(p.move(100, 112).scale(0.8f, 0.5f), scenery::DAY);
+    Path m1, m2;
+    m1.to(0, 118).quad(60, 100, 120, 108, 6).quad(170, 114, 200, 104, 6).to(200, 200).to(0, 200);
+    m2.to(0, 150).quad(80, 136, 200, 146, 8).to(200, 200).to(0, 200);
+    p.area(m1, 0xA8D08D);
+    p.area(m2, 0x8CC06E);
+    // The blanket, skewed by -20 degrees.
+    Pen bl = p.move(104, 150);
+    bl.c += bl.a * tanf(-20 * PI_F / 180);
+    bl.d += bl.b * tanf(-20 * PI_F / 180);
+    bl.fill(poly({-26, -10, 26, -10, 26, 10, -26, 10}), WHITE);
+    const uint32_t red = mix(WHITE, 0xE5484D, 0.85f);
+    for (int i = 0; i < 6; i++) {
+        for (int j = 0; j < 2; j++) {
+            if ((i + j) % 2 == 0) {
+                const float cx = -26 + i * 8.66f, cy = -10 + j * 10.0f;
+                bl.fill(poly({cx, cy, cx + 8.66f, cy, cx + 8.66f, cy + 10, cx, cy + 10}), red);
+            }
+        }
+    }
+    p.fill(poly({96, 132, 118, 132, 115, 146, 99, 146}), 0xC68B59, 0x8A5A3B, 1.4f);
+    Path handle;
+    handle.to(100, 132).quad(107, 120, 114, 132, 5);
+    p.stroke(handle, 2, 0x8A5A3B);
+    static const float FLOWERS[8][3] = {{34, 166, 0xF28CA8}, {52, 176, 0xFFFFFF}, {150, 170, 0xF2C14E}, {168, 160, 0xF28CA8},
+                                        {70, 160, 0x9C7AD6}, {134, 180, 0xFFFFFF}, {44, 140, 0xF2C14E}, {160, 138, 0xFFFFFF}};
+    for (int i = 0; i < 8; i++) {
+        flower(p.move(FLOWERS[i][0], FLOWERS[i][1]).turn(sinf(x.c * 2 + i) * 9), 10, 2.4f, 3.4f, 1.8f, (uint32_t)FLOWERS[i][2]);
+    }
+    const float k = x.c * 0.7f;
+    const Pen bf = p.move(100 + sinf(k) * 44, 96 + sinf(k * 2.3f) * 12).scale(1, 0.55f + 0.45f * fabsf(sinf(x.c * 12)));
+    Path wings;
+    wings.to(0, 0).cubic(-5, -8, -12, -4, -8, 1, 4).cubic(-10, 5, -4, 8, 0, 1, 4).cubic(4, 8, 10, 5, 8, 1, 4).cubic(12, -4, 5, -8, 0, 0, 4);
+    bf.area(wings, 0x9C7AD6);
+}
+
+// The cow is drawn in parts, each with its own outlines: in one function
+// they took 6 KB of stack.
+constexpr uint32_t HIDE = 0xF6F3EE, LINE = 0xB9B4AD;
+
+__attribute__((noinline)) void kuh_spots(const Pen &p)
+{
+    Path s;
+    s.to(70, 102).quad(80, 94, 90, 104, 4).quad(86, 116, 74, 114, 4);
+    p.fill(s, INK);
+    s.n = 0;
+    s.to(114, 112).quad(128, 104, 136, 116, 4).quad(128, 128, 116, 124, 4);
+    p.fill(s, INK);
+    s.n = 0;
+    s.to(96, 126).quad(104, 122, 108, 130, 4).quad(100, 136, 94, 132, 4);
+    p.fill(s, INK);
+}
+
+__attribute__((noinline)) void kuh_head(const Pen &h)
+{
+    Path q;
+    q.to(84, 66).quad(78, 56, 72, 58, 4);
+    h.stroke(q, 4, 0xE8D9B8);
+    q.n = 0;
+    q.to(116, 66).quad(122, 56, 128, 58, 4);
+    h.stroke(q, 4, 0xE8D9B8);
+    h.turn(-20, 76, 74).fill(Path::oval(76, 74, 9, 5, 18), HIDE, LINE, 1.4f);
+    h.turn(20, 124, 74).fill(Path::oval(124, 74, 9, 5, 18), HIDE, LINE, 1.4f);
+    h.ell(100, 80, 22, 20, HIDE, LINE, 1.8f);
+    q.n = 0;
+    q.to(88, 66).quad(96, 60, 100, 68, 4).quad(94, 74, 88, 66, 4);
+    h.fill(q, INK);
+    h.ell(100, 92, 16, 10, 0xF7B9C2, 0xE08C9A, 1.4f);
+    h.ell(94, 92, 2, 2.6f, 0xC9707E);
+    h.ell(106, 92, 2, 2.6f, 0xC9707E);
+    for (float ex : {92.0f, 108.0f}) {
+        h.ell(ex, 78, 2.6f, 3.2f, 0x2B2230);
+        h.ell(ex + 0.9f, 76.8f, 0.9f, 0.9f, WHITE);
+    }
+    h.ell(86, 84, 3, 1.6f, mix(HIDE, 0xF49A94, 0.6f));
+    h.ell(114, 84, 3, 1.6f, mix(HIDE, 0xF49A94, 0.6f));
+}
+
+__attribute__((noinline)) void kuh_bell(const Pen &bell)
+{
+    Path collar;
+    collar.to(90, 100).quad(100, 106, 110, 100, 5);
+    bell.stroke(collar, 3, 0xE5484D);
+    bell.fill(poly({94, 104, 106, 104, 108, 118, 92, 118}), 0xF2C14E, 0xC99227, 1.4f);
+    bell.ell(100, 119.5f, 2, 2, 0xC99227);
+}
+
+// A cow; her bell swings and rings, her head and tail move.
+void o_kuh(const Ctx &x)
+{
+    const Pen &p = x.p;
+    Path ground;
+    ground.to(0, 158).quad(100, 146, 200, 158, 8).to(200, 200).to(0, 200);
+    p.area(ground, 0xA8D08D);
+    Path tail;
+    tail.to(0, 0).quad(10, 10, 6, 26, 6);
+    p.move(142, 108).turn(sinf(x.c * 2.5f) * 18).stroke(tail, 3.4f, HIDE);
+    static const float LEGS[4][2] = {{70, 128}, {84, 132}, {118, 132}, {132, 128}};
+    for (auto &l : LEGS) {
+        p.rect(l[0] - 5, l[1], 10, 30, 3, HIDE, LINE, 1.4f);
+        p.rect(l[0] - 5, l[1] + 24, 10, 6, 2, 0x5B4A44);
+    }
+    p.ell(100, 116, 44, 26, HIDE, LINE, 1.8f);
+    kuh_spots(p);
+    kuh_head(p.turn(sinf(x.c * 1.2f) * 3, 100, 96));
+    kuh_bell(p.turn(sinf(x.c * 4) * 14, 100, 100));
+    if (fabsf(sinf(x.c * 4)) > 0.85f) {
+        for (int s = -1; s <= 1; s += 2) {
+            p.line(100 + s * 14, 108, 100 + s * 19, 106, 1.8f, 0xC99227);
+            p.line(100 + s * 15, 114, 100 + s * 21, 115, 1.8f, 0xC99227);
+        }
+    }
+}
+
+// A mountain lake; Knödel rows across, the peaks mirrored in the water.
+void o_see(const Ctx &x)
+{
+    const Pen &p = x.p;
+    constexpr uint32_t LAKE = 0x7FC4EA;
+    scenery::peaks(p.move(100, 120).scale(0.82f, 0.55f), scenery::DAY);
+    p.ell(100, 148, 96, 40, LAKE);
+    const auto pale = [](uint32_t col) { return mix(LAKE, col, 0.25f); };
+    const scenery::Palette mirrored = {pale(scenery::DAY.rock), pale(scenery::DAY.edge), pale(scenery::DAY.shade),
+                                       pale(scenery::DAY.snow), pale(scenery::DAY.hill), pale(scenery::DAY.hill2)};
+    scenery::peaks(p.move(100, 122).scale(0.82f, -0.3f), mirrored);
+    static const float RIPPLES[3][2] = {{50, 138}, {150, 150}, {80, 172}};
+    for (int i = 0; i < 3; i++) {
+        const float k = fract(x.c * 0.4f + i / 3.0f);
+        Path r;
+        r.to(-10, 0).quad(0, -3, 10, 0, 4);
+        p.move(RIPPLES[i][0], RIPPLES[i][1]).scale(1 + k).stroke(r, 1.6f, mix(LAKE, WHITE, 0.7f * (1 - k)));
+    }
+    const Pen boat = p.move(104 + sinf(x.c * 0.6f) * 18, 150 + sinf(x.c * 2) * 1.5f).turn(sinf(x.c * 1.7f) * 3);
+    scenery::buddy(boat.move(0, -4).scale(0.78f), scenery::FLOAT, x.c, *x.st);
+    Path hull;
+    hull.to(-26, -6).to(26, -6).quad(22, 8, 0, 8, 5).quad(-22, 8, -26, -6, 5);
+    boat.fill(hull, 0xC68B59, 0x8A5A3B, 1.8f);
+    boat.line(-24, -2, 24, -2, 1.2f, 0x8A5A3B);
+    boat.line(16, -8, 34, 10, 2.4f, 0x8A5A3B);
+}
+
+// A mountain hut: smoke from the chimney, geraniums at the windows.
+void o_huette(const Ctx &x)
+{
+    const Pen &p = x.p;
+    Path ground;
+    ground.to(0, 156).quad(100, 146, 200, 156, 8).to(200, 200).to(0, 200);
+    p.area(ground, 0xA8D08D);
+    for (int i = 0; i < 3; i++) {
+        const float k = fract(x.c * 0.35f + i / 3.0f), a = 0.85f * sinf(PI_F * k), r = 4 + k * 6;
+        if (a > 0.05f) {
+            p.ell(134 + sinf(k * 5) * 4 + k * 10, 36 - k * 34, r, r, WHITE, a);
+        }
+    }
+    p.rect(128, 40, 12, 26, 0, 0x9AA4B1);
+    p.rect(50, 92, 100, 64, 0, 0xC68B59, 0x8A5A3B, 2);
+    for (int y = 100; y < 156; y += 9) {
+        p.line(50, y, 150, y, 1.4f, 0xA8703F);
+    }
+    p.area(poly({36, 96, 100, 52, 164, 96, 156, 100, 100, 62, 44, 100}), 0x8A5A3B, 0x6E4528, 2);
+    p.fill(poly({56, 96, 100, 66, 144, 96}), 0xE0B07E);
+    p.rect(88, 116, 24, 40, 2, 0x8A5A3B, 0x6E4528, 1.6f);
+    Path heart;
+    heart.to(100, 128).cubic(98, 124, 93, 126, 95, 130, 4).to(100, 134).to(105, 130).cubic(107, 126, 102, 124, 100, 128, 4);
+    p.fill(heart, 0xF3D2A6);
+    static const float WINDOWS[2][2] = {{60, 108}, {120, 108}};
+    for (int w = 0; w < 2; w++) {
+        const float wx = WINDOWS[w][0], wy = WINDOWS[w][1];
+        p.rect(wx, wy, 20, 18, 0, 0xDDF1FB, 0x6E4528, 1.8f);
+        p.line(wx + 10, wy, wx + 10, wy + 18, 1.4f, 0x6E4528);
+        p.rect(wx - 2, wy + 18, 24, 5, 1.5f, 0x8A5A3B);
+        for (int i = 0; i < 3; i++) {
+            const float r = 2.8f + sinf(x.c * 3 + w * 3 + i) * 0.35f;
+            p.ell(wx + 3 + i * 7, wy + 17, r, r, 0xE5484D);
+        }
+    }
+    p.rect(84, 76, 32, 11, 2.5f, 0xF3D2A6, 0x8A5A3B, 1.2f);
+    x.text(p, "Hütte", 100, 81.5f, 7.5f, 0x6E4528);
+}
+
+// A cable car going up, Knödel in the cabin.
+void o_seilbahn(const Ctx &x)
+{
+    const Pen &p = x.p;
+    scenery::peaks(p.move(100, 176).scale(0.7f), scenery::DAY);
+    p.fill(poly({150, 22, 160, 22, 166, 96, 144, 96}), 0x9AA4B1, 0x6B7180, 1.6f);
+    p.line(140, 22, 170, 22, 3, 0x6B7180);
+    p.line(-10, 104, 210, 14, 1.8f, INK);
+    const float u = loop(x.c, 7.4f), cx = -20 + u * 240, cy = 108 - (cx + 10) * (90.0f / 220) + 26;
+    const Pen cab = p.move(cx, cy).turn(sinf(x.c * 2) * 3, 0, -26);
+    cab.line(0, -26, 0, -12, 2, INK);
+    cab.ell(0, -27, 3, 3, INK);
+    cab.rect(-22, -12, 44, 36, 7, 0xE5484D, 0xB8323A, 2);
+    cab.rect(-17, -6, 34, 15, 3, 0xDDF1FB);
+    scenery::buddy(cab.move(-1, 14).scale(0.62f), scenery::HAPPY, x.c, *x.st);
+    cab.rect(-22, 9, 44, 15, 4, 0xE5484D);
+    cab.rect(-22, 9, 44, 3, 0, mix(0xE5484D, WHITE, 0.6f));
+}
+
+// A valley with a village and its church; smoke from a chimney.
+void o_tal(const Ctx &x)
+{
+    const Pen &p = x.p;
+    p.area(poly({-10, 40, 40, 30, 100, 132, 160, 26, 210, 36, 210, 200, -10, 200}), 0xEEE7DD, 0xC9BBA8, 2);
+    p.fill(poly({28, 34, 40, 30, 46, 46}), WHITE);
+    p.fill(poly({154, 36, 160, 26, 170, 40}), WHITE);
+    Path m1, m2, river;
+    m1.to(-10, 96).quad(40, 92, 100, 150, 8).quad(160, 92, 210, 96, 8).to(210, 200).to(-10, 200);
+    m2.to(-10, 150).quad(60, 140, 100, 160, 8).quad(140, 140, 210, 150, 8).to(210, 200).to(-10, 200);
+    river.to(100, 156).quad(90, 172, 104, 186, 5).quad(114, 196, 108, 210, 5);
+    p.area(m1, 0xA8D08D);
+    p.area(m2, 0x8CC06E);
+    p.stroke(river, 6, 0x7FC4EA);
+    scenery::fir(p, 34, 112, 0.8f);
+    scenery::fir(p, 166, 110, 0.8f, 0x4E9E68);
+    scenery::fir(p, 52, 124, 0.6f);
+    static const float HOUSES[4][3] = {{80, 158, 0xC2553A}, {122, 160, 0xC2553A}, {140, 150, 0xB8323A}, {66, 150, 0xB8323A}};
+    for (auto &h : HOUSES) {
+        p.rect(h[0] - 8, h[1] - 10, 16, 11, 0, WHITE, 0xC9CED6, 1);
+        p.fill(poly({h[0] - 10, h[1] - 9, h[0], h[1] - 17, h[0] + 10, h[1] - 9}), (uint32_t)h[2]);
+        p.rect(h[0] - 2, h[1] - 6, 4, 4, 0, 0x7FB6E0);
+    }
+    p.rect(96, 136, 12, 26, 0, WHITE, 0xC9CED6, 1);
+    Path roof;
+    roof.to(96, 136).quad(102, 120, 108, 136, 5);
+    p.fill(roof, 0x5E9E45);
+    p.ell(102, 128, 4, 5, 0x5E9E45);
+    p.line(102, 123, 102, 115, 1.4f, 0xC99227);
+    p.ell(102, 146, 2.6f, 2.6f, 0xF2C14E);
+    for (int i = 0; i < 3; i++) {
+        const float k = fract(x.c * 0.35f + i / 3.0f), a = 0.9f * sinf(PI_F * k), r = 2 + k * 4;
+        if (a > 0.05f) {
+            p.ell(142 + sinf(k * 6) * 2 + k * 6, 134 - k * 26, r, r, WHITE, a);
+        }
+    }
+}
+
 // ---- the objects ------------------------------------------------------------------
 
 struct ObjDef {
@@ -488,6 +866,9 @@ const ObjDef OBJECTS[] = {
     {"steckdose", o_steckdose, 0, 0}, {"arzt", o_arzt, 0, -16}, {"praxis", o_praxis, 0, 0},
     {"krankenkasse", o_krankenkasse, 0, 0}, {"rezept", o_rezept, 0, 0}, {"apotheke", o_apotheke, 0, 0},
     {"medikament", o_medikament, 0, -16}, {"tablette", o_tablette, 0, 4},
+    {"berg", o_berg, 0, 0}, {"wanderschuh", o_wanderschuh, 0, 0}, {"weg", o_weg, 0, 0}, {"wald", o_wald, 0, 0},
+    {"wiese", o_wiese, 0, 0}, {"kuh", o_kuh, 0, 0}, {"see", o_see, 0, 0}, {"huette", o_huette, 0, 0},
+    {"seilbahn", o_seilbahn, 0, 0}, {"tal", o_tal, 0, 0},
 };
 constexpr int OBJECT_COUNT = sizeof(OBJECTS) / sizeof(OBJECTS[0]);
 

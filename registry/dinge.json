@@ -9,7 +9,9 @@
   "prop": [
     "sofa", "teppich", "lampe", "regal", "schrank", "spiegel",
     "herd", "heizung", "steckdose", "arzt", "praxis", "krankenkasse",
-    "rezept", "apotheke", "medikament", "tablette"
+    "rezept", "apotheke", "medikament", "tablette", "berg", "wanderschuh",
+    "weg", "wald", "wiese", "kuh", "see", "huette",
+    "seilbahn", "tal"
   ],
   "bubble": []
 }

@@ -126,7 +126,29 @@
 
 所以更新内容不需要更新固件，一块手表从一个内容包换到另一个（比如从 A2 换到 B1）不到一分钟。
 
-第一个内容包 `a2-start` 有十个 A2 级别的卡组，每组 12 张：情绪、身体状态、性格、家务、出门在外、日常反应、购物、预约和办事、家里的东西（名词）、看病（名词）。翻译有英文和中文。
+第一个内容包 `a2-start` 有 15 个卡组，每组 12 张，共 180 张，A2 级别（其中两个卡组带一些 B1 词汇）。翻译有英文和中文。
+
+| 卡组 | 主题 | 类型 | 例子 | 级别 | 谁来演 |
+|---|---|---|---|---|---|
+| Wie fühlst du dich? | 情绪 | 形容词 | glücklich、traurig、nervös | A2–B1 | Knödel |
+| Wie geht's dir? | 身体状态 | 形容词 | müde、hungrig、durstig | A2 | Knödel |
+| Wie bist du? | 性格 | 形容词 | fleißig、faul、ordentlich | A2 | Knödel |
+| Hausarbeit | 做家务 | 动词 | aufräumen、putzen、staubsaugen | A2 | Brezel |
+| Unterwegs | 出门在外 | 动词 | Fahrrad fahren、sich beeilen、verpassen | A2 | Brezel |
+| Reaktionen | 日常反应 | 短语 | Wie bitte?、Ach so!、Echt? | A2 | Knödel |
+| Einkaufen | 去购物 | 动词 | aussuchen、anprobieren、passen | A2 | Brezel |
+| Termine | 预约和办事 | 动词 | anrufen、zurückrufen、bestätigen | A2 | Brezel |
+| Meine Wohnung | 家里的东西 | 名词 | das Sofa、der Teppich、die Lampe | A2 | 东西本身 |
+| Beim Arzt | 看病 | 名词 | der Arzt、die Praxis、das Fieber | A2 | 东西本身 |
+| In den Bergen | 在山里 | 名词 | der Berg、der Rucksack、die Hütte | A2 | 东西本身 |
+| Wir waren wandern! | 去徒步啦 | 动词 | packen、wandern、klettern | A2 | Brezel 和 Knödel |
+| Auf der Hütte | 山间小屋 | 短语 | Grüß Gott!、Prost!、Zahlen, bitte! | A2 | Brezel 和 Knödel |
+| Im Fitnessstudio | 健身房 | 动词 | sich aufwärmen、trainieren、Gewichte heben | A2–B1 | Brezel 和 Knödel |
+| Sport im Freien | 户外运动 | 动词 | joggen、Fußball spielen、Ski fahren | A2–B1 | Brezel 和 Knödel |
+
+最后五个卡组是两个小系列：一个是去多洛米蒂徒步（那里说德语，Knödel 就是当地的特色菜），一个是运动双集，Knödel 当教练。
+
+**更多卡组正在制作中。** 新卡组会放进新的内容包里，和固件一样，在[网页安装器](https://yanxuceo.github.io/knoedel-watch/)上安装。想学什么主题？欢迎[提 issue](https://github.com/yanxuceo/knoedel-watch/issues)。
 
 ## 编译和烧录
 

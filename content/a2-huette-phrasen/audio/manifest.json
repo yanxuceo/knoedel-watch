@@ -1,0 +1,199 @@
+{
+  "format": 1,
+  "files": {
+    "auf-gehts_0.mp3": {
+      "text": "Auf geht's!",
+      "provider": "azure",
+      "model": null,
+      "voice": "de-DE-KatjaNeural",
+      "speed": 0.88,
+      "output_format": "audio-24khz-48kbitrate-mono-mp3"
+    },
+    "auf-gehts_2.mp3": {
+      "text": "– Hast du alles? Wasser, Jacke, Karte? – Ja! Auf geht's!",
+      "provider": "azure",
+      "model": null,
+      "voice": "de-DE-KatjaNeural|de-DE-FlorianMultilingualNeural",
+      "speed": 0.95,
+      "output_format": "audio-24khz-48kbitrate-mono-mp3"
+    },
+    "wie-weit_0.mp3": {
+      "text": "Wie weit ist es noch?",
+      "provider": "azure",
+      "model": null,
+      "voice": "de-DE-KatjaNeural",
+      "speed": 0.88,
+      "output_format": "audio-24khz-48kbitrate-mono-mp3"
+    },
+    "wie-weit_2.mp3": {
+      "text": "– Wie weit ist es noch bis zur Hütte? – Ungefähr eine Stunde.",
+      "provider": "azure",
+      "model": null,
+      "voice": "de-DE-FlorianMultilingualNeural|de-DE-KatjaNeural",
+      "speed": 0.95,
+      "output_format": "audio-24khz-48kbitrate-mono-mp3"
+    },
+    "nicht-mehr_0.mp3": {
+      "text": "Ich kann nicht mehr!",
+      "provider": "azure",
+      "model": null,
+      "voice": "de-DE-KatjaNeural",
+      "speed": 0.88,
+      "output_format": "audio-24khz-48kbitrate-mono-mp3"
+    },
+    "nicht-mehr_2.mp3": {
+      "text": "– Nur noch zehn Minuten! – Ich kann nicht mehr!",
+      "provider": "azure",
+      "model": null,
+      "voice": "de-DE-KatjaNeural|de-DE-FlorianMultilingualNeural",
+      "speed": 0.95,
+      "output_format": "audio-24khz-48kbitrate-mono-mp3"
+    },
+    "gleich-oben_0.mp3": {
+      "text": "Gleich sind wir oben!",
+      "provider": "azure",
+      "model": null,
+      "voice": "de-DE-KatjaNeural",
+      "speed": 0.88,
+      "output_format": "audio-24khz-48kbitrate-mono-mp3"
+    },
+    "gleich-oben_2.mp3": {
+      "text": "– Mir tun die Beine weh. – Komm, gleich sind wir oben!",
+      "provider": "azure",
+      "model": null,
+      "voice": "de-DE-FlorianMultilingualNeural|de-DE-KatjaNeural",
+      "speed": 0.95,
+      "output_format": "audio-24khz-48kbitrate-mono-mp3"
+    },
+    "aussicht_0.mp3": {
+      "text": "Was für eine Aussicht!",
+      "provider": "azure",
+      "model": null,
+      "voice": "de-DE-KatjaNeural",
+      "speed": 0.88,
+      "output_format": "audio-24khz-48kbitrate-mono-mp3"
+    },
+    "aussicht_2.mp3": {
+      "text": "– Wahnsinn, was für eine Aussicht! – Schau mal, da unten ist der See!",
+      "provider": "azure",
+      "model": null,
+      "voice": "de-DE-KatjaNeural|de-DE-FlorianMultilingualNeural",
+      "speed": 0.95,
+      "output_format": "audio-24khz-48kbitrate-mono-mp3"
+    },
+    "gruess-gott_0.mp3": {
+      "text": "Grüß Gott!",
+      "provider": "azure",
+      "model": null,
+      "voice": "de-DE-KatjaNeural",
+      "speed": 0.88,
+      "output_format": "audio-24khz-48kbitrate-mono-mp3"
+    },
+    "gruess-gott_2.mp3": {
+      "text": "– Grüß Gott! – Grüß Gott! Haben Sie noch Platz für zwei?",
+      "provider": "azure",
+      "model": null,
+      "voice": "de-DE-FlorianMultilingualNeural|de-DE-KatjaNeural",
+      "speed": 0.95,
+      "output_format": "audio-24khz-48kbitrate-mono-mp3"
+    },
+    "ist-hier-frei_0.mp3": {
+      "text": "Ist hier noch frei?",
+      "provider": "azure",
+      "model": null,
+      "voice": "de-DE-KatjaNeural",
+      "speed": 0.88,
+      "output_format": "audio-24khz-48kbitrate-mono-mp3"
+    },
+    "ist-hier-frei_2.mp3": {
+      "text": "– Entschuldigung, ist hier noch frei? – Ja, klar! Setzen Sie sich.",
+      "provider": "azure",
+      "model": null,
+      "voice": "de-DE-KatjaNeural|de-DE-FlorianMultilingualNeural",
+      "speed": 0.95,
+      "output_format": "audio-24khz-48kbitrate-mono-mp3"
+    },
+    "empfehlen_0.mp3": {
+      "text": "Was können Sie empfehlen?",
+      "provider": "azure",
+      "model": null,
+      "voice": "de-DE-KatjaNeural",
+      "speed": 0.88,
+      "output_format": "audio-24khz-48kbitrate-mono-mp3"
+    },
+    "empfehlen_2.mp3": {
+      "text": "– Was können Sie empfehlen? – Heute haben wir Speckknödel!",
+      "provider": "azure",
+      "model": null,
+      "voice": "de-DE-FlorianMultilingualNeural|de-DE-KatjaNeural",
+      "speed": 0.95,
+      "output_format": "audio-24khz-48kbitrate-mono-mp3"
+    },
+    "guten-appetit_0.mp3": {
+      "text": "Guten Appetit!",
+      "provider": "azure",
+      "model": null,
+      "voice": "de-DE-KatjaNeural",
+      "speed": 0.88,
+      "output_format": "audio-24khz-48kbitrate-mono-mp3"
+    },
+    "guten-appetit_2.mp3": {
+      "text": "– Guten Appetit! – Danke, gleichfalls!",
+      "provider": "azure",
+      "model": null,
+      "voice": "de-DE-KatjaNeural|de-DE-FlorianMultilingualNeural",
+      "speed": 0.95,
+      "output_format": "audio-24khz-48kbitrate-mono-mp3"
+    },
+    "prost_0.mp3": {
+      "text": "Prost!",
+      "provider": "azure",
+      "model": null,
+      "voice": "de-DE-KatjaNeural",
+      "speed": 0.88,
+      "output_format": "audio-24khz-48kbitrate-mono-mp3"
+    },
+    "prost_2.mp3": {
+      "text": "– Prost! Auf uns! – Prost!",
+      "provider": "azure",
+      "model": null,
+      "voice": "de-DE-FlorianMultilingualNeural|de-DE-KatjaNeural",
+      "speed": 0.95,
+      "output_format": "audio-24khz-48kbitrate-mono-mp3"
+    },
+    "zahlen-bitte_0.mp3": {
+      "text": "Zahlen, bitte!",
+      "provider": "azure",
+      "model": null,
+      "voice": "de-DE-KatjaNeural",
+      "speed": 0.88,
+      "output_format": "audio-24khz-48kbitrate-mono-mp3"
+    },
+    "zahlen-bitte_2.mp3": {
+      "text": "– Zahlen, bitte! – Zusammen oder getrennt?",
+      "provider": "azure",
+      "model": null,
+      "voice": "de-DE-KatjaNeural|de-DE-FlorianMultilingualNeural",
+      "speed": 0.95,
+      "output_format": "audio-24khz-48kbitrate-mono-mp3"
+    },
+    "gelohnt_0.mp3": {
+      "text": "Das hat sich gelohnt!",
+      "provider": "azure",
+      "model": null,
+      "voice": "de-DE-KatjaNeural",
+      "speed": 0.88,
+      "output_format": "audio-24khz-48kbitrate-mono-mp3"
+    },
+    "gelohnt_2.mp3": {
+      "text": "– Sechs Stunden sind wir gewandert! – Ja, aber das hat sich gelohnt!",
+      "provider": "azure",
+      "model": null,
+      "voice": "de-DE-FlorianMultilingualNeural|de-DE-KatjaNeural",
+      "speed": 0.95,
+      "output_format": "audio-24khz-48kbitrate-mono-mp3"
+    }
+  },
+  "deck": "a2-huette-phrasen",
+  "deck_version": "0.1.0"
+}

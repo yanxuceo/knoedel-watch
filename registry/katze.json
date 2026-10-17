@@ -12,14 +12,17 @@
     "tail-wag", "breathe", "bounce", "hop", "walk", "scrub",
     "push", "sweep", "smooth", "reach-up", "pour", "watch-spin",
     "pedal", "run", "tap", "look-around", "tremble", "type",
-    "drop", "knock", "write", "dance", "cough"
+    "drop", "knock", "write", "dance", "cough", "climb",
+    "fan", "swim", "wave", "jumping-jack", "flex", "lift",
+    "squat", "skip", "punch", "curl", "stiff", "deep-breath",
+    "pant", "kick", "pullup", "wobble", "ski"
   ],
   "fx": [
     "sparkles", "bubbles", "dust", "shine", "steam", "stink",
     "drops", "sun", "speed-lines", "sweat", "sigh-puffs", "question",
     "hearts", "rain", "contactless", "parcel", "swap", "coins",
     "ring", "callback", "checkmark", "knock-lines", "signature", "cough-puffs",
-    "pain"
+    "pain", "flash", "clink", "breeze", "snow"
   ],
   "prop": [
     "bed", "window", "washing-machine", "drying-rack", "ironing-board", "plant",
@@ -32,7 +35,20 @@
     "wallet", "coin", "phone-ear", "calendar", "calendar-move", "calendar-x",
     "thermometer", "big-clock", "door", "number-display", "ticket", "clipboard",
     "pen", "folder", "fridge", "sofa-back", "pillow", "red-nose",
-    "tissue", "plaster-cheek"
+    "tissue", "plaster-cheek", "mountains", "sunset", "hills", "slope",
+    "boulder", "big-sun", "bench", "lake-back", "night-window", "knoedel-sleep",
+    "meadow", "summit", "signpost", "hut-door", "hut-bench", "menu-board",
+    "car", "backpack-open", "hiking-pole", "water-bottle", "fuel-nozzle", "camera",
+    "fork", "glass", "knoedel-hug", "nightcap", "sunglasses", "backpack-straps",
+    "backpack", "knoedel-on-pack", "lake-water", "table-food", "table-drinks", "table-empty",
+    "knoedel", "knoedel-wow", "knoedel-tired", "knoedel-walk", "knoedel-top", "knoedel-bench",
+    "knoedel-pose", "knoedel-float", "knoedel-cool", "knoedel-guest", "knoedel-shock", "knoedel-table",
+    "knoedel-cheers", "knoedel-full", "knoedel-flat", "knoedel-coach", "knoedel-stretch", "knoedel-laugh",
+    "knoedel-roll", "knoedel-yoga", "knoedel-dive", "knoedel-snow", "gym", "headband",
+    "barbell", "treadmill", "jump-rope", "punching-bag", "boxing-gloves", "mat",
+    "yoga-mat", "dumbbells", "timer", "scale", "park", "field",
+    "ball", "goal", "football", "pullup-bar", "kite", "underwater",
+    "snorkel", "snow-slope", "skis", "beanie", "ski-poles"
   ],
   "bubble": []
 }

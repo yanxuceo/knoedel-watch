@@ -1,8 +1,11 @@
 #include "katze.h"
 
+#include <initializer_list>
+#include <stdio.h>
 #include <string.h>
 
 #include "gfx_util.h"
+#include "scenery.h"
 #include "vec.h"
 
 using namespace gfxu;
@@ -228,6 +231,148 @@ void m_cough(float *v, float c, float w)
     v[JUMP] -= 1.5f * k * w;
 }
 
+// a2-wandern-verben and a2-huette-phrasen
+void m_climb(float *v, float c, float w)
+{
+    const float s = sinf(c * 3);
+    v[HLY] += s * 5 * w;
+    v[HRY] -= s * 5 * w;
+    v[FRY] += fmaxf(0, s) * 6 * w;
+    v[FLY] -= fmaxf(0, -s) * 6 * w;
+    v[JUMP] += fabsf(s) * 1.5f * w;
+    v[ROT] += s * 2 * w;
+}
+// Fanning herself with the right paw.
+void m_fan(float *v, float c, float w)
+{
+    v[HRX] += sinf(c * 12) * 5 * w;
+    v[HRY] += cosf(c * 12) * 2 * w;
+    v[ROT] += sinf(c * 12) * 0.6f * w;
+}
+void m_swim(float *v, float c, float w)
+{
+    v[JUMP] += sinf(c * 2) * 2.4f * w;
+    v[HLX] += cosf(c * 4) * 6 * w;
+    v[HLY] += sinf(c * 4) * 4 * w;
+    v[HRX] -= cosf(c * 4 + PI_F) * 6 * w;
+    v[HRY] += sinf(c * 4 + PI_F) * 4 * w;
+    v[ROT] += sinf(c * 2) * 2 * w;
+}
+void m_wave(float *v, float c, float w)
+{
+    v[HRX] += sinf(c * 8) * 7 * w;
+    v[ROT] += sinf(c * 8) * w;
+    v[EARR] += sinf(c * 8) * 3 * w;
+}
+
+// a2-fitness-verben and a2-sport-draussen
+void m_jumping_jack(float *v, float c, float w)
+{
+    const float s = fabsf(sinf(c * 4));
+    v[JUMP] += s * 8 * w;
+    v[HLX] -= s * 6 * w;
+    v[HLY] -= s * 50 * w;
+    v[HRX] += s * 6 * w;
+    v[HRY] -= s * 50 * w;
+    v[FLX] -= s * 9 * w;
+    v[FRX] += s * 9 * w;
+}
+void m_flex(float *v, float c, float w)
+{
+    const float s = sinf(c * 3);
+    v[HLY] += s * 3 * w;
+    v[HRY] += s * 3 * w;
+    v[ROT] += s * 2 * w;
+}
+void m_lift(float *v, float c, float w)
+{
+    const float u = ease(fabsf(sinf(c * 1.4f)));
+    v[HLY] += (1 - u) * 22 * w;
+    v[HRY] += (1 - u) * 22 * w;
+    v[SY] *= 1 - 0.03f * (1 - u) * w;
+    v[X] += sinf(c * 30) * 0.5f * u * w;
+}
+void m_squat(float *v, float c, float w)
+{
+    const float s = (1 - cosf(c * 2.6f)) / 2, d = s * 14 * w;
+    v[JUMP] -= d;
+    v[FLY] -= d;
+    v[FRY] -= d;
+    v[FLX] -= s * 18 * w;
+    v[FRX] += s * 18 * w;
+    v[HLY] -= s * 6 * w;
+    v[HRY] -= s * 6 * w;
+}
+void m_skip(float *v, float c, float w)
+{
+    v[JUMP] += fabsf(sinf(c * 4)) * 12 * w;
+    v[HLX] += cosf(c * 8) * 3 * w;
+    v[HRX] -= cosf(c * 8) * 3 * w;
+}
+void m_punch(float *v, float c, float w)
+{
+    const float u = fmaxf(0, sinf(c * 5)), k = u * u;
+    v[HRX] += k * 20 * w;
+    v[HRY] -= k * 4 * w;
+    v[ROT] += k * 3 * w;
+}
+void m_curl(float *v, float c, float w)
+{
+    const float s = (1 - cosf(c * 3)) / 2;
+    v[HLY] -= s * 16 * w;
+    v[HRY] -= s * 16 * w;
+    v[HLX] += s * 4 * w;
+    v[HRX] -= s * 4 * w;
+}
+// Sore muscles: stiff little steps.
+void m_stiff(float *v, float c, float w)
+{
+    const float s = sinf(c * 3);
+    v[ROT] += s * 1.5f * w;
+    v[FLY] -= fmaxf(0, s) * 2.5f * w;
+    v[FRY] -= fmaxf(0, -s) * 2.5f * w;
+    v[X] += sinf(c * 30) * 0.5f * w;
+}
+void m_deep_breath(float *v, float c, float w)
+{
+    const float s = (1 - cosf(c * 1.4f)) / 2;
+    v[SX] *= 1 + s * 0.05f * w;
+    v[SY] *= 1 + s * 0.03f * w;
+    v[HLY] -= s * 8 * w;
+    v[HRY] -= s * 8 * w;
+}
+void m_pant(float *v, float c, float w)
+{
+    const float s = fabsf(sinf(c * 7));
+    v[SY] *= 1 - s * 0.02f * w;
+    v[MOPEN] += s * 0.2f * w;
+}
+void m_kick(float *v, float c, float w)
+{
+    const float u = fmodf(c, 1.8f) / 1.8f, k = u < 0.22f ? sinf(u / 0.22f * PI_F) : 0;
+    v[FRY] -= k * 14 * w;
+    v[FRX] += k * 12 * w;
+    v[ROT] -= k * 4 * w;
+}
+void m_pullup(float *v, float c, float w)
+{
+    const float s = sinf(c * 2.2f);
+    v[JUMP] += s * 8 * w;
+    v[HLY] += s * 8 * w;
+    v[HRY] += s * 8 * w;
+}
+void m_wobble(float *v, float c, float w)
+{
+    v[ROT] += sinf(c * 1.6f) * 3 * w;
+    v[X] += sinf(c * 1.6f) * 1.2f * w;
+}
+void m_ski(float *v, float c, float w)
+{
+    const float s = sinf(c * 1.3f);
+    v[X] += s * 8 * w;
+    v[ROT] += s * 5 * w;
+}
+
 struct MotionDef {
     const char *id;
     MotionFn fn;
@@ -238,7 +383,10 @@ const MotionDef MOTIONS[] = {
     {"smooth", m_smooth}, {"reach-up", m_reach_up}, {"pour", m_pour}, {"watch-spin", m_watch_spin},
     {"pedal", m_pedal}, {"run", m_run}, {"tap", m_tap}, {"look-around", m_look_around}, {"tremble", m_tremble},
     {"type", m_type}, {"drop", m_drop}, {"knock", m_knock}, {"write", m_write}, {"dance", m_dance},
-    {"cough", m_cough},
+    {"cough", m_cough}, {"climb", m_climb}, {"fan", m_fan}, {"swim", m_swim}, {"wave", m_wave},
+    {"jumping-jack", m_jumping_jack}, {"flex", m_flex}, {"lift", m_lift}, {"squat", m_squat}, {"skip", m_skip},
+    {"punch", m_punch}, {"curl", m_curl}, {"stiff", m_stiff}, {"deep-breath", m_deep_breath}, {"pant", m_pant},
+    {"kick", m_kick}, {"pullup", m_pullup}, {"wobble", m_wobble}, {"ski", m_ski},
 };
 constexpr int MOTION_COUNT = sizeof(MOTIONS) / sizeof(MOTIONS[0]);
 
@@ -262,7 +410,8 @@ struct Ctx {
     Pen stage, scene, root, body;
     float L[2], R[2];  // paws, body frame
     float head_y, mouth_y, body_y, floor_y;
-    Anchor tool, plate, vac, mop, iron, bag, spout, drum, card, phone, wallet, ear, clip, paw_r;
+    Anchor tool, plate, vac, mop, iron, bag, spout, drum, card, phone, wallet, ear, clip, paw_l, paw_r, steam, flash, glass;
+    const Anim *anim;
     float pour;  // 0..1 while a can is held, else -1
 
     void body_to_root(float x, float y, float &ox, float &oy) const
@@ -338,7 +487,9 @@ void draw_legs(const Ctx &x)
     }
 }
 
-void draw_body(const Ctx &x)
+void draw_behind(Ctx &x);  // props behind the torso, after the tail (a backpack)
+
+void draw_body(Ctx &x)
 {
     const float *v = x.v;
     const Pen &b = x.body;
@@ -348,6 +499,7 @@ void draw_body(const Ctx &x)
     curl.to(0, 0).cubic(26, -2, 30, -32, 18, -46, 9);
     tail.stroke(curl, 10, C_EDGE);
     tail.stroke(curl, 5.6f, C_BASE);
+    draw_behind(x);
 
     for (int side = -1; side <= 1; side += 2) {
         const Pen ear = b.turn(side < 0 ? v[EARL] : -v[EARR], side * 18, -104);
@@ -1455,9 +1607,1105 @@ void p_plaster_cheek(Ctx &x, bool draw)
     s.rect(16.5f, -83, 6, 5, 1, 0xE9BF8E);
 }
 
-// Where a prop is drawn: on the stage behind the cat (scene frame), worn on
-// the body under the arms, or held between the arms and the paws (body frame).
-enum Layer { BACK, WEAR, HAND };
+// ---- a2-wandern-verben and a2-huette-phrasen: the mountains ----
+
+Path poly(std::initializer_list<float> xy)
+{
+    Path q;
+    for (auto i = xy.begin(); i != xy.end(); i += 2) {
+        q.to(i[0], i[1]);
+    }
+    return q;
+}
+
+// Text that keeps its anchor on the pen, in the stage font nearest its size.
+void label(const Ctx &x, const Pen &p, const char *s, float px, float py, float size, uint32_t col,
+           lgfx::textdatum_t datum = baseline_center)
+{
+    p.text(scenery::font_for(*x.st, size * p.k), s, px, py, datum, col);
+}
+
+// Backdrops, behind the cat.
+void p_mountains(Ctx &x, bool draw)
+{
+    if (draw) {
+        scenery::peaks(x.scene, scenery::DAY);
+    }
+}
+
+void p_sunset(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const Pen &s = x.scene;
+    s.ell(96, -84, 32, 32, x.fade(0xFFD08A, 0.35f));
+    s.ell(96, -84, 22 + sinf(x.c * 1.5f) * 1.2f, 22 + sinf(x.c * 1.5f) * 1.2f, x.fade(0xFFB347, 0.95f));
+    scenery::peaks(s, scenery::DUSK);
+}
+
+void p_hills(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const Pen &s = x.scene;
+    scenery::peaks(s, scenery::DAY);
+    Path path;
+    path.to(150, -20).quad(100, -12, 70, -6).quad(40, 0, 10, 2);
+    s.stroke(path, 6, 0xE8D3A8);
+    scenery::fir(s, 100, -16, 1.1f);
+    scenery::fir(s, 118, -22, 0.9f, 0x4E9E68);
+    scenery::fir(s, -44, -14, 1);
+}
+
+void p_slope(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const Pen &s = x.scene;
+    Path hill;
+    hill.to(-120, -8).quad(-40, -16, 20, -50, 8).quad(70, -84, 112, -112, 8).to(132, -118).to(150, -118).to(150, 0).to(-120, 0);
+    s.area(hill, 0xB2D896, 0x86BC67, 1.6f);
+    Path trail;
+    trail.to(-30, -18).quad(14, -26, 2, -36).quad(26, -48, 48, -58).quad(34, -68, 64, -80).quad(84, -92, 104, -108);
+    s.stroke(trail, 3.4f, 0xE8D3A8);
+    scenery::fir(s, -36, -14, 0.9f);
+    scenery::fir(s, 70, -60, 0.8f, 0x4E9E68);
+    s.line(118, -114, 118, -146, 3, 0x8A5A3B);
+    s.line(110, -138, 126, -138, 3, 0x8A5A3B);
+    s.fill(poly({118, -146, 131 + sinf(x.c * 5) * 2, -142 + sinf(x.c * 5 + 1), 118, -138}), 0xE5484D);
+}
+
+// In front of the cat: she pulls herself up over its edge.
+void p_boulder(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const Pen &s = x.scene;
+    s.area(poly({-100, 44, -92, -10, -70, -34, -36, -44, 10, -46, 56, -44, 86, -36, 104, -12, 116, 44}), 0xBDB7AE, 0x8E8880, 2);
+    s.area(poly({-70, -34, -36, -44, 10, -46, 56, -44, 86, -36, 74, -30, 40, -36, 0, -38, -40, -36}), 0xD6D1C9);
+    s.stroke(poly({-50, -14, -40, 2, -46, 20}), 1.6f, 0x8E8880);
+    s.line(60, -20, 68, 0, 1.6f, 0x8E8880);
+    s.line(10, -4, 18, 14, 1.6f, 0x8E8880);
+    Path grass1, grass2;
+    grass1.to(-100, 44).quad(-96, 30, -84, 34, 4).quad(-78, 24, -66, 30, 4).to(-60, 44);
+    grass2.to(80, 44).quad(84, 30, 96, 34, 4).quad(104, 28, 112, 44, 4);
+    s.area(grass1, 0x7DB35E);
+    s.area(grass2, 0x7DB35E);
+}
+
+void p_big_sun(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const Pen sun = x.scene.move(80, -112);
+    for (int i = 0; i < 10; i++) {
+        sun.turn(i * 36 + x.c * 20).line(0, -22, 0, -30, 3, 0xFFB020);
+    }
+    sun.ell(0, 0, 17, 17, 0xFFC93C, 0xFFB020, 2);
+    Path e1, e2, m;
+    e1.to(-6, -3).quad(-4, -5, -2, -3, 3);
+    e2.to(3, -3).quad(5, -5, 7, -3, 3);
+    m.to(-5, 5).quad(0, 9, 5, 5, 4);
+    sun.stroke(e1, 1.6f, 0xC77B12);
+    sun.stroke(e2, 1.6f, 0xC77B12);
+    sun.stroke(m, 1.6f, 0xC77B12);
+    for (int i = 0; i < 3; i++) {
+        const float k = fract(x.c * 0.6f + i / 3.0f), a = 0.6f * sinf(PI_F * k);
+        if (a < 0.05f) {
+            continue;
+        }
+        Path wisp;
+        wisp.to(0, 0).quad(4, -4, 0, -8, 4).quad(-4, -12, 0, -16, 4);
+        x.scene.move(48 + i * 22, -20 - k * 20).stroke(wisp, 1.8f, x.fade(0xFFB020, a));
+    }
+}
+
+void p_bench(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const Pen &s = x.scene;
+    constexpr uint32_t W = 0xB07A4F, E = 0x8A5A3B;
+    scenery::peaks(s, scenery::DAY);
+    s.rect(-54, -24, 5, 24, 0, E);
+    s.rect(64, -24, 5, 24, 0, E);
+    s.rect(-50, -58, 5, 34, 0, E);
+    s.rect(70, -58, 5, 34, 0, E);
+    s.rect(-64, -56, 146, 7, 2, W, E, 1.2f);
+    s.rect(-64, -44, 146, 7, 2, W, E, 1.2f);
+    s.rect(-66, -27, 150, 7, 2, W, E, 1.2f);
+}
+
+void p_lake_back(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const Pen &s = x.scene;
+    scenery::peaks(s, scenery::DAY);
+    s.rect(-120, -44, 280, 90, 0, 0x8FD0F0);
+    const uint32_t glint = mix(0x8FD0F0, WHITE, 0.6f);
+    s.line(-80, -30, -40, -30, 1.6f, glint);
+    s.line(30, -24, 80, -24, 1.6f, glint);
+    s.line(-20, -14, 20, -14, 1.6f, glint);
+}
+
+void p_night_window(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const Pen &s = x.scene;
+    constexpr uint32_t SKY = 0x151B3D, WOOD = 0xC89B6D;
+    s.rect(40, -116, 52, 58, 3, SKY, WOOD, 3);
+    s.ell(76, -100, 8, 8, 0xFFE58A);
+    s.ell(80, -103, 7, 7, SKY);
+    static const float STARS[4][2] = {{50, -106}, {58, -78}, {84, -72}, {62, -96}};
+    for (int i = 0; i < 4; i++) {
+        scenery::star(s.move(STARS[i][0], STARS[i][1]).scale(0.35f), mix(SKY, WHITE, 0.4f + 0.6f * fabsf(sinf(x.c * 2 + i * 1.3f))));
+    }
+    s.line(66, -116, 66, -58, 2.4f, WOOD);
+    s.line(40, -87, 92, -87, 2.4f, WOOD);
+    s.rect(36, -58, 60, 5, 2, WOOD);
+}
+
+// Knödel asleep in the bed, under his own blanket.
+void p_knoedel_sleep(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const Pen &s = x.scene;
+    scenery::buddy(s.move(80, -30).scale(0.82f), scenery::SLEEP, x.c, *x.st);
+    Path blanket;
+    blanket.to(62, -30).quad(74, -34, 98, -30, 4).quad(102, -20, 98, -10, 4).to(62, -10).quad(58, -20, 62, -30, 4);
+    s.fill(blanket, 0xC9C2F2, 0x9D8DF1, 1.6f);
+    Path fold;
+    fold.to(62, -30).quad(74, -34, 98, -30, 4).to(98, -25).quad(74, -29, 62, -25, 4);
+    s.area(fold, mix(0xC9C2F2, WHITE, 0.85f));
+}
+
+// A small flower nodding, its foot at the origin of `p`.
+void flower(const Pen &p, float size, uint32_t col)
+{
+    p.line(0, 0, 0, 8 * size / 2.6f, 1.4f, 0x5E9E45);
+    for (int a = 0; a < 360; a += 72) {
+        p.turn(a).oval(0, -size, size * 0.7f, size, col);
+    }
+    p.ell(0, 0, size * 0.55f, size * 0.55f, 0xF2A93B);
+}
+
+// The butterfly of the meadow, its wings beating.
+void butterfly(const Pen &p, float c, float size)
+{
+    Path wings;
+    wings.to(0, 0).cubic(-4, -6, -9, -3, -6, 1, 4).cubic(-8, 4, -3, 6, 0, 1, 4).cubic(3, 6, 8, 4, 6, 1, 4).cubic(9, -3, 4, -6, 0, 0, 4);
+    p.scale(size, size * (0.6f + 0.4f * fabsf(sinf(c * 12)))).area(wings, 0x9C7AD6);
+}
+
+void p_meadow(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const Pen &s = x.scene;
+    scenery::peaks(s, scenery::DAY);
+    static const float FLOWERS[7][3] = {{-48, -6, 0xF28CA8}, {-30, -12, 0xFFFFFF}, {86, -10, 0xF2C14E}, {100, -4, 0xF28CA8},
+                                        {70, -16, 0xFFFFFF}, {118, -14, 0x9C7AD6}, {-40, -18, 0xF2C14E}};
+    for (int i = 0; i < 7; i++) {
+        flower(s.move(FLOWERS[i][0], FLOWERS[i][1]).turn(sinf(x.c * 2 + i) * 8), 2.6f, (uint32_t)FLOWERS[i][2]);
+    }
+    const float k = x.c * 0.7f;
+    butterfly(s.move(80 + sinf(k) * 26, -70 + sinf(k * 2.3f) * 10), x.c, 1);
+}
+
+void p_summit(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const Pen &s = x.scene;
+    static const float CLOUDS[2][3] = {{-70, -110, 1}, {104, -60, 0.8f}};
+    for (int i = 0; i < 2; i++) {
+        const Pen cl = s.move(CLOUDS[i][0] + sinf(x.c * 0.5f + i) * 6, CLOUDS[i][1]).scale(CLOUDS[i][2]);
+        const uint32_t col = x.fade(WHITE, 0.9f);
+        cl.ell(0, 0, 12, 12, col);
+        cl.ell(12, 2, 9, 9, col);
+        cl.ell(-11, 3, 8, 8, col);
+    }
+    s.area(poly({-96, 44, -72, 12, -52, 2, -20, -1, 34, -1, 70, 3, 90, 14, 112, 44}), 0xBDB7AE, 0x8E8880, 2);
+    s.area(poly({-52, 2, -20, -1, 34, -1, 70, 3, 60, 8, -40, 8}), 0xD6D1C9);
+    s.line(-60, 20, -50, 32, 1.6f, 0x8E8880);
+    s.line(40, 18, 52, 30, 1.6f, 0x8E8880);
+    s.line(78, 2, 78, -86, 4.5f, 0x8A5A3B);
+    s.line(64, -64, 92, -64, 4.5f, 0x8A5A3B);
+    s.ell(78, -64, 4, 4, 0xF2C14E);
+}
+
+// Trail signs to the hut and the summit; the upper one rocks.
+void p_signpost(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const Pen &s = x.scene;
+    s.rect(70, -116, 6, 116, 0, 0xA86B48);
+    s.rect(70, -44, 6, 4, 0, 0xE5484D);
+    s.rect(70, -36, 6, 4, 0, 0xE5484D);
+    const auto sign = [&](const Pen &p, float y, const char *place, const char *time) {
+        p.fill(poly({28, y, 100, y, 110, y + 9, 100, y + 18, 28, y + 18}), WHITE, 0xC9CED6, 1.2f);
+        p.fill(poly({100, y, 110, y + 9, 100, y + 18}), 0xE5484D);
+        label(x, p, place, 34, y + 12.5f, 8.5f, 0x2B2230, baseline_left);
+        label(x, p, time, 96, y + 12.5f, 8.5f, 0x2B2230, baseline_right);
+    };
+    sign(s.turn(sinf(x.c * 1.6f) * 1.2f, 73, -101), -110, "Hütte", "1 h");
+    sign(s, -86, "Gipfel", "3 h");
+}
+
+void p_hut_door(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const Pen &s = x.scene;
+    s.rect(24, -132, 130, 132, 0, 0xC68B59);
+    for (int y = -124; y < 0; y += 12) {
+        s.line(24, y, 154, y, 1.6f, 0xA8703F);
+    }
+    s.rect(34, -72, 38, 72, 3, 0x8A5A3B, 0x6E4528, 2);
+    Path heart;
+    heart.to(53, -52).cubic(50, -57, 44, -55, 46, -50, 4).to(53, -44).to(60, -50).cubic(62, -55, 56, -57, 53, -52, 4);
+    s.fill(heart, 0xF3D2A6);
+    s.ell(66, -34, 2.4f, 2.4f, 0xF2C14E);
+    s.rect(84, -102, 34, 30, 0, 0xDDF1FB, 0x6E4528, 2.4f);
+    s.line(101, -102, 101, -72, 1.8f, 0x6E4528);
+    s.line(84, -87, 118, -87, 1.8f, 0x6E4528);
+    s.rect(80, -72, 42, 8, 2, 0x8A5A3B);
+    for (int i = 0; i < 5; i++) {
+        const float r = 3.6f + sinf(x.c * 3 + i) * 0.4f;
+        s.ell(86 + i * 8, -75, r, r, 0xE5484D);
+    }
+    for (float lx : {88.0f, 98.0f, 108.0f, 116.0f}) {
+        s.ell(lx, -71, 3, 1.6f, 0x5E9E45);
+    }
+    s.rect(30, -94, 46, 14, 3, 0xF3D2A6, 0x8A5A3B, 1.4f);
+    label(x, s, "Hütte", 53, -83.5f, 9, 0x6E4528);
+}
+
+void p_hut_bench(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const Pen &s = x.scene;
+    constexpr uint32_t W = 0xB07A4F, E = 0x8A5A3B;
+    s.rect(30, -48, 90, 6, 2, W, E, 1.2f);
+    s.rect(40, -42, 5, 42, 0, E);
+    s.rect(106, -42, 5, 42, 0, E);
+    Path mug;
+    mug.to(92, -48).to(92, -60).quad(92, -63, 95, -63, 3).to(101, -63).quad(104, -63, 104, -60, 3).to(104, -48);
+    s.fill(mug, WHITE, 0xC9CED6, 1.2f);
+    Path handle;
+    handle.to(104, -58).quad(109, -58, 109, -54, 3).quad(109, -50, 104, -50, 3);
+    s.stroke(handle, 1.2f, 0xC9CED6);
+    s.rect(26, -27, 100, 6, 2, W, E, 1.2f);
+    s.rect(34, -21, 4, 21, 0, E);
+    s.rect(114, -21, 4, 21, 0, E);
+}
+
+// Today's dish on a blackboard: Speckknödel, with a smiling dumpling.
+void p_menu_board(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const Pen &s = x.scene;
+    s.line(54, 0, 66, -110, 3.4f, 0x8A5A3B);
+    s.line(102, 0, 90, -110, 3.4f, 0x8A5A3B);
+    s.rect(42, -122, 70, 70, 3, 0x2F4A3A, 0xA86B48, 3.4f);
+    label(x, s, "Heute", 77, -108, 8.5f, 0xF7D774);
+    label(x, s, "Speck-", 77, -95, 10.5f, WHITE);
+    label(x, s, "knödel", 77, -83, 10.5f, WHITE);
+    const Pen d = s.move(70, -66);
+    d.ring(0, 0, 7, 1.3f, WHITE);
+    d.ell(-2.6f, -1.5f, 0.8f, 0.8f, WHITE);
+    d.ell(2.6f, -1.5f, 0.8f, 0.8f, WHITE);
+    Path smile;
+    smile.to(-2.6f, 2).quad(0, 4.6f, 2.6f, 2, 3);
+    d.stroke(smile, 1.1f, WHITE);
+    const Pen fork = d.move(-2, 0);
+    fork.line(14, -8, 14, 6, 1.2f, WHITE);
+    Path tines;
+    tines.to(11, -8).to(11, -2).quad(14, 1, 17, -2, 3).to(17, -8);
+    fork.stroke(tines, 1.2f, WHITE);
+    label(x, s, "9 €", 98, -61, 8, 0xF7D774);
+}
+
+// A fuel pump and the car, Knödel inside; the hose runs to the cat's paw.
+void p_car(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const Pen &s = x.scene;
+    s.rect(-82, -88, 30, 88, 4, 0xE5484D, 0xB8323A, 1.6f);
+    s.rect(-76, -80, 18, 12, 2, WHITE);
+    label(x, s, "€", -67, -71, 8, 0x2B2230);
+    const float px = x.paw_r.x - FEET_X, py = x.paw_r.y - FEET_Y;
+    Path hose;
+    hose.to(-58, -60).quad(-60, 10, (px - 58) / 2, 4, 10).quad(px - 6, 0, px - 4, py + 4, 8);
+    s.stroke(hose, 3, 0x2B2230);
+    Path roof;
+    roof.to(30, -14).quad(30, -32, 46, -36, 4).to(62, -56).quad(66, -60, 74, -60, 3).to(122, -60).quad(130, -60, 136, -52, 3);
+    roof.to(150, -36).to(150, -14);
+    s.area(roof, 0x4BA3D9, 0x2F7DB8, 2);
+    s.fill(poly({66, -54, 120, -54, 130, -40, 58, -40}), 0xDDF1FB);
+    scenery::buddy(s.move(96, -32).scale(0.62f), scenery::HAPPY, x.c, *x.st);
+    Path lower;
+    lower.to(54, -40).to(150, -40).to(150, -14).to(30, -14).quad(30, -32, 46, -36, 4);
+    s.area(lower, 0x4BA3D9, 0x2F7DB8, 2);
+    s.line(92, -54, 92, -40, 2, 0x2F7DB8);
+    s.rect(40, -32, 8, 8, 2, 0x2F7DB8);
+    s.ell(34, -22, 3, 2.4f, 0xFFE58A);
+    for (float wx : {56.0f, 124.0f}) {
+        s.ell(wx, -8, 10, 10, 0x3B2F4A);
+        s.ell(wx, -8, 4, 4, 0xC9CED6);
+    }
+}
+
+// An open backpack on the floor, Knödel looking out of it.
+void p_backpack_open(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const Pen &s = x.scene;
+    Path back;
+    back.to(40, -2).quad(38, -44, 50, -48, 6).to(82, -48).quad(94, -44, 92, -2, 6).quad(92, 2, 86, 2, 3).to(46, 2).quad(40, 2, 40, -2, 3);
+    s.fill(back, 0x4BA3D9, 0x2F7DB8, 2);
+    s.ell(66, -47, 16, 4.5f, 0x25486B);
+    scenery::buddy(s.move(66, -34).scale(0.72f), scenery::HAPPY, x.c, *x.st);
+    Path front;
+    front.to(40, -2).quad(39, -34, 44, -42, 5).quad(66, -36, 88, -42, 6).quad(93, -34, 92, -2, 5).quad(92, 2, 86, 2, 3).to(46, 2);
+    front.quad(40, 2, 40, -2, 3);
+    s.area(front, 0x4BA3D9, 0x2F7DB8, 2);
+    s.rect(52, -26, 28, 18, 4, 0x2F7DB8);
+    Path flap;
+    flap.to(90, -46).quad(104, -52, 108, -40, 4).quad(100, -36, 92, -40, 4);
+    s.area(flap, 0x2F7DB8);
+    s.turn(-12, 34, -9).rect(26, -14, 16, 10, 2, 0xFFF6DA, 0xC9B98A, 1.2f);
+    s.ell(102, -6, 6, 6, 0xE5484D);
+    Path stem;
+    stem.to(102, -12).quad(103, -15, 105, -16, 3);
+    s.stroke(stem, 1.6f, 0x5E9E45);
+}
+
+// Held props.
+void p_hiking_pole(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const Pen s = x.body.move(x.R[0] + 1, x.R[1]);
+    s.line(0, 0, 7, 54, 2.2f, 0x6B7180);
+    s.stroke(Path::oval(6.2f, 48, 4, 1.4f, 16), 1.2f, 0x3B2F4A, true);
+    s.turn(-7).rect(-2.4f, -8, 5, 11, 2.2f, 0xE5484D);
+}
+
+void p_water_bottle(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const Pen s = x.body.move(x.R[0] + 1, x.R[1] + 4).turn(8);
+    s.rect(-4.5f, -16, 9, 20, 3.5f, 0xE5484D, 0xB8323A, 1.2f);
+    s.rect(-3, -20, 6, 5, 1, 0xC9CED6);
+    s.rect(-4.5f, -8, 9, 4, 0, mix(0xE5484D, WHITE, 0.8f));
+}
+
+void p_fuel_nozzle(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const Pen s = x.body.move(x.R[0], x.R[1]);
+    s.fill(poly({-5, -4, 5, -4, 7, 4, -3, 6}), 0x2B2230);
+    s.line(5, -2, 15, 2, 3, 0x6B7180);
+    s.rect(-6, -7, 8, 4, 1.5f, 0xF2C14E);
+}
+
+void p_camera(Ctx &x, bool draw)
+{
+    const float cx = (x.L[0] + x.R[0]) / 2, cy = (x.L[1] + x.R[1]) / 2;
+    x.flash = x.body_to_stage(cx + 16, cy - 6);
+    if (!draw) {
+        return;
+    }
+    const Pen s = x.body.move(cx, cy - 2);
+    s.rect(-12, -8, 22, 15, 3, 0x3B3F4A, 0x22252C, 1.2f);
+    s.rect(-8, -11, 7, 4, 1, 0x3B3F4A);
+    s.rect(8, -6, 7, 11, 2, 0x55596A, 0x22252C, 1);
+    s.ell(15.5f, -0.5f, 2, 4.5f, 0x7FB6E0);
+    s.ell(-7, -3, 1.5f, 1.5f, 0xE5484D);
+}
+
+void p_fork(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const Pen s = x.body.move(x.R[0] + 1, x.R[1] - 2).turn(10);
+    s.line(0, 4, 0, -12, 1.8f, 0x9AA4B1);
+    Path tines;
+    tines.to(-3, -20).to(-3, -12).quad(0, -9, 3, -12, 3).to(3, -20);
+    s.stroke(tines, 1.8f, 0x9AA4B1);
+    s.line(0, -20, 0, -12, 1.8f, 0x9AA4B1);
+    s.fill(poly({-4, -26, 4, -27, 5, -21, -3, -20}), 0xE8B04B, 0xC08A2E, 0.8f);
+}
+
+void p_glass(Ctx &x, bool draw)
+{
+    x.glass = x.body_to_stage(x.R[0] + 6, x.R[1] - 22);
+    if (!draw) {
+        return;
+    }
+    const Pen s = x.body.move(x.R[0] + 1, x.R[1] - 3).turn(14);
+    s.fill(poly({-5, -20, 5, -20, 4, 2, -4, 2}), 0xF7C948, 0xC9A227, 1.2f);
+    s.rect(-5.4f, -24, 10.8f, 5, 2, WHITE);
+    for (int i = 0; i < 3; i++) {
+        s.ell(-2 + i * 2, -1 - fract(x.c * 0.8f + i / 3.0f) * 16, 0.9f, 0.9f, mix(0xF7C948, WHITE, 0.8f));
+    }
+}
+
+void p_knoedel_hug(Ctx &x, bool draw)
+{
+    if (draw) {
+        scenery::buddy(x.body.move((x.L[0] + x.R[0]) / 2, (x.L[1] + x.R[1]) / 2 + 18).scale(0.95f), scenery::HUG, x.c, *x.st);
+    }
+}
+
+// Worn.
+void p_nightcap(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const Pen &b = x.body;
+    Path cap;
+    cap.to(-24, -110).quad(-20, -138, 6, -140, 5).quad(30, -140, 42, -116, 5).quad(46, -106, 40, -100, 3);
+    cap.quad(34, -122, 18, -126, 5).quad(22, -116, 24, -106, 3);
+    b.area(cap, 0x9C7AD6, 0x7A5AC8, 1.6f);
+    Path band;
+    band.to(-26, -108).quad(0, -118, 26, -108, 6).to(26, -102).quad(0, -112, -26, -102, 6);
+    b.area(band, WHITE, 0xD6D2E0, 1.2f);
+    b.ell(41, -98 + sinf(x.c * 1.8f) * 1.2f, 5, 5, WHITE, 0xD6D2E0, 1.2f);
+    static const float STARS[3][2] = {{-10, -126}, {10, -130}, {26, -120}};
+    for (auto &st : STARS) {
+        scenery::star(b.move(st[0], st[1]).scale(0.4f), 0xFFE58A);
+    }
+}
+
+void p_sunglasses(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const Pen &b = x.body;
+    for (int side = -1; side <= 1; side += 2) {
+        Path lens;
+        lens.to(side * 21, -91).to(side * 2, -91).to(side * 3, -83).quad(side * 6, -79, side * 12, -79, 3);
+        lens.quad(side * 19, -79, side * 21, -85, 3);
+        b.fill(lens, 0x2B2230);
+        b.line(side * 21, -90, side * 30, -92, 1.8f, 0x2B2230);
+    }
+    Path bridge;
+    bridge.to(-2, -89).quad(0, -91, 2, -89, 3);
+    b.stroke(bridge, 1.8f, 0x2B2230);
+    const uint32_t shine = mix(0x2B2230, WHITE, 0.55f);
+    b.line(-17, -88, -12, -88, 1.4f, shine);
+    b.line(6, -88, 11, -88, 1.4f, shine);
+}
+
+void p_backpack_straps(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const Pen &b = x.body;
+    for (int side = -1; side <= 1; side += 2) {
+        Path strap;
+        strap.to(side * 17, -110).quad(side * 24, -80, side * 23, -46, 6);
+        b.stroke(strap, 5, 0x25486B);
+    }
+    b.line(-21, -72, 21, -72, 2.4f, 0x25486B);
+    b.rect(-4, -75, 8, 6, 1.5f, 0xF2C14E);
+}
+
+// Behind the torso.
+void p_backpack(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const Pen &b = x.body;
+    Path pack;
+    pack.to(-32, -40).quad(-36, -130, -26, -146, 8).quad(0, -158, 26, -146, 6).quad(36, -130, 32, -40, 8);
+    b.fill(pack, 0x4BA3D9, 0x2F7DB8, 2);
+    Path lid;
+    lid.to(-27, -144).quad(0, -156, 27, -144, 6).to(28, -132).quad(0, -142, -28, -132, 6);
+    b.area(lid, 0x2F7DB8);
+    b.rect(-42, -84, 12, 26, 4, 0x2F7DB8);
+    b.rect(30, -84, 12, 26, 4, 0x2F7DB8);
+    b.rect(34, -98, 5, 16, 2, 0xE5484D);
+}
+
+void p_knoedel_on_pack(Ctx &x, bool draw)
+{
+    if (draw) {
+        scenery::buddy(x.body.move(2, -149).scale(0.82f), scenery::WOW, x.c, *x.st);
+    }
+}
+
+// In front of the cat: lake water up to her chest, rings around her.
+void p_lake_water(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const Pen &s = x.scene;
+    constexpr uint32_t WATER = 0x7CC3EA;
+    Path water, crest;
+    water.to(-120, 50);
+    for (int wx = -120; wx <= 160; wx += 10) {
+        const float wy = -34 + sinf(wx * 0.08f + x.c * 2.4f) * 1.8f;
+        water.to(wx, wy);
+        crest.to(wx, wy);
+    }
+    water.to(160, 50);
+    s.area(water, x.fade(WATER, 0.94f));
+    s.stroke(crest, 2, mix(WATER, WHITE, 0.8f));
+    const float cx = x.v[X] - FEET_X;
+    for (int i = 0; i < 2; i++) {
+        const float k = fract(x.c * 0.5f + i / 2.0f), a = 0.7f * (1 - k);
+        if (a > 0.05f) {
+            s.stroke(Path::oval(cx, -34, 26 + k * 26, 3 + k * 3, 28), 1.6f, mix(WATER, WHITE, a), true);
+        }
+    }
+}
+
+void p_table_food(Ctx &x, bool draw)
+{
+    x.steam = {FEET_X + 2, FEET_Y - 50, true};
+    if (!draw) {
+        return;
+    }
+    const Pen &s = x.scene;
+    scenery::table_cloth(s);
+    s.ell(2, -38, 22, 5.5f, WHITE, 0xC9CED6, 1.4f);
+    static const float PIECES[4][5] = {{-10, -42, 9, 5, -10}, {2, -44, 10, 5, 8}, {12, -41, 8, 4.5f, -6}, {-2, -40, 8, 4, 4}};
+    for (auto &q : PIECES) {
+        s.turn(q[4], q[0], q[1]).rect(q[0] - q[2] / 2, q[1] - q[3] / 2, q[2], q[3], 1.6f, 0xE8B04B, 0xC08A2E, 0.8f);
+    }
+    static const float SALT[5][2] = {{-6, -46}, {4, -47}, {10, -44}, {-12, -44}, {0, -42}};
+    for (auto &q : SALT) {
+        s.ell(q[0], q[1], 0.9f, 0.9f, WHITE);
+    }
+    s.ell(64, -38, 13, 4, WHITE, 0xC9CED6, 1.2f);
+    Path bowl;
+    bowl.to(53, -40).quad(64, -30, 75, -40, 4);
+    s.fill(bowl, 0xF2C14E, 0xC99227, 1);
+}
+
+void p_table_drinks(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const Pen &s = x.scene;
+    scenery::table_cloth(s);
+    Path pretzel;
+    pretzel.to(-8, 2).quad(-12, -8, -4, -9, 4).quad(0, -3, 4, -9, 4).quad(12, -8, 8, 2, 4).quad(4, -2, 0, 2, 3).quad(-4, -2, -8, 2, 3);
+    s.move(16, -40).stroke(pretzel, 3.2f, 0xB0653A, true);
+}
+
+void p_table_empty(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const Pen &s = x.scene;
+    scenery::table_cloth(s);
+    s.ell(4, -38, 18, 4.6f, WHITE, 0xC9CED6, 1.3f);
+    s.ell(64, -38, 13, 4, WHITE, 0xC9CED6, 1.2f);
+    const Pen bill = s.move(34, -42).turn(-8);
+    bill.rect(-7, -10, 14, 16, 1.5f, WHITE, 0xC9CED6, 1.2f);
+    bill.line(-4, -6, 4, -6, 1.1f, 0x9AA4B1);
+    bill.line(-4, -3, 4, -3, 1.1f, 0x9AA4B1);
+    bill.line(-4, 0, 2, 0, 1.1f, 0x9AA4B1);
+}
+
+// ---- a2-fitness-verben and a2-sport-draussen ----
+
+// A gym: a pale wall stripe, the floor, a clock on the wall.
+void p_gym(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const Pen &s = x.scene;
+    s.rect(-120, -64, 280, 5, 0, x.fade(WHITE, 0.55f));
+    s.rect(-120, 0, 280, 50, 0, 0xC9CED6);
+    s.rect(-120, 0, 280, 3, 0, 0x9AA4B1);
+    const Pen clock = s.move(-62, -112);
+    clock.ell(0, 0, 11, 11, WHITE, 0x6B7180, 2);
+    clock.turn(fmodf(x.c * 60, 360)).line(0, 0, 0, -8, 1.6f, 0x2B2230);
+    clock.line(0, 0, 5, 0, 1.8f, 0x2B2230);
+}
+
+void p_headband(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const Pen &b = x.body;
+    Path band;
+    band.to(-30.5f, -104).quad(0, -115, 30.5f, -104, 6).to(30.5f, -97).quad(0, -108, -30.5f, -97, 6);
+    b.area(band, 0xE5484D);
+    Path stripe;
+    stripe.to(-30.5f, -100.5f).quad(0, -111.5f, 30.5f, -100.5f, 6);
+    b.stroke(stripe, 1.3f, WHITE);
+    const float a = sinf(x.c * 6) * 3;
+    b.fill(poly({29, -103, 44, -100 + a, 42, -95 + a, 29, -98}), 0xE5484D);
+}
+
+// A barbell across both paws. Its plates' "25" is left out: no font is that small.
+void p_barbell(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const float a = atan2f(x.R[1] - x.L[1], x.R[0] - x.L[0]) * 180 / PI_F;
+    const Pen s = x.body.move((x.L[0] + x.R[0]) / 2, (x.L[1] + x.R[1]) / 2).turn(a);
+    s.line(-58, 0, 58, 0, 3.2f, 0x6B7180);
+    for (int k = -1; k <= 1; k += 2) {
+        s.rect(k * 44 - 4, -16, 8, 32, 2, 0x3B3F4A);
+        s.rect(k * 51 - 2.5f, -11, 5, 22, 1.5f, 0xE5484D);
+        s.rect(k * 38 - 1.5f, -5, 3, 10, 1, 0x9AA4B1);
+    }
+}
+
+void p_treadmill(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const Pen &s = x.scene;
+    s.line(58, -10, 66, -84, 5, 0x9AA4B1);
+    s.line(64, -66, 24, -62, 4, 0x9AA4B1);
+    s.rect(46, -100, 40, 18, 3, 0x2B2230);
+    label(x, s, "8 km/h", 66, -88, 7, 0x5BE38A);
+    s.fill(poly({-58, -9, 66, -9, 72, 0, -62, 0}), 0x3B3F4A);
+    for (int i = 0; i < 7; i++) {
+        s.rect(-54 + fmodf(fmodf(i * 18 - x.c * 70, 126) + 126, 126), -9, 2, 3, 0, 0x6B7180);
+    }
+}
+
+// The rope swings from paw to paw, over the head and under the feet.
+void p_jump_rope(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const float lx = x.paw_l.x - FEET_X, ly = x.paw_l.y - FEET_Y, rx = x.paw_r.x - FEET_X, ry = x.paw_r.y - FEET_Y;
+    const float k = -cosf(x.c * 8), dy = k > 0 ? k * 120 : k * 190;
+    Path rope;
+    rope.to(lx, ly).quad((lx + rx) / 2, (ly + ry) / 2 + dy, rx, ry, 12);
+    x.scene.stroke(rope, 2.4f, 0xE5484D);
+}
+
+void p_punching_bag(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const Pen &s = x.scene;
+    s.line(40, -152, 96, -152, 4, 0x6B7180);
+    const float hit = fmaxf(0, sinf(x.c * 5 - 0.7f));
+    const Pen bag = s.turn(hit * hit * 9, 62, -152);
+    bag.line(62, -152, 62, -124, 2, 0x6B7180);
+    bag.rect(46, -124, 32, 86, 12, 0xC0392B, 0x8E2A20, 2);
+    bag.rect(46, -112, 32, 5, 0, 0x2B2230);
+    bag.rect(46, -54, 32, 5, 0, 0x2B2230);
+    bag.rect(51, -104, 4, 42, 2, mix(0xC0392B, WHITE, 0.3f));
+    if (fmaxf(0, sinf(x.c * 5)) > 0.97f) {
+        scenery::star(s.move(48, -72).scale(1.4f), STAR);
+    }
+}
+
+void glove(const Pen &s)
+{
+    s.rect(-6, 5, 12, 6, 2, WHITE, 0xC9CED6, 1);
+    s.ell(0, 0, 9, 8.5f, 0xE5484D, 0xB8323A, 1.6f);
+    s.ell(-6, 2, 3.4f, 4, 0xE5484D, 0xB8323A, 1.2f);
+    s.ell(2, -3, 3, 1.6f, mix(0xE5484D, WHITE, 0.4f));
+}
+
+void p_boxing_gloves(Ctx &x, bool draw)
+{
+    if (draw) {
+        glove(x.body.move(x.L[0], x.L[1]));
+        glove(x.body.move(x.R[0], x.R[1]).scale(-1, 1));
+    }
+}
+
+void p_mat(Ctx &x, bool draw)
+{
+    if (draw) {
+        x.scene.fill(poly({-62, -3, 74, -3, 82, 6, -70, 6}), 0x9C7AD6);
+        x.scene.line(-62, -3, 74, -3, 1.6f, 0x7A5AC8);
+    }
+}
+
+void p_yoga_mat(Ctx &x, bool draw)
+{
+    if (draw) {
+        x.scene.fill(poly({-62, -3, 80, -3, 88, 6, -70, 6}), 0x4FB8A0);
+        x.scene.line(-62, -3, 80, -3, 1.6f, 0x2E9A7A);
+    }
+}
+
+void dumbbell(const Pen &s)
+{
+    s.line(-8, 0, 8, 0, 2.6f, 0x6B7180);
+    s.rect(-11.5f, -6.5f, 5, 13, 1.6f, 0x3B3F4A);
+    s.rect(6.5f, -6.5f, 5, 13, 1.6f, 0x3B3F4A);
+}
+
+void p_dumbbells(Ctx &x, bool draw)
+{
+    if (draw) {
+        dumbbell(x.body.move(x.L[0], x.L[1]));
+        dumbbell(x.body.move(x.R[0], x.R[1]));
+    }
+}
+
+// A plank timer counting down from 0:20 once per loop.
+void p_timer(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const Pen &s = x.scene;
+    s.rect(34, -136, 66, 30, 5, 0x2B2230, 0x6B7180, 2);
+    const int n = (int)fmaxf(0, 20 - floorf(fmodf(x.c, LOOP_SECONDS) / LOOP_SECONDS * 21));
+    char text[8];
+    snprintf(text, sizeof(text), "0:%02d", n);
+    label(x, s, text, 67, -114.5f, 16, 0xFF5A5A);
+}
+
+void p_scale(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const Pen &s = x.scene;
+    s.rect(-36, -9, 72, 10, 3, WHITE, 0xB9BFCC, 1.6f);
+    s.rect(-9, -7, 18, 5, 1, 0xDDF1FB);
+    const Pen lab = s.move(66, -76 - fabsf(sinf(x.c * 2.4f)) * 5);
+    lab.rect(-22, -10, 44, 20, 10, WHITE, 0x2E9A7A, 1.8f);
+    label(x, lab, "−5 kg", 0, 5, 12, 0x2E9A7A);
+}
+
+void p_park(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const Pen &s = x.scene;
+    Path hill, lawn;
+    hill.to(-120, -22).quad(-60, -46, 0, -28, 8).quad(60, -12, 150, -36, 8).to(150, 0).to(-120, 0);
+    s.area(hill, 0xB2D896);
+    s.rect(-120, -2, 280, 52, 0, 0x93C474);
+    lawn.to(-120, -6).quad(-40, -16, 30, -8, 8).quad(90, 0, 150, -10, 8).to(150, 0).to(-120, 0);
+    s.area(lawn, 0x93C474);
+    scenery::tree(s, -58, -16, 1.1f);
+    scenery::tree(s, 104, -22, 1.2f, 0x4E9E68);
+    s.ell(84, -8, 8, 8, 0x5BAF74);
+    s.ell(92, -6, 6, 6, 0x4E9E68);
+}
+
+void p_field(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const Pen &s = x.scene;
+    Path back;
+    back.to(-120, -30).quad(0, -40, 150, -28, 8).to(150, 0).to(-120, 0);
+    s.area(back, 0xC9DE9A);
+    s.rect(-120, -2, 280, 52, 0, 0xA8C97A);
+    scenery::tree(s, -60, -26, 0.9f, 0xF2A93B);
+    scenery::tree(s, -40, -28, 0.7f, 0xE5873A);
+    static const float TUFTS[6] = {-30, -10, 20, 40, 70, 96};
+    for (int i = 0; i < 6; i++) {
+        const float tx = TUFTS[i], a = sinf(x.c * 3 + i) * 3;
+        Path blade;
+        blade.to(tx, 0).quad(tx + 1, -5, tx + 3 + a, -9, 4);
+        s.stroke(blade, 1.6f, 0x7DA855);
+        blade.n = 0;
+        blade.to(tx + 4, 0).quad(tx + 5, -4, tx + 8 + a, -6, 4);
+        s.stroke(blade, 1.6f, 0x7DA855);
+    }
+}
+
+// A football: white with a black pentagon and seams.
+void ball(const Pen &s, float r, float scale_pent, float seam)
+{
+    s.ell(0, 0, r, r, WHITE, 0x2B2230, 1.4f);
+    const float k = scale_pent;
+    s.fill(poly({0, -3.4f * k, 3.2f * k, -1 * k, 2 * k, 2.8f * k, -2 * k, 2.8f * k, -3.2f * k, -1 * k}), 0x2B2230);
+    if (seam > 0) {
+        s.line(0, -3.4f, 0, -8.6f, seam, 0x2B2230);
+        s.line(3.2f, -1, 8, -2.6f, seam, 0x2B2230);
+        s.line(2, 2.8f, 5, 7, seam, 0x2B2230);
+        s.line(-2, 2.8f, -5, 7, seam, 0x2B2230);
+        s.line(-3.2f, -1, -8, -2.6f, seam, 0x2B2230);
+    }
+}
+
+void p_ball(Ctx &x, bool draw)
+{
+    if (draw) {
+        ball(x.body.move(x.R[0] + 4, x.R[1] - 6), 9, 1, 1);
+    }
+}
+
+// A goal with Knödel as the startled keeper.
+void p_goal(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const Pen &s = x.scene;
+    const uint32_t net = x.fade(WHITE, 0.7f);
+    for (int nx = 52; nx <= 126; nx += 9) {
+        s.line(nx, -62, nx + 4, -2, 1, net);
+    }
+    for (int ny = -54; ny <= -6; ny += 9) {
+        s.line(48, ny, 130, ny, 1, net);
+    }
+    scenery::buddy(s.move(90, 0), scenery::SHOCK, x.c, *x.st);
+    s.stroke(poly({46, 0, 46, -66, 134, -66, 134, 0}), 4.5f, WHITE);
+    s.rect(-120, 0, 280, 50, 0, 0x93C474);
+    s.line(-120, 0, 160, 0, 2, mix(0x93C474, WHITE, 0.7f));
+}
+
+// The ball flies from the cat's foot towards the goal.
+void p_football(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const float u = fmodf(x.c, 1.8f) / 1.8f;
+    const Pen s = x.scene.move(24 + u * 62, -9 - sinf(u * PI_F) * 36).turn(u * 540);
+    s.ell(0, 0, 7.5f, 7.5f, WHITE, 0x2B2230, 1.3f);
+    s.fill(poly({0, -2.8f, 2.7f, -0.8f, 1.7f, 2.3f, -1.7f, 2.3f, -2.7f, -0.8f}), 0x2B2230);
+}
+
+void p_pullup_bar(Ctx &x, bool draw)
+{
+    if (draw) {
+        x.scene.rect(-64, -104, 5, 104, 0, 0x6B7180);
+        x.scene.rect(59, -104, 5, 104, 0, 0x6B7180);
+        x.scene.line(-62, -101, 62, -101, 4, 0x9AA4B1);
+    }
+}
+
+// A kite with Knödel on it; its string runs to the cat's paw.
+__attribute__((noinline)) void kite_body(Ctx &x, const Pen &k)
+{
+    Path tail;
+    tail.to(0, 24);
+    for (int i = 1; i <= 6; i++) {
+        tail.to(-i * 4 + sinf(x.c * 4 + i) * 3, 24 + i * 6);
+    }
+    k.stroke(tail, 1.2f, 0x3B2F4A);
+    static const uint32_t BOWS[3] = {0xE5484D, 0x4BA3D9, 0xF2C14E};
+    for (int i = 0; i < 3; i++) {
+        const int j = i * 2 + 2;
+        const Pen bow = k.move(-j * 4 + sinf(x.c * 4 + j) * 3, 24 + j * 6);
+        bow.line(-3, -2, 3, 2, 2.6f, BOWS[i]);
+        bow.line(-3, 2, 3, -2, 2.6f, BOWS[i]);
+    }
+    k.fill(poly({0, -20, 15, 0, 0, 24}), 0xE5484D);
+    k.fill(poly({0, -20, -15, 0, 0, 24}), 0xF2C14E);
+    k.line(0, -20, 0, 24, 1.4f, 0x8A5A3B);
+    k.line(-15, 0, 15, 0, 1.4f, 0x8A5A3B);
+    scenery::buddy(k.move(0, 8).scale(0.48f), scenery::WOW, x.c, *x.st);
+}
+
+void p_kite(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const float kx = 78 + sinf(x.c * 0.9f) * 8, ky = -140 + sinf(x.c * 1.3f) * 6;
+    const float px = x.paw_r.x - FEET_X, py = x.paw_r.y - FEET_Y;
+    Path string;
+    string.to(kx, ky + 22).quad((kx + px) / 2 + 10, (ky + py) / 2 + 12, px, py, 10);
+    x.scene.stroke(string, 1, 0x3B2F4A);
+    kite_body(x, x.scene.move(kx, ky).turn(sinf(x.c * 1.1f) * 8));
+}
+
+// Under water: light from above, sand, swaying weeds, two fish.
+void p_underwater(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const Pen &s = x.scene;
+    static const float RAYS[3][2] = {{-50, 0.5f}, {30, 0.4f}, {96, 0.45f}};
+    for (auto &r : RAYS) {
+        s.fill(poly({r[0], -170, r[0] + 24, -170, r[0] + 6, 10, r[0] - 14, 10}), x.fade(WHITE, r[1] * 0.4f));
+    }
+    Path sand;
+    sand.to(-120, -4).quad(-60, -12, 0, -4, 8).quad(60, 4, 150, -6, 8).to(150, 50).to(-120, 50);
+    s.area(sand, 0xF2DFB0);
+    static const float WEEDS[4][2] = {{-46, 0x3E8E5A}, {-36, 0x5BAF74}, {92, 0x3E8E5A}, {100, 0x5BAF74}};
+    for (int i = 0; i < 4; i++) {
+        const float wx = WEEDS[i][0], a = sinf(x.c * 1.6f + i) * 6;
+        Path weed;
+        weed.to(wx, 0).quad(wx + a, -18, wx, -34, 6).quad(wx - a, -48, wx + a * 0.6f, -56 - (i % 2) * 10, 6);
+        s.stroke(weed, 4, (uint32_t)WEEDS[i][1]);
+    }
+    s.ell(70, -2, 7, 4, 0xF49A94);
+    s.fill(poly({-14, -2, -11, -8, -8, -2}), 0xE5873A);
+    for (int i = 0; i < 2; i++) {
+        const float u = fract(x.c * (i ? 0.09f : 0.12f) + i * 0.5f);
+        const Pen f = s.move(140 - u * 260, (i ? -120 : -84) + sinf(x.c * 3 + i) * 3);
+        f.fill(poly({8, 0, 16, -6, 16, 6}), i ? 0x4BA3D9 : 0xF2A93B);
+        f.ell(0, 0, 10, 6, i ? 0x6FB8E6 : 0xF7C948);
+        f.ell(-5, -1.5f, 1.4f, 1.4f, 0x2B2230);
+    }
+}
+
+// Worn: a diving mask (the eyes show through) and a snorkel; bubbles rise from its top.
+void p_snorkel(Ctx &x, bool draw)
+{
+    x.tool = x.body_to_stage(28, -132);
+    if (!draw) {
+        return;
+    }
+    const Pen &b = x.body;
+    b.line(-22, -88, -33, -92, 3, 0x2F7DB8);
+    b.line(22, -88, 33, -92, 3, 0x2F7DB8);
+    const Path mask = Path::rect(-22, -97, 44, 21, 8);
+    b.area(mask, 0xBFE6F7, vec::NONE, 0, 0.5f);
+    b.stroke(mask, 2.8f, 0x2F7DB8, true);
+    b.line(-16, -93, -10, -93, 1.6f, WHITE);
+    b.stroke(poly({24, -76, 28, -76, 28, -128}), 4, 0xF28C38);
+}
+
+void p_snow_slope(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const Pen &s = x.scene;
+    Path back, front;
+    back.to(-120, -50).quad(-40, -90, 40, -60, 8).quad(100, -40, 150, -70, 8).to(150, 0).to(-120, 0);
+    s.area(back, 0xEEF4FA, 0xD6E2EE, 1.6f);
+    front.to(-120, -14).quad(-30, -30, 60, -12, 8).quad(110, -2, 150, -14, 8).to(150, 50).to(-120, 50);
+    s.area(front, WHITE);
+    static const float FIRS[3][3] = {{-54, -34, 1}, {96, -30, 1.1f}, {112, -46, 0.8f}};
+    for (auto &f : FIRS) {
+        scenery::fir(s, f[0], f[1], f[2], 0x3E8E5A);
+        s.fill(poly({f[0], f[1] - 30 * f[2], f[0] + 6 * f[2], f[1] - 20 * f[2], f[0] - 6 * f[2], f[1] - 20 * f[2]}), WHITE);
+    }
+}
+
+// Skis under the cat's feet, following her sway.
+void p_skis(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const Pen s = x.scene.move(x.v[X] - FEET_X, 0).turn(x.v[ROT] * 0.25f);
+    static const float SKIS[2][2] = {{0xE5484D, -6}, {0x4BA3D9, -2}};
+    for (auto &k : SKIS) {
+        const float y = k[1];
+        Path ski;
+        ski.to(-46, y).to(44, y).quad(54, y, 56, y - 8, 4).to(52, y - 8).quad(50, y - 3, 44, y - 3, 4).to(-46, y - 3);
+        s.area(ski, (uint32_t)k[0]);
+    }
+}
+
+void p_beanie(Ctx &x, bool draw)
+{
+    if (!draw) {
+        return;
+    }
+    const Pen &b = x.body;
+    Path hat;
+    hat.to(-29, -104).quad(-27, -128, 0, -129, 6).quad(27, -128, 29, -104, 6);
+    b.fill(hat, 0x4BA3D9);
+    for (float y : {-114.0f, -121.0f}) {
+        Path stripe;
+        stripe.to(-27, y).quad(0, y - 6, 27, y, 6);
+        b.stroke(stripe, 2, mix(0x4BA3D9, WHITE, 0.8f));
+    }
+    b.rect(-31, -108, 62, 9, 4.5f, 0x2F7DB8);
+    b.ell(0, -131 + sinf(x.c * 3), 6.5f, 6.5f, WHITE, 0xD6E2EE, 1.2f);
+}
+
+void pole(const Pen &s)
+{
+    s.line(0, 0, 0, 46, 2, 0x6B7180);
+    s.stroke(Path::oval(0, 41, 4, 1.4f, 16), 1.2f, 0x3B2F4A, true);
+}
+
+void p_ski_poles(Ctx &x, bool draw)
+{
+    if (draw) {
+        pole(x.body.move(x.L[0], x.L[1]).turn(18));
+        pole(x.body.move(x.R[0], x.R[1]).turn(-18));
+    }
+}
+
+// Knödel along as the cat's buddy: a fixed expression at a fixed place
+// (scene frame), BUDDY_PROPS in katze.js.
+struct BuddyDef {
+    scenery::Mood mood;
+    float x, y, k;
+};
+const BuddyDef BUDDIES[] = {
+    {scenery::HAPPY, 54, 0, 1},    {scenery::WOW, 56, 0, 1},     {scenery::TIRED, 54, 0, 1},    {scenery::WALK, 58, 0, 1},
+    {scenery::WOW, 58, -46, 0.9f}, {scenery::SLEEP, 54, -24, 1}, {scenery::POSE, 66, 0, 1},     {scenery::FLOAT, 60, -22, 1},
+    {scenery::COOL, 56, 0, 1},     {scenery::HAPPY, 88, -24, 0.9f}, {scenery::SHOCK, 64, 0, 1.05f}, {scenery::HAPPY, 62, -28, 1},
+    {scenery::CHEERS, 62, -28, 1}, {scenery::FULL, 62, -28, 1}, {scenery::FLAT, 54, 0, 1.05f},
+    {scenery::COACH, 60, 0, 1},    {scenery::STRETCH, 72, 0, 1}, {scenery::LAUGH, 56, 0, 1},    {scenery::ROLL, 64, 0, 1},
+    {scenery::YOGA, 62, -3, 1},    {scenery::FLOAT, 64, -56, 1}, {scenery::SNOW, 60, 0, 1},
+};
+template <int I>
+void p_buddy(Ctx &x, bool draw)
+{
+    if (draw) {
+        const BuddyDef &d = BUDDIES[I];
+        scenery::buddy(x.scene.move(d.x, d.y).scale(d.k), d.mood, x.c, *x.st);
+    }
+}
+
+// Where a prop is drawn: on the stage behind the cat (scene frame), on the body
+// behind the torso (a backpack), worn on the body under the arms, held between
+// the arms and the paws (body frame), or on the stage in front of the cat (lake
+// water, a table). Within a layer, in the card's order.
+enum Layer { BACK, BEHIND, WEAR, HAND, FRONT };
 
 struct PropDef {
     const char *id;
@@ -1485,8 +2733,42 @@ const PropDef PROPS[] = {
     {"ticket", HAND, p_ticket}, {"clipboard", HAND, p_clipboard}, {"pen", HAND, p_pen}, {"folder", HAND, p_folder},
     {"fridge", BACK, p_fridge}, {"sofa-back", BACK, p_sofa_back}, {"pillow", HAND, p_pillow}, {"red-nose", WEAR, p_red_nose},
     {"tissue", HAND, p_tissue}, {"plaster-cheek", WEAR, p_plaster_cheek},
+    {"mountains", BACK, p_mountains}, {"sunset", BACK, p_sunset}, {"hills", BACK, p_hills}, {"slope", BACK, p_slope},
+    {"boulder", FRONT, p_boulder}, {"big-sun", BACK, p_big_sun}, {"bench", BACK, p_bench}, {"lake-back", BACK, p_lake_back},
+    {"night-window", BACK, p_night_window}, {"knoedel-sleep", BACK, p_knoedel_sleep}, {"meadow", BACK, p_meadow},
+    {"summit", BACK, p_summit}, {"signpost", BACK, p_signpost}, {"hut-door", BACK, p_hut_door}, {"hut-bench", BACK, p_hut_bench},
+    {"menu-board", BACK, p_menu_board}, {"car", BACK, p_car}, {"backpack-open", BACK, p_backpack_open},
+    {"hiking-pole", HAND, p_hiking_pole}, {"water-bottle", HAND, p_water_bottle}, {"fuel-nozzle", HAND, p_fuel_nozzle},
+    {"camera", HAND, p_camera}, {"fork", HAND, p_fork}, {"glass", HAND, p_glass}, {"knoedel-hug", HAND, p_knoedel_hug},
+    {"nightcap", WEAR, p_nightcap}, {"sunglasses", WEAR, p_sunglasses}, {"backpack-straps", WEAR, p_backpack_straps},
+    {"backpack", BEHIND, p_backpack}, {"knoedel-on-pack", BEHIND, p_knoedel_on_pack}, {"lake-water", FRONT, p_lake_water},
+    {"table-food", FRONT, p_table_food}, {"table-drinks", FRONT, p_table_drinks}, {"table-empty", FRONT, p_table_empty},
+    {"knoedel", BACK, p_buddy<0>}, {"knoedel-wow", BACK, p_buddy<1>}, {"knoedel-tired", BACK, p_buddy<2>},
+    {"knoedel-walk", BACK, p_buddy<3>}, {"knoedel-top", FRONT, p_buddy<4>}, {"knoedel-bench", BACK, p_buddy<5>},
+    {"knoedel-pose", BACK, p_buddy<6>}, {"knoedel-float", BACK, p_buddy<7>}, {"knoedel-cool", BACK, p_buddy<8>},
+    {"knoedel-guest", BACK, p_buddy<9>}, {"knoedel-shock", BACK, p_buddy<10>}, {"knoedel-table", BACK, p_buddy<11>},
+    {"knoedel-cheers", BACK, p_buddy<12>}, {"knoedel-full", BACK, p_buddy<13>}, {"knoedel-flat", BACK, p_buddy<14>},
+    {"knoedel-coach", BACK, p_buddy<15>}, {"knoedel-stretch", BACK, p_buddy<16>}, {"knoedel-laugh", BACK, p_buddy<17>},
+    {"knoedel-roll", BACK, p_buddy<18>}, {"knoedel-yoga", BACK, p_buddy<19>}, {"knoedel-dive", BACK, p_buddy<20>},
+    {"knoedel-snow", BACK, p_buddy<21>},
+    {"gym", BACK, p_gym}, {"headband", WEAR, p_headband}, {"barbell", HAND, p_barbell}, {"treadmill", BACK, p_treadmill},
+    {"jump-rope", BACK, p_jump_rope}, {"punching-bag", BACK, p_punching_bag}, {"boxing-gloves", HAND, p_boxing_gloves},
+    {"mat", BACK, p_mat}, {"yoga-mat", BACK, p_yoga_mat}, {"dumbbells", HAND, p_dumbbells}, {"timer", BACK, p_timer},
+    {"scale", BACK, p_scale}, {"park", BACK, p_park}, {"field", BACK, p_field}, {"ball", HAND, p_ball}, {"goal", BACK, p_goal},
+    {"football", BACK, p_football}, {"pullup-bar", BACK, p_pullup_bar}, {"kite", BACK, p_kite},
+    {"underwater", BACK, p_underwater}, {"snorkel", WEAR, p_snorkel}, {"snow-slope", BACK, p_snow_slope}, {"skis", BACK, p_skis},
+    {"beanie", WEAR, p_beanie}, {"ski-poles", HAND, p_ski_poles},
 };
 constexpr int PROP_COUNT = sizeof(PROPS) / sizeof(PROPS[0]);
+
+void draw_behind(Ctx &x)
+{
+    for (int i = 0; i < x.anim->n_prop; i++) {
+        if (PROPS[x.anim->prop[i]].layer == BEHIND) {
+            PROPS[x.anim->prop[i]].fn(x, true);
+        }
+    }
+}
 
 // ---- effects (stage frame) ---------------------------------------------------------
 
@@ -1570,7 +2852,7 @@ void fx_shine(const Ctx &x)
 
 void fx_steam(const Ctx &x)
 {
-    wisps(x, x.iron.set ? x.iron : Anchor{x.v[X] + 40, x.body_y, true}, -6, 6, 0, 14, 0.6f, 2, 0xC9D3DE);
+    wisps(x, x.steam.set ? x.steam : x.iron.set ? x.iron : Anchor{x.v[X] + 40, x.body_y, true}, -6, 6, 0, 14, 0.6f, 2, 0xC9D3DE);
 }
 
 void fx_stink(const Ctx &x)
@@ -1854,6 +3136,66 @@ void fx_pain(const Ctx &x)
     }
 }
 
+// ---- a2-wandern-verben and a2-huette-phrasen ----
+
+// The camera's flash.
+void fx_flash(const Ctx &x)
+{
+    const Anchor o = x.flash.set ? x.flash : Anchor{x.v[X] + 40, x.head_y + 40, true};
+    const float k = fmodf(x.c, 1.6f) / 1.6f, on = k < 0.16f ? sinf(PI_F * k / 0.16f) : 0;
+    if (on * x.w < 0.05f) {
+        return;
+    }
+    if (x.inside(o.x, o.y, 14)) {
+        x.stage.ell(o.x, o.y, 14, 14, WHITE, 0.75f * on * x.w);
+    }
+    scenery::star(x.stage.move(o.x, o.y).scale(1 + on * 1.4f), x.fade(0xFFF3B0, on * x.w));
+}
+
+// Sparkles where the glasses meet (Knödel's glass is at 138, 108).
+void fx_clink(const Ctx &x)
+{
+    const Anchor a = x.glass.set ? x.glass : Anchor{x.v[X] + 30, x.head_y + 40, true};
+    const float ox = (a.x + 138) / 2 + 4, oy = (a.y + 108) / 2 - 8, on = fmaxf(0, sinf(x.c * 2.4f));
+    if (on * x.w < 0.05f) {
+        return;
+    }
+    static const float POS[3][2] = {{0, -6}, {-8, 2}, {8, 3}};
+    for (auto &q : POS) {
+        scenery::star(x.stage.move(ox + q[0] * (1 + on * 0.5f), oy + q[1] * (1 + on * 0.5f)).scale(0.3f + on * 0.5f),
+                      x.fade(STAR, on * x.w));
+    }
+}
+
+// ---- a2-sport-draussen ----
+
+// Gusts of wind drifting across.
+void fx_breeze(const Ctx &x)
+{
+    for (int i = 0; i < 3; i++) {
+        const float k = fract(x.c * 0.35f + i / 3.0f), a = 0.85f * x.w * sinf(PI_F * k);
+        const float px = x.v[X] - 90 + k * 170, py = x.head_y + 10 + i * 28;
+        if (a < 0.05f || !x.inside(px + 20, py, 22)) {
+            continue;
+        }
+        Path gust;
+        gust.to(0, 0).quad(10, -5, 20, 0, 4).quad(30, 5, 40, 0, 4);
+        x.stage.move(px, py).stroke(gust, 2.4f, x.fade(WHITE, a));
+    }
+}
+
+// Snow falling over the whole disc.
+void fx_snow(const Ctx &x)
+{
+    for (int i = 0; i < 16; i++) {
+        const float py = fmodf(x.c * 16 + i * 31, 220) - 30, px = fmodf(i * 47.0f, 230) - 15 + sinf(x.c + i) * 5;
+        const float r = 1.4f + (i % 3) * 0.6f;
+        if (x.inside(px, py, r)) {
+            x.stage.ell(px, py, r, r, WHITE, 0xC9D8E8, 0.6f);
+        }
+    }
+}
+
 struct FxDef {
     const char *id;
     bool back;  // drawn behind the cat
@@ -1867,7 +3209,8 @@ const FxDef EFFECTS[] = {
     {"contactless", false, fx_contactless}, {"parcel", false, fx_parcel}, {"swap", false, fx_swap},
     {"coins", false, fx_coins}, {"ring", false, fx_ring}, {"callback", false, fx_callback},
     {"checkmark", false, fx_checkmark}, {"knock-lines", false, fx_knock_lines}, {"signature", false, fx_signature},
-    {"cough-puffs", false, fx_cough_puffs}, {"pain", false, fx_pain},
+    {"cough-puffs", false, fx_cough_puffs}, {"pain", false, fx_pain}, {"flash", false, fx_flash}, {"clink", false, fx_clink},
+    {"breeze", false, fx_breeze}, {"snow", false, fx_snow},
 };
 constexpr int FX_COUNT = sizeof(EFFECTS) / sizeof(EFFECTS[0]);
 
@@ -1911,6 +3254,7 @@ void k_draw(G *g, const Stage &st, const Anim &anim, float t, float c)
 
     Ctx x = {};
     x.st = &st;
+    x.anim = &anim;
     x.v = v;
     x.c = c;
     x.w = w;
@@ -1930,6 +3274,7 @@ void k_draw(G *g, const Stage &st, const Anim &anim, float t, float c)
     for (int i = 0; i < anim.n_prop; i++) {
         PROPS[anim.prop[i]].fn(x, false);
     }
+    x.paw_l = x.body_to_stage(x.L[0], x.L[1]);
     x.paw_r = x.body_to_stage(x.R[0], x.R[1]);
     for (int i = 0; i < anim.n_prop; i++) {
         if (PROPS[anim.prop[i]].layer == BACK) {
@@ -1961,6 +3306,11 @@ void k_draw(G *g, const Stage &st, const Anim &anim, float t, float c)
     }
     x.body.ell(x.L[0], x.L[1], 6, 5.4f, C_BASE, C_EDGE, EDGE_W);
     x.body.ell(x.R[0], x.R[1], 6, 5.4f, C_BASE, C_EDGE, EDGE_W);
+    for (int i = 0; i < anim.n_prop; i++) {
+        if (PROPS[anim.prop[i]].layer == FRONT) {
+            PROPS[anim.prop[i]].fn(x, true);
+        }
+    }
 
     for (int i = 0; i < anim.n_fx && w >= 0.03f; i++) {
         if (!EFFECTS[anim.fx[i]].back) {

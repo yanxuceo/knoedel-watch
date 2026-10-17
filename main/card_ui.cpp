@@ -657,7 +657,7 @@ Styles german(const Card &card, const lgfx::IFont *regular)
 bool draw_cover(G *g, int deck)
 {
     static const Font *const LOCAL[] = {&f_loc_m, &f_loc_s};
-    static const Font *const TITLE[] = {&f_de_l};
+    static const Font *const TITLES[] = {&f_de_l, &f_de_mb};
     static const Font *const META[] = {&f_de_s};
     constexpr int CENTRE_Y = 352, LOCAL_GAP = 40, LINE_GAP = 44, META_GAP = 38;
 
@@ -666,21 +666,39 @@ bool draw_cover(G *g, int deck)
     draw_ring(g, deck_count(), deck, COVER_COLOR, false);
     const std::string meta = std::string(info.level) + " · " + std::to_string(info.cards) + " Karten";
 
-    g->setFont(&f_de_l.font);
-    const float half = g->fontHeight() * 0.34f;
-    const int one_line_y = CENTRE_Y - (LOCAL_GAP + META_GAP) / 2 + LOCAL_GAP;
-    std::string lines[2] = {info.title, ""};
-    if (g->textWidth(info.title) > chord(one_line_y - half, one_line_y + half)) {
-        // Split at the space that makes the longer line shortest.
-        const std::string t = info.title;
-        int best = -1;
-        for (size_t i = t.find(' '); i != std::string::npos; i = t.find(' ', i + 1)) {
-            const int w = std::max(g->textWidth(t.substr(0, i).c_str()), g->textWidth(t.substr(i + 1).c_str()));
-            if (best < 0 || w < best) {
-                best = w;
-                lines[0] = t.substr(0, i);
-                lines[1] = t.substr(i + 1);
+    // The title in the large font, on one line or split into two; if a line
+    // is still too wide (one long word: "Fitnessstudio"), all of it in the smaller one.
+    std::string lines[2];
+    const Font *const *TITLE = TITLES;
+    for (const Font *const &font : TITLES) {
+        TITLE = &font;
+        g->setFont(&font->font);
+        const float half = g->fontHeight() * 0.34f;
+        const int one_line_y = CENTRE_Y - (LOCAL_GAP + META_GAP) / 2 + LOCAL_GAP;
+        lines[0] = info.title;
+        lines[1] = "";
+        if (g->textWidth(info.title) > chord(one_line_y - half, one_line_y + half)) {
+            // Split at the space that makes the longer line shortest.
+            const std::string t = info.title;
+            int best = -1;
+            for (size_t i = t.find(' '); i != std::string::npos; i = t.find(' ', i + 1)) {
+                const int w = std::max(g->textWidth(t.substr(0, i).c_str()), g->textWidth(t.substr(i + 1).c_str()));
+                if (best < 0 || w < best) {
+                    best = w;
+                    lines[0] = t.substr(0, i);
+                    lines[1] = t.substr(i + 1);
+                }
             }
+        }
+        // Each line on its own row of the two-line layout.
+        const int top = CENTRE_Y - (LOCAL_GAP + LINE_GAP + META_GAP) / 2 + LOCAL_GAP;
+        bool fits = true;
+        for (int i = 0; i < (lines[1].empty() ? 1 : 2); i++) {
+            const int y = lines[1].empty() ? one_line_y : top + i * LINE_GAP;
+            fits = fits && g->textWidth(lines[i].c_str()) <= chord(y - half, y + half);
+        }
+        if (fits) {
+            break;
         }
     }
     const int n = lines[1].empty() ? 1 : 2;

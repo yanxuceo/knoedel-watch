@@ -26,18 +26,19 @@ int lookup(int who, Kind kind, const char *id)
     return -1;
 }
 
-bool add(int8_t *list, int8_t &n, int index)
+bool add(int16_t *list, int8_t &n, int index)
 {
     if (index < 0 || n >= MAX_LAYERS) {
         return false;
     }
-    list[n++] = (int8_t)index;
+    list[n++] = (int16_t)index;
     return true;
 }
 
-// White circle of 35 % opacity, cut off at the edge of the disc.
+// White circle of 35 % opacity (6 % on a night card), cut off at the edge of the disc.
 void bg_blob(G *g, const Stage &st, float cx, float cy, float r)
 {
+    const bool dark = ((st.bg >> 16) & 0xFF) + ((st.bg >> 8) & 0xFF) + (st.bg & 0xFF) < 300;
     for (int y = (int)floorf(cy - r); y <= (int)ceilf(cy + r); y++) {
         float dy = y + 0.5f - cy, ddy = y + 0.5f - st.cy, lim = st.r - 1.5f;
         if (fabsf(dy) >= r || fabsf(ddy) >= lim) {
@@ -46,7 +47,7 @@ void bg_blob(G *g, const Stage &st, float cx, float cy, float r)
         float hw = sqrtf(r * r - dy * dy), dhw = sqrtf(lim * lim - ddy * ddy);
         int x0 = (int)lroundf(fmaxf(cx - hw, st.cx - dhw)), x1 = (int)lroundf(fminf(cx + hw, st.cx + dhw));
         if (x1 > x0) {
-            g->fillRectAlpha(x0, y, x1 - x0, 1, 89, 0xFFFFFFu);
+            g->fillRectAlpha(x0, y, x1 - x0, 1, dark ? 15 : 89, 0xFFFFFFu);
         }
     }
 }

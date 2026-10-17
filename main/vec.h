@@ -166,6 +166,52 @@ struct Pen {
             stroke(q, 0, col, true);
         }
     }
+    // Fills any shape (concave too: a mountain range, a wave), row by row,
+    // even-odd; `alpha` below 1 lets what is underneath show through (glass).
+    void area(const Path &q, uint32_t col, uint32_t edge = NONE, float sw = 0, float alpha = 1) const
+    {
+        if (q.n < 3) {
+            return;
+        }
+        float sx[Path::MAX], sy[Path::MAX], top = 1e9f, bottom = -1e9f;
+        for (int i = 0; i < q.n; i++) {
+            sx[i] = X(q.p[i][0], q.p[i][1]);
+            sy[i] = Y(q.p[i][0], q.p[i][1]);
+            top = fminf(top, sy[i]);
+            bottom = fmaxf(bottom, sy[i]);
+        }
+        int32_t cx, cy, cw, ch;
+        g->getClipRect(&cx, &cy, &cw, &ch);
+        const int r0 = (int)fmaxf(cy, floorf(top)), r1 = (int)fminf(cy + ch - 1, ceilf(bottom));
+        for (int row = r0; row <= r1; row++) {
+            const float yc = row + 0.5f;
+            float xs[Path::MAX];
+            int n = 0;
+            for (int i = 0; i < q.n; i++) {
+                const int j = (i + 1) % q.n;
+                if ((sy[i] <= yc && yc < sy[j]) || (sy[j] <= yc && yc < sy[i])) {
+                    xs[n++] = sx[i] + (yc - sy[i]) / (sy[j] - sy[i]) * (sx[j] - sx[i]);
+                }
+            }
+            for (int a = 1; a < n; a++) {  // insertion sort: a handful of crossings
+                const float v = xs[a];
+                int b = a - 1;
+                for (; b >= 0 && xs[b] > v; b--) {
+                    xs[b + 1] = xs[b];
+                }
+                xs[b + 1] = v;
+            }
+            for (int k = 0; k + 1 < n; k += 2) {
+                const int x0 = (int)ceilf(xs[k] - 0.5f), x1 = (int)floorf(xs[k + 1] - 0.5f);
+                if (x1 >= x0) {
+                    gfxu::span(g, x0, row, x1 - x0 + 1, alpha, col);
+                }
+            }
+        }
+        if (alpha >= 0.98f || (edge != NONE && sw > 0)) {
+            stroke(q, edge != NONE && sw > 0 ? sw : 0, edge != NONE && sw > 0 ? edge : col, true);
+        }
+    }
     void rect(float x, float y, float w, float h, float r, uint32_t col, uint32_t edge = NONE, float sw = 0) const
     {
         fill(Path::rect(x, y, w, h, r), col, edge, sw);

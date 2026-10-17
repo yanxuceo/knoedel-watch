@@ -15,7 +15,7 @@ namespace character {
 constexpr float LOOP_SECONDS = 7.4f;
 
 constexpr int MAX_POSE = 24;  // pose parameters of the richest character
-constexpr int MAX_LAYERS = 4;
+constexpr int MAX_LAYERS = 6;  // motions, effects or props of one card (skiing has 5 props)
 
 enum Kind { POSE, MOTION, FX, PROP, BUBBLE, KIND_COUNT };
 
@@ -24,7 +24,7 @@ struct Anim {
     float pose[MAX_POSE];    // target pose, in the character's registry order
     uint32_t tint;           // colour the body blends towards (by the "tint" pose value)
     bool has_tint;
-    int8_t motion[MAX_LAYERS], fx[MAX_LAYERS], prop[MAX_LAYERS];
+    int16_t motion[MAX_LAYERS], fx[MAX_LAYERS], prop[MAX_LAYERS];  // Brezel alone has more than 127 props
     int8_t n_motion, n_fx, n_prop;
     int8_t bubble;           // -1: none
 };
