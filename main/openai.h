@@ -20,6 +20,11 @@ std::string transcribe_ogg(const uint8_t *ogg, size_t size);
 // ("Today: ...\nCalendar: ..."). Empty when it failed.
 std::string tidy(const std::string &transcript, const char *context);
 
+// Between these the requests share one connection: TLS's handshake, a second
+// or two on the watch, is done once for all the memos of a go.
+void begin_session();
+void end_session();
+
 // The HTTP status of the last request, 0 when it got no answer at all.
 // 429 with spend_limited(): the project's monthly limit is reached.
 int status();

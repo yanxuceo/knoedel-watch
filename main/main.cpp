@@ -75,7 +75,7 @@ static constexpr int FLIP_STEPS = 5;
 
 enum Screen : uint8_t { HOME, DECKS, CARDS, SETTINGS, PRACTICE, CLOCK, TIMER, NOTES };
 enum HomeItem { ITEM_CLOCK, ITEM_LEARN, ITEM_PRACTICE, ITEM_NOTES, ITEM_TIMER, ITEM_SETTINGS, HOME_ITEMS };
-enum Setting { SET_LANGUAGE, SET_TIME, SET_VOLUME, SET_BRIGHTNESS, SET_POWER_OFF, SETTING_COUNT };
+enum Setting { SET_LANGUAGE, SET_TIME, SET_VOLUME, SET_BRIGHTNESS, SET_NOTES, SET_POWER_OFF, SETTING_COUNT };
 
 // Everything the watch remembers across power cycles.
 struct State {
@@ -424,6 +424,10 @@ static void render_setting()
         name = tx.brightness;
         value = std::to_string(st.brightness + 1) + " / " + std::to_string(sizeof(BRIGHTNESSES));
         break;
+    case SET_NOTES:
+        name = tx.sending_setting;
+        value = notes_sync::saving() ? tx.sending_saving : tx.sending_at_once;
+        break;
     default:
         name = tx.power_off;
         hint = tx.tap_off;
@@ -438,7 +442,12 @@ static void render()
     switch (st.screen) {
     case HOME: {
         const char *const TITLES[HOME_ITEMS] = {tx.clock, tx.learn, tx.practice, tx.notes, tx.timer, tx.settings};
-        ui::draw_menu(&fb, st.home_item, HOME_ITEMS, TITLES[st.home_item]);
+        char sub[40] = "";
+        const int done = st.home_item == ITEM_NOTES ? notes_page::done_today() : 0;
+        if (done > 0) {  // what was done today, under Notes
+            snprintf(sub, sizeof sub, tx.done_today, done);
+        }
+        ui::draw_menu(&fb, st.home_item, HOME_ITEMS, TITLES[st.home_item], sub);
         break;
     }
     case CLOCK: {
@@ -519,6 +528,7 @@ static void show()
     fb.pushSprite(ox, oy);
     speak();
     st_dirty = true;
+    notes_sync::page_open(st.screen == NOTES);  // the notes are wanted now: no waiting for a batch
 }
 
 // Draws the frame buffer squeezed horizontally, as a card seen edge-on.
@@ -871,6 +881,9 @@ static void change_setting()
         st.brightness = wrap(st.brightness + 1, sizeof(BRIGHTNESSES));
         board::display().setBrightness(BRIGHTNESSES[st.brightness]);
         break;
+    case SET_NOTES:
+        notes_sync::set_saving(!notes_sync::saving());
+        break;
     case SET_TIME:
         edit_time_next();
         return;
@@ -1106,6 +1119,15 @@ extern "C" void app_main(void)
             break;
         case board::Event::SELECT:
             tap();
+            break;
+        case board::Event::HOLD:
+            if (st.screen == NOTES) {
+                int x, y;
+                board::tap_point(x, y);
+                if (notes_page::hold(x - ox, y - oy)) {
+                    redraw();
+                }
+            }
             break;
         case board::Event::TALK:
 #if CONFIG_KNOEDEL_MIC_TEST

@@ -53,6 +53,19 @@ extern const char API_ROOTS[] asm("_binary_api_roots_pem_start");
 
 static int last_status;
 static bool last_spend_limited;
+static bool in_session;
+static esp_http_client_handle_t session;  // the connection kept between the requests of a session
+
+void begin_session() { in_session = true; }
+
+void end_session()
+{
+    if (session != nullptr) {
+        esp_http_client_cleanup(session);
+        session = nullptr;
+    }
+    in_session = false;
+}
 
 int status() { return last_status; }
 bool spend_limited() { return last_spend_limited; }
@@ -72,49 +85,70 @@ static std::string post(const char *path, const char *content_type, const void *
     std::string auth = std::string("Bearer ") + key;
     memset(key, 0, sizeof key);
 
-    esp_http_client_config_t cfg = {};
-    cfg.url = url.c_str();
-    cfg.method = HTTP_METHOD_POST;
-    cfg.cert_pem = API_ROOTS;
-    cfg.timeout_ms = 60000;
-    cfg.buffer_size = 4096;
-    cfg.buffer_size_tx = 2048;
-    esp_http_client_handle_t client = esp_http_client_init(&cfg);
-    esp_http_client_set_header(client, "Authorization", auth.c_str());
-    esp_http_client_set_header(client, "Content-Type", content_type);
-
     size_t total = 0;
     for (int i = 0; i < count; i++) {
         total += sizes[i];
     }
     std::string answer;
-    if (esp_http_client_open(client, (int)total) != ESP_OK) {
-        ESP_LOGW(TAG, "%s: no connection", path);
-    } else {
-        bool sent = true;
-        for (int i = 0; i < count && sent; i++) {
-            const char *p = (const char *)parts[i];
-            for (size_t done = 0; done < sizes[i];) {
-                const int w = esp_http_client_write(client, p + done, (int)(sizes[i] - done));
-                if (w <= 0) {
-                    sent = false;
-                    break;
+    // In a session the connection of the last request is used again; one the
+    // server has closed meanwhile fails, and the request goes once more on a new one.
+    for (int attempt = 0; attempt < 2; attempt++) {
+        const bool reused = session != nullptr;
+        esp_http_client_handle_t client = session;
+        if (client == nullptr) {
+            esp_http_client_config_t cfg = {};
+            cfg.url = url.c_str();
+            cfg.method = HTTP_METHOD_POST;
+            cfg.cert_pem = API_ROOTS;
+            cfg.timeout_ms = 60000;
+            cfg.buffer_size = 4096;
+            cfg.buffer_size_tx = 2048;
+            cfg.keep_alive_enable = true;
+            client = esp_http_client_init(&cfg);
+        } else {
+            esp_http_client_set_url(client, url.c_str());
+            esp_http_client_set_method(client, HTTP_METHOD_POST);
+        }
+        esp_http_client_set_header(client, "Authorization", auth.c_str());
+        esp_http_client_set_header(client, "Content-Type", content_type);
+        answer.clear();
+        last_status = 0;
+        if (esp_http_client_open(client, (int)total) != ESP_OK) {
+            ESP_LOGW(TAG, "%s: no connection", path);
+        } else {
+            bool sent = true;
+            for (int i = 0; i < count && sent; i++) {
+                const char *p = (const char *)parts[i];
+                for (size_t done = 0; done < sizes[i];) {
+                    const int w = esp_http_client_write(client, p + done, (int)(sizes[i] - done));
+                    if (w <= 0) {
+                        sent = false;
+                        break;
+                    }
+                    done += w;
                 }
-                done += w;
+            }
+            if (sent && esp_http_client_fetch_headers(client) >= 0) {
+                last_status = esp_http_client_get_status_code(client);
+                char buf[512];
+                int r;
+                while ((r = esp_http_client_read(client, buf, sizeof buf)) > 0) {
+                    answer.append(buf, r);
+                }
+            } else {
+                ESP_LOGW(TAG, "%s: the request broke off", path);
             }
         }
-        if (sent && esp_http_client_fetch_headers(client) >= 0) {
-            last_status = esp_http_client_get_status_code(client);
-            char buf[512];
-            int r;
-            while ((r = esp_http_client_read(client, buf, sizeof buf)) > 0) {
-                answer.append(buf, r);
-            }
+        if (in_session && last_status != 0) {
+            session = client;
         } else {
-            ESP_LOGW(TAG, "%s: the request broke off", path);
+            esp_http_client_cleanup(client);
+            session = nullptr;
+        }
+        if (last_status != 0 || !reused) {
+            break;
         }
     }
-    esp_http_client_cleanup(client);
     if (last_status != 200) {
         last_spend_limited = last_status == 429 && answer.find("spend_limit") != std::string::npos;
         ESP_LOGW(TAG, "%s: HTTP %d %.200s", path, last_status, answer.c_str());

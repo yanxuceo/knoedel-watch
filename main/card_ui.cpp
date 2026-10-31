@@ -1147,12 +1147,19 @@ void set_locale(const uint8_t *loc_m, const uint8_t *loc_s, const uint8_t *loc_l
     s_stage_card_deck = -1;  // cached strings belong to the previous pack
 }
 
-bool draw_menu(G *g, int index, int count, const char *title)
+bool draw_menu(G *g, int index, int count, const char *title, const char *sub)
 {
     static const Font *const TITLE[] = {&f_loc_l, &f_loc_m};
     g->fillScreen(BG);
     draw_ring(g, count, index, COVER_COLOR, false);
-    return draw_single(g, title, bright(COVER_COLOR), false, TITLE, 2, MENU_TITLE_Y);
+    const bool fits = draw_single(g, title, bright(COVER_COLOR), false, TITLE, 2, MENU_TITLE_Y);
+    if (sub != nullptr && sub[0]) {
+        g->setFont(&f_loc_s.font);
+        g->setTextDatum(middle_center);
+        g->setTextColor(0x9A968Eu);
+        g->drawString(sub, CX, MENU_TITLE_Y + 38);
+    }
+    return fits;
 }
 
 // The notes: a note card whose tasks get their ticks one after the other, and

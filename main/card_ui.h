@@ -60,8 +60,9 @@ void draw_stage(lgfx::LovyanGFX *g, int deck, int card, float t, float clock);
 enum MenuIcon { ICON_KNOEDEL, ICON_BREZEL, ICON_GEAR, ICON_CLOCK, ICON_TIMER, ICON_NOTES };
 
 // One entry of the main menu, or a message: one title in the learner's
-// language, and a ring that shows which of `count` entries this is.
-bool draw_menu(lgfx::LovyanGFX *g, int index, int count, const char *title);
+// language, and a ring that shows which of `count` entries this is; `sub`, a
+// small grey line under the title (null: none).
+bool draw_menu(lgfx::LovyanGFX *g, int index, int count, const char *title, const char *sub = nullptr);
 void draw_menu_stage(lgfx::LovyanGFX *g, MenuIcon icon, float t, float clock);
 
 // ---- practice ----

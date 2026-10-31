@@ -128,6 +128,11 @@ Event update() {
         return Event::NEXT;
     if (detail.wasFlicked() && abs(detail.distanceX()) > abs(detail.distanceY()))
         return detail.distanceX() < 0 ? Event::NEXT : Event::PREVIOUS;
+    if (detail.wasHold()) {
+        tap_x = detail.x;
+        tap_y = detail.y;
+        return Event::HOLD;
+    }
     if (detail.wasClicked()) {
         tap_x = detail.x;
         tap_y = detail.y;
@@ -160,6 +165,7 @@ bool acceleration(float &x, float &y, float &z) {
     z = int16_t(data[4] | data[5] << 8) / 8192.f;
     return true;
 }
+int battery_level() { return -1; }  // the AXP2101's fuel gauge is not read yet
 bool on_usb() {
     uint8_t status = 0;
     // A failed PMIC read must not trigger an attempted battery shutdown.

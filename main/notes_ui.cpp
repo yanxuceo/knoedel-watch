@@ -117,6 +117,17 @@ static std::vector<std::string> wrap(G *g, const lgfx::IFont *f, const std::stri
         uint32_t cp;
         const int n = next(s, i, cp);
         const bool wide = cp >= 0x2E80, space = cp == ' ';
+        // Punctuation that closes never starts a line: it stays with what comes before.
+        static const char32_t CLOSING[] = U"，。、：；！？）」』》…,.;:!?)";
+        bool closing = false;
+        for (const char32_t *c = CLOSING; *c; c++) {
+            closing |= cp == (uint32_t)*c;
+        }
+        if (closing && !tokens.empty()) {
+            tokens.back().append(s, i, n);
+            i += n;
+            continue;
+        }
         if (wide || space || tokens.empty()) {
             tokens.emplace_back(s, i, n);
         } else {
@@ -434,28 +445,194 @@ int item_at(int x, int y)
     return y >= TOP - 40 && y <= BOTTOM + 10 && x >= 30 && x <= ui::SCREEN - 30 ? -1 : -2;
 }
 
+// ---- the lists ----------------------------------------------------------------------------
+
+static constexpr int LIST_TOP = 112, ROW_H = 70, TAB_Y = 82, TAB_H = 38;
+
+static struct {
+    int rows;
+    int tab_x[2], tab_w[2];
+} list_layout;
+
+static void tabs(G *g, const ListPage &p)
+{
+    if (p.list == DONE) {  // one title: back is the back key
+        char title[40];
+        snprintf(title, sizeof title, "%s %d", tx->done_list, p.done);
+        const int w = width(g, loc_s(), title) + 36;
+        pill(g, CX - w / 2, TAB_Y - TAB_H / 2, w, TAB_H, mix(BLACK, TEAL, 0.18f));
+        text(g, loc_s(), title, CX, TAB_Y, middle_center, TEAL);
+        list_layout.tab_w[0] = list_layout.tab_w[1] = 0;
+        return;
+    }
+    char label[2][32];
+    snprintf(label[0], sizeof label[0], "%s %d", tx->todo, p.tasks);
+    snprintf(label[1], sizeof label[1], "%s %d", tx->idea, p.ideas);
+    const int w0 = width(g, loc_s(), label[0]) + 36, w1 = width(g, loc_s(), label[1]) + 36, gap = 10;
+    const int x0 = CX - (w0 + w1 + gap) / 2;
+    const int xs[2] = {x0, x0 + w0 + gap}, ws[2] = {w0, w1};
+    const uint32_t accent[2] = {TEAL, AMBER};
+    for (int i = 0; i < 2; i++) {
+        const bool on = (int)p.list == i;
+        pill(g, xs[i], TAB_Y - TAB_H / 2, ws[i], TAB_H, on ? mix(BLACK, accent[i], 0.18f) : BLACK, on ? accent[i] : LINE,
+             on ? 0 : 1.5f);
+        text(g, loc_s(), label[i], xs[i] + ws[i] / 2, TAB_Y, middle_center, on ? accent[i] : DIM);
+        list_layout.tab_x[i] = xs[i];
+        list_layout.tab_w[i] = ws[i];
+    }
+}
+
+void draw_list(G *g, const ListPage &p, const Status &status, float clock)
+{
+    g->fillScreen(BLACK);
+    status_line(g, status);
+    tabs(g, p);
+    list_layout.rows = p.row_count;
+    layout.card = false;
+    if (p.row_count == 0) {
+        text(g, loc_m(), p.list == IDEAS ? tx->no_notes : tx->all_done, CX, CY + 20, middle_center, INK);
+        text(g, loc_s(), tx->no_notes_hint, CX, CY + 60, middle_center, DIM);
+        return;
+    }
+    for (int i = 0; i < p.row_count; i++) {
+        const Row &r = p.rows[i];
+        const int y = LIST_TOP + i * ROW_H, cy = y + ROW_H / 2;
+        if (i == p.held) {
+            g->fillSmoothRoundRect(X0 - 14, y + 3, X1 - X0 + 28, ROW_H - 6, 18, mix(BLACK, INK, 0.12f));
+        }
+        const int tx0 = p.list == IDEAS ? X0 + 18 : X0 + 42;
+        const bool due = r.due != nullptr && r.due[0];
+        const int dw = due ? width(g, loc_s(), r.due) + 22 : 0;
+        const int right = due ? X1 - dw - 10 : X1;
+        const std::string shown = first_chars(r.text, r.reveal);
+        const auto lines = wrap(g, nf(), shown, right - tx0, 2);
+        const int first = lines.size() > 1 ? cy - 14 : cy;
+        if (p.list != IDEAS) {
+            const float bx = X0 + 14;
+            if (r.done) {
+                g->fillSmoothCircle(bx, first, 14, TEAL);
+                tick(g, bx, first, 1.0f, 2.6f, BLACK);
+            } else {
+                ring(g, bx, first, 12.5f, 2.6f, 0x6E6A63u, i == p.held ? mix(BLACK, INK, 0.12f) : BLACK);
+            }
+        } else {
+            g->fillSmoothCircle(X0 + 4, first, 4, AMBER);
+        }
+        const bool struck = r.done && p.list == TASKS;  // ticked today, still among the tasks
+        for (size_t k = 0; k < lines.size(); k++) {
+            const int ly = first + (int)k * 28;
+            text(g, nf(), lines[k], tx0, ly, middle_left, struck ? FAINT : p.list == DONE ? MUTED : INK);
+            if (struck && !lines[k].empty()) {
+                gfxu::line(g, tx0, ly + 1, tx0 + width(g, nf(), lines[k]), ly + 1, 2.0f, FAINT);
+            }
+        }
+        if (due) {
+            pill(g, X1 - dw, first - 16, dw, 32, i == p.held ? mix(BLACK, INK, 0.12f) : BLACK, LINE, 1.5f);
+            text(g, loc_s(), r.due, X1 - dw / 2, first, middle_center, struck ? FAINT : 0xC9C5BCu);
+        }
+        if (i + 1 < p.row_count) {  // a hairline between rows
+            g->drawFastHLine(tx0, y + ROW_H, X1 - tx0, mix(BLACK, LINE, 0.7f));
+        }
+    }
+    if (p.pages > 1) {
+        pager(g, p.page, p.pages);
+    }
+}
+
+void draw_stats(G *g, const Stats &st, const Status &status)
+{
+    g->fillScreen(BLACK);
+    status_line(g, status);
+    ListPage p = {TASKS, st.tasks, st.ideas, 0, nullptr, 0, st.page, st.pages, -1};
+    tabs(g, p);
+    list_layout.rows = 0;
+    int total = 0, most = 1;
+    for (int n : st.week) {
+        total += n;
+        most = n > most ? n : most;
+    }
+    text(g, loc_s(), tx->week_done, CX, 146, middle_center, DIM);
+    // The count, with its unit in the small text beside it.
+    char buf[64];
+    snprintf(buf, sizeof buf, "%d", total);
+    const lgfx::IFont *digits = ui::font(ui::FontId::CLOCK);
+    const int nw = width(g, digits, buf), uw = width(g, loc_s(), tx->tasks_unit);
+    const int x = CX - (nw + 8 + uw) / 2;
+    text(g, digits, buf, x, 206, middle_left, total ? INK : FAINT);
+    text(g, loc_s(), tx->tasks_unit, x + nw + 8, 226, middle_left, DIM);
+    // A bar a day, Monday to Sunday; today's in the accent, the days to come not yet there.
+    static constexpr int BAR_W = 20, GAP = 16, BASE = 302, TALL = 50;
+    const int x0 = CX - (7 * BAR_W + 6 * GAP) / 2;
+    for (int d = 0; d < 7; d++) {
+        const int bx = x0 + d * (BAR_W + GAP);
+        const bool now = d == st.today, future = d > st.today;
+        const int h = st.week[d] ? 8 + (TALL - 8) * st.week[d] / most : 4;
+        const uint32_t col = future ? mix(BLACK, LINE, 0.6f) : now ? TEAL : st.week[d] ? mix(BLACK, TEAL, 0.45f) : LINE;
+        g->fillSmoothRoundRect(bx, BASE - h, BAR_W, h, h < 10 ? h / 2 : 6, col);
+        text(g, loc_s(), tx->week_initials[d], bx + BAR_W / 2, BASE + 22, middle_center, now ? TEAL : FAINT);
+    }
+    if (st.streak >= 2) {
+        snprintf(buf, sizeof buf, tx->streak, st.streak);
+        const int sw = width(g, loc_s(), buf);
+        g->fillSmoothCircle(CX - sw / 2.0f - 12, 356, 4, AMBER);
+        text(g, loc_s(), buf, CX + 6, 356, middle_center, AMBER);
+    }
+    // "See all", with a small chevron.
+    const int aw = width(g, loc_s(), tx->see_all);
+    text(g, loc_s(), tx->see_all, CX - 8, 392, middle_center, MUTED);
+    const float cx = CX - 8 + aw / 2.0f + 12;
+    gfxu::line(g, cx - 3, 386, cx + 3, 392, 2, MUTED);
+    gfxu::line(g, cx + 3, 392, cx - 3, 398, 2, MUTED);
+    if (st.pages > 1) {
+        pager(g, st.page, st.pages);
+    }
+}
+
+int row_at(int x, int y, int &tab)
+{
+    tab = -1;
+    for (int i = 0; i < 2; i++) {
+        if (y >= TAB_Y - TAB_H / 2 - 8 && y <= TAB_Y + TAB_H / 2 + 8 && x >= list_layout.tab_x[i] - 6 &&
+            x <= list_layout.tab_x[i] + list_layout.tab_w[i] + 6) {
+            tab = i;
+            return -1;
+        }
+    }
+    const int i = (y - LIST_TOP) / ROW_H;
+    return y >= LIST_TOP && i < list_layout.rows && x >= 30 && x <= ui::SCREEN - 30 ? i : -1;
+}
+
 // ---- the menu ---------------------------------------------------------------------------
 
-static void button_xy(bool todo, int i, float &x, float &y)
+static void button_xy(bool three, int i, float &x, float &y)
 {
-    const int n = todo ? 3 : 2;
+    const int n = three ? 3 : 2;
     x = CX + (i - (n - 1) / 2.0f) * 110;
     y = CY - 6;
 }
 
-void draw_menu(G *g, bool todo)
+void draw_menu(G *g, Choice first, const char *title)
 {
+    const bool three = first == ALL_DONE || first == UNDO;
     dim(g, 0.86f);
-    text(g, loc_s(), tx->this_note, CX, CY - 92, middle_center, DIM);
-    const Choice choices[3] = {ALL_DONE, REMOVE, CANCEL};
-    for (int i = 0, b = todo ? 0 : 1; b < 3; i++, b++) {
+    if (title != nullptr) {  // the row held, so that a wrong one is seen before anything happens
+        text(g, nf(), fit(g, nf(), title, 300), CX, CY - 96, middle_center, INK);
+    } else {
+        text(g, loc_s(), tx->this_note, CX, CY - 92, middle_center, DIM);
+    }
+    const Choice choices[3] = {three ? first : NOTHING, REMOVE, CANCEL};
+    for (int i = 0, b = three ? 0 : 1; b < 3; i++, b++) {
         float x, y;
-        button_xy(todo, i, x, y);
+        button_xy(three, i, x, y);
         const Choice c = choices[b];
-        const uint32_t col = c == ALL_DONE ? TEAL : c == REMOVE ? 0xFF6B5Eu : 0x4A4740u;
+        const uint32_t col = c == ALL_DONE || c == UNDO ? TEAL : c == REMOVE ? 0xFF6B5Eu : 0x4A4740u;
         ring(g, x, y, 41, 2.6f, col, c == CANCEL ? BLACK : mix(BLACK, col, 0.1f));
         if (c == ALL_DONE) {
             tick(g, x, y, 1.6f, 3.2f, TEAL);
+        } else if (c == UNDO) {  // an arrow going back round
+            arc(g, x, y + 2, 12, 0.08f, 0.78f, 2.8f, TEAL);
+            gfxu::line(g, x - 12, y - 6, x - 13, y + 3, 2.8f, TEAL);
+            gfxu::line(g, x - 12, y - 6, x - 4, y - 5, 2.8f, TEAL);
         } else if (c == REMOVE) {  // a bin
             gfxu::line(g, x - 13, y - 10, x + 13, y - 10, 2.6f, col);
             gfxu::line(g, x - 5, y - 15, x + 5, y - 15, 2.6f, col);
@@ -467,17 +644,18 @@ void draw_menu(G *g, bool todo)
         } else {
             cross(g, x, y, 9, 2.8f, 0xC9C5BCu);
         }
-        text(g, loc_s(), c == ALL_DONE ? tx->all_done : c == REMOVE ? tx->remove : tx->cancel, (int)x, (int)y + 68,
-             middle_center, 0xC9C5BCu);
+        text(g, loc_s(), c == ALL_DONE ? tx->all_done : c == UNDO ? tx->undo : c == REMOVE ? tx->remove : tx->cancel,
+             (int)x, (int)y + 68, middle_center, 0xC9C5BCu);
     }
 }
 
-Choice menu_at(bool todo, int x, int y)
+Choice menu_at(Choice first, int x, int y)
 {
-    const Choice choices[3] = {ALL_DONE, REMOVE, CANCEL};
-    for (int i = 0, b = todo ? 0 : 1; b < 3; i++, b++) {
+    const bool three = first == ALL_DONE || first == UNDO;
+    const Choice choices[3] = {three ? first : NOTHING, REMOVE, CANCEL};
+    for (int i = 0, b = three ? 0 : 1; b < 3; i++, b++) {
         float bx, by;
-        button_xy(todo, i, bx, by);
+        button_xy(three, i, bx, by);
         if ((x - bx) * (x - bx) + (y - by) * (y - by) < 52 * 52) {
             return choices[b];
         }
@@ -522,7 +700,7 @@ void draw_recording(G *g, float seconds, float max_seconds, float level, float c
 void draw_message(G *g, Message m, float t)
 {
     g->fillScreen(BLACK);
-    const bool kept = m == KEPT_ONLINE || m == KEPT_OFFLINE || m == KEPT_NO_KEY;
+    const bool kept = m == KEPT_ONLINE || m == KEPT_LATER || m == KEPT_OFFLINE || m == KEPT_NO_KEY;
     if (kept && t < 0.5f) {  // the edge of the recording closes in
         const float u = ease_out(t * 2);
         ring(g, CX, CY, 218 * (1 - u) + 12, 4, mix(RED, BLACK, u));
@@ -540,6 +718,7 @@ void draw_message(G *g, Message m, float t)
     }
     const char *title = kept ? tx->kept : m == TOO_SHORT ? tx->too_short : tx->cancelled;
     const char *sub = m == KEPT_ONLINE    ? tx->kept_online
+                      : m == KEPT_LATER   ? tx->kept_later
                       : m == KEPT_OFFLINE ? tx->kept_offline
                       : m == KEPT_NO_KEY  ? tx->no_key
                       : m == TOO_SHORT    ? tx->too_short_hint

@@ -12,6 +12,11 @@
 
 #include <atomic>
 
+#include <nvs.h>
+
+#include <vector>
+
+#include "board.h"
 #include "credentials.h"
 #include "memos.h"
 #include "net.h"
@@ -74,6 +79,7 @@ static Result go()
         }
     }
     const int64_t online_us = esp_timer_get_time();
+    openai::begin_session();
 
     for (const std::string &id : ids) {
         size_t size = 0;
@@ -117,6 +123,7 @@ static Result go()
             break;
         }
     }
+    openai::end_session();
     net::disconnect();
     r.left = (int)memos::waiting().size();
     ESP_LOGI(TAG, "%d done, %d left; online in %lld ms, all in %lld ms", r.done, r.left, (online_us - t0) / 1000,
@@ -124,25 +131,66 @@ static Result go()
     return r;
 }
 
-// ---- the task ---------------------------------------------------------------------
+// ---- when to go -------------------------------------------------------------------
+
+static constexpr int BATCH = 3, LOW_BATTERY = 20;
+static constexpr int64_t OLDEST_WAITS_S = 15 * 60;
 
 static TaskHandle_t handle;
 static SemaphoreHandle_t lock;  // guards `latest`
 static Result latest;
 static std::atomic<uint32_t> count;
-static std::atomic<bool> running;
+static std::atomic<bool> running, page, saving_on{true};
+
+// Seconds since 2000 of a memo's id, or of the clock now; -1 when unknown.
+static int64_t seconds(int y, int mo, int d, int h, int mi, int s)
+{
+    struct tm t = {};
+    t.tm_year = y - 1900, t.tm_mon = mo - 1, t.tm_mday = d, t.tm_hour = h, t.tm_min = mi, t.tm_sec = s;
+    return (int64_t)mktime(&t) - 946684800;
+}
+
+static int64_t waited_s(const std::string &id)
+{
+    int y, mo, d, h, mi, s;
+    board::DateTime now = {};
+    if (sscanf(id.c_str(), "%4d%2d%2d-%2d%2d%2d", &y, &mo, &d, &h, &mi, &s) != 6 || y < 2001 || !board::get_time(now)) {
+        return OLDEST_WAITS_S;  // unknown: as if it had waited long enough
+    }
+    return seconds(now.year, now.month, now.day, now.hour, now.minute, now.second) - seconds(y, mo, d, h, mi, s);
+}
+
+static bool time_to_go(const std::vector<std::string> &ids)
+{
+    if (board::on_usb() || page || !saving_on) {
+        return true;
+    }
+    const int battery = board::battery_level();
+    if (battery >= 0 && battery < LOW_BATTERY) {
+        return false;
+    }
+    return (int)ids.size() >= BATCH || waited_s(ids.front()) >= OLDEST_WAITS_S;
+}
+
+// ---- the task ---------------------------------------------------------------------
 
 static void task(void *)
 {
     static const uint32_t RETRY_MIN[] = {1, 5, 15, 60};
     int retry = 0;
-    TickType_t wait = 0;  // memos from before go at once
+    int64_t not_before_us = 0;  // after a failure
     while (true) {
-        if (ulTaskNotifyTake(pdTRUE, wait) > 0) {
-            retry = 0;  // asked: a new memo
+        const auto ids = memos::waiting();
+        // Asleep without memos; with some, a look every minute (cheap: no Wi-Fi).
+        const bool asked = ulTaskNotifyTake(pdTRUE, ids.empty() ? portMAX_DELAY : pdMS_TO_TICKS(60 * 1000)) > 0;
+        const auto now_ids = memos::waiting();
+        if (now_ids.empty() || !credentials::has_key()) {
+            continue;
         }
-        if (memos::waiting().empty() || !credentials::has_key()) {
-            wait = portMAX_DELAY;
+        if (asked) {
+            not_before_us = 0;  // asked again: a new memo, the page opened
+        }
+        if (esp_timer_get_time() < not_before_us || !time_to_go(now_ids)) {
             continue;
         }
         running = true;
@@ -152,11 +200,11 @@ static void task(void *)
         latest = r;
         xSemaphoreGive(lock);
         count++;
-        if (r.left == 0) {
+        if (r.left == 0 || r.done > 0) {
             retry = 0;
-            wait = portMAX_DELAY;
+            not_before_us = 0;
         } else {
-            wait = pdMS_TO_TICKS(RETRY_MIN[retry] * 60 * 1000);
+            not_before_us = esp_timer_get_time() + (int64_t)RETRY_MIN[retry] * 60 * 1000000;
             ESP_LOGI(TAG, "%d memos waiting: next try in %lu min", r.left, (unsigned long)RETRY_MIN[retry]);
             retry = retry < 3 ? retry + 1 : 3;
         }
@@ -167,8 +215,16 @@ static void task(void *)
 // RAM, as Wi-Fi and flash are used from it.
 void start()
 {
+    nvs_handle_t h;
+    uint8_t v = 1;
+    if (nvs_open("notes", NVS_READONLY, &h) == ESP_OK) {
+        nvs_get_u8(h, "saving", &v);
+        nvs_close(h);
+    }
+    saving_on = v != 0;
     lock = xSemaphoreCreateMutex();
     xTaskCreatePinnedToCore(task, "notes_sync", 16 * 1024, nullptr, 3, &handle, 0);
+    request();  // memos from before: looked at now
 }
 
 void request()
@@ -179,6 +235,34 @@ void request()
 }
 
 bool busy() { return running; }
+
+bool goes_now()
+{
+    const auto ids = memos::waiting();
+    return !ids.empty() && credentials::has_key() && time_to_go(ids);
+}
+
+void page_open(bool open)
+{
+    page = open;
+    if (open) {
+        request();
+    }
+}
+
+bool saving() { return saving_on; }
+
+void set_saving(bool on)
+{
+    saving_on = on;
+    nvs_handle_t h;
+    if (nvs_open("notes", NVS_READWRITE, &h) == ESP_OK) {
+        nvs_set_u8(h, "saving", on ? 1 : 0);
+        nvs_commit(h);
+        nvs_close(h);
+    }
+    request();
+}
 
 Result last(uint32_t *n)
 {

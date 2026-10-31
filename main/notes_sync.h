@@ -1,9 +1,15 @@
 #pragma once
 // Turns the memos waiting in memos.h into notes, in a task of its own: online,
 // oldest first, each transcribed and tidied (openai.h), its note written, its
-// recording deleted. A memo that fails stays, and the ones after it wait too:
-// the task tries again after 1, 5, 15 and then every 60 minutes, and at once
-// when asked (a new memo).
+// recording deleted. A memo that fails stays, and the ones after it wait too.
+//
+// Going online costs most in connecting, not in sending, so on battery the
+// memos are sent together (saving battery, the default):
+//   on USB power, the notes page open, or "at once" chosen: at once
+//   else: when 3 are waiting, or the oldest has waited 15 minutes
+//   below 20 % battery: only on USB power or with the notes page open
+// After a failure it waits 1, 5, 15, then 60 minutes, unless asked again
+// (a new memo, the notes page opened).
 
 #include <stdint.h>
 
@@ -22,8 +28,18 @@ struct Result {
 // Starts the task; it goes at once when memos are waiting from before.
 void start();
 
-// Asks for a go soon (a memo was just kept).
+// A memo was just kept: the task looks whether to go now.
 void request();
+
+// The notes page shows (its notes are wanted now) or not.
+void page_open(bool open);
+
+// Send in batches to save battery (true, the default) or each memo at once.
+bool saving();
+void set_saving(bool on);
+
+// Whether the memos waiting would go now (for the message after recording).
+bool goes_now();
 
 // A go is under way (the watch then stays on).
 bool busy();

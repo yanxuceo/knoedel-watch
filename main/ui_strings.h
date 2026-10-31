@@ -28,6 +28,11 @@ struct UiText {
     const char *no_notes, *no_notes_hint, *this_note, *all_done, *remove, *cancel, *removed, *more_n;  // "%d"
     const char *weekdays_short[7];                // a task's day, Sunday first
     const char *date_short;                       // "%d" month, "%d" day, for a task's day further away
+    const char *kept_later;                       // kept, sent with the next ones (saving battery)
+    const char *sending_setting, *sending_saving, *sending_at_once;  // settings: how memos are sent
+    // What was done: the page after the open tasks, its list, the main menu
+    const char *week_done, *tasks_unit, *streak, *see_all, *done_list, *undo, *done_today;  // "%d"
+    const char *week_initials[7];                 // Monday first
 };
 
 inline const UiText &ui_text(const char *locale)
@@ -48,7 +53,11 @@ inline const UiText &ui_text(const char *locale)
                               "已记下：",
                               "还没有速记", "按住右键 说一句话", "这条速记", "全部完成", "删除", "取消", "已删除", "还有 %d 项",
                               {"周日", "周一", "周二", "周三", "周四", "周五", "周六"},
-                              "%d月%d日"};
+                              "%d月%d日",
+                              "稍后一起转录，更省电",
+                              "速记上传", "省电", "立即",
+                              "本周完成", "件", "连续 %d 天都有完成", "查看全部", "已完成", "撤销完成", "今天完成 %d 件",
+                              {"一", "二", "三", "四", "五", "六", "日"}};
     static const UiText EN = {"Learn German", "Practice", "Settings", "Language", "English", "Volume", "Brightness", "Power off",
                               "Tap to change", "Tap to switch off", "Muted",
                               "Well done", "No cards yet",
@@ -70,6 +79,11 @@ inline const UiText &ui_text(const char *locale)
                               "No notes yet", "Hold the right key and talk", "This note", "All done", "Delete", "Cancel",
                               "Deleted", "%d more",
                               {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"},
-                              "%d/%d"};
+                              "%d/%d",
+                              "Sent with the next ones",
+                              "Notes upload", "Save battery", "At once",
+                              "Done this week", "tasks", "%d days in a row", "See all", "Done", "Not done",
+                              "%d done today",
+                              {"M", "T", "W", "T", "F", "S", "S"}};
     return strncmp(locale, "zh", 2) == 0 ? ZH : EN;
 }

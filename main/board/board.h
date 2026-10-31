@@ -35,6 +35,7 @@ enum class Event : uint8_t {
     SELECT,    // a tap on the screen
     BACK,      // holding the left key
     TALK,      // holding the right key: talk while it is held (see talk_key_held)
+    HOLD,      // a finger held on the screen (tap_point tells where)
 };
 
 // Call once per frame: reads keys and touch, returns at most one event.
@@ -43,7 +44,7 @@ Event update();
 // A key or the screen is being touched right now (keeps the watch awake).
 bool touched();
 
-// Where the last SELECT tapped, in display pixels.
+// Where the last SELECT or HOLD touched, in display pixels.
 void tap_point(int &x, int &y);
 
 // The left key is held down (as read by the last talk_key_held()): cancels a recording.
@@ -118,6 +119,9 @@ bool set_time(const DateTime &t);
 
 // Powered over USB: the watch then stays on.
 bool on_usb();
+
+// The battery's charge, 0..100, or -1 when the board cannot tell.
+int battery_level();
 
 // Switches the watch off; returns only where it cannot be (on USB power).
 void power_off();

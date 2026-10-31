@@ -63,9 +63,10 @@ void talk(lgfx::LovyanGFX *fb, void (*push)())
     }
     // The note is made in the background (notes_sync.h): back to where the watch was.
     notes_sync::request();
-    const notes_ui::Message m = !credentials::has_key() ? notes_ui::KEPT_NO_KEY
+    const notes_ui::Message m = !credentials::has_key()      ? notes_ui::KEPT_NO_KEY
+                                : !notes_sync::goes_now()      ? notes_ui::KEPT_LATER
                                 : notes_sync::last().offline ? notes_ui::KEPT_OFFLINE
-                                                             : notes_ui::KEPT_ONLINE;
+                                                               : notes_ui::KEPT_ONLINE;
     message(fb, push, m, m == notes_ui::KEPT_ONLINE ? 800 : 1300);
 }
 

@@ -62,6 +62,11 @@ Event update()
     if (touch.wasFlicked() && abs(touch.distanceX()) > abs(touch.distanceY())) {
         return touch.distanceX() < 0 ? Event::NEXT : Event::PREVIOUS;
     }
+    if (touch.wasHold()) {
+        tap_x = touch.x;
+        tap_y = touch.y;
+        return Event::HOLD;
+    }
     if (touch.wasClicked()) {
         tap_x = touch.x;
         tap_y = touch.y;
@@ -222,6 +227,8 @@ bool set_time(const DateTime &t)
 // ---- power --------------------------------------------------------------------
 
 bool on_usb() { return M5.Power.getVBUSVoltage() >= 4000; }
+
+int battery_level() { return M5.Power.getBatteryLevel(); }
 
 void power_off() { M5.Power.powerOff(); }
 
