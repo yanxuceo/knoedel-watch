@@ -12,7 +12,7 @@ English | [中文](README.zh.md)
 
 Animated vocabulary cards for the M5Stack StopWatch Dev Kit (ESP32-S3, round AMOLED touch screen, speaker, motion sensor). Two characters act out every word: **Knödel**, a dumpling, shows adjectives and expressions; **Brezel**, a ginger cat, does the verbs. Nouns show the thing itself, on a disc in the colour of its gender.
 
-Each card has up to three faces: the word with its animation, the grammar line with an example sentence and its translation, and a tip. Every German line is spoken, in synthetic voices (Microsoft Azure neural text-to-speech, not recordings of real people); short dialogues are spoken in two voices. Around the cards the watch has a practice mode with spaced repetition, a clock with a word of the day, and a focus timer.
+Each card has up to three faces: the word with its animation, the grammar line with an example sentence and its translation, and a tip. Every German line is spoken, in synthetic voices (Microsoft Azure neural text-to-speech, not recordings of real people); short dialogues are spoken in two voices. Around the cards the watch has a practice mode with spaced repetition, a clock with a word of the day, and a focus timer. Since 0.3 it also keeps **your own sentences** (a sentence book you fill from the browser) and takes **voice notes**: hold a key, say what you have to do in any mix of Chinese, German and English, and it becomes a list you tick off (with your own OpenAI key).
 
 > **About the content.** The cards were written by an AI and have not been proofread by a native speaker yet. If you find a mistake, please open an issue: it will be fixed in the next content pack.
 
@@ -66,10 +66,12 @@ The watch starts in English. To switch to Chinese: *Settings* → *Language*, ta
 | | |
 |---|---|
 | **Clock** | the time and a word of the day |
-| **Learn German** | the decks, card by card |
-| **Practice** | a few cards you have seen, asked again |
+| **Words** | the decks, card by card |
+| **Review** | a few cards you have seen, asked again |
+| **Sentences** | your own sentence book: the meaning, the German, the pattern |
+| **Notes** | your voice notes: tasks to tick off, ideas, what was done |
 | **Focus timer** | 25 minutes of focus, 5 of break |
-| **Settings** | language, time, volume, brightness, power off |
+| **Settings** | language, time, volume, brightness, how notes are sent, power off |
 
 Menus are in the language chosen in the settings. The watch remembers where you were.
 
@@ -79,30 +81,49 @@ Menus are in the language chosen in the settings. The watch remembers where you 
 |---|---|
 | KEY B (blue, right) or swipe left | next |
 | KEY A (yellow, left) or swipe right | previous |
-| Tap the screen | open, next face of a card, change a setting |
+| Tap the screen | open, next face of a card, change a setting, tick a task |
 | Hold KEY A | back |
+| Hold KEY B, anywhere | record a voice note while held (KEY A cancels) |
+| Hold the screen on a note | its menu (delete, undo a tick) |
 
 The motion sensor adds three gestures: **pick the watch up** to wake a dimmed screen, **turn it face down** to darken it (on the focus timer this also starts the timer), and **shake it** on the clock for another word.
 
 On battery the screen dims after a minute and the watch switches itself off after five idle minutes. On USB power it stays on and, left alone, shows the clock.
 
-## Learn German
+## Words
 
-Main menu → *Learn German* → a deck → its cards. Tap to turn a card over:
+Main menu → *Words* → a deck → its cards. Tap to turn a card over:
 
 1. the character acts the word out, with the word and its meaning;
 2. the grammar line (past tense and perfect, plural, or a pattern with its case) and an example with its translation;
 3. a tip.
 
-## Practice
+## Review
 
-Main menu → *Practice* asks you a handful of the cards you have already seen, a minute or two at a time.
+Main menu → *Review* asks you a handful of the cards you have already seen, a minute or two at a time.
 
 1. The character acts the word out, with no text. After two seconds the meaning appears as a hint.
 2. Say the German word to yourself, then press any key or tap to see and hear the answer.
 3. KEY B (blue, ✓): you knew it. KEY A (yellow, ✗): not yet; the card comes back before the session ends.
 
 Three right answers in a row earn a short celebration. Words you know return after 1, 2, 4 … 64 days; a word you missed starts again. There is no backlog to work off and nothing to configure.
+
+## Sentence book
+
+Sentences you collect yourself, from a podcast or an article, kept apart from the decks. Add them on the **[sentence book page](https://yanxuceo.github.io/knoedel-watch/sentences/)** (Chrome or Edge, the watch on USB): one by one, or paste a whole exercise and check how it was split into meaning, German and pattern before it is saved. Export and import as JSON or Markdown.
+
+On the watch: Main menu → *Sentences*. Tap to turn: the meaning (in the language of the menus), the German, the pattern with its topic. The keys go to the sentence before or after.
+
+## Voice notes
+
+Hold KEY B anywhere and say what is on your mind; let go and the watch goes back to where it was. The memo is turned into a note online: transcribed (OpenAI `gpt-4o-mini-transcribe`) and tidied (`gpt-5-mini`) into **tasks** with their days, or an **idea**. Chinese, German and English may be mixed in one sentence; nothing is translated. "下周三" or "nächsten Freitag" become dates, counted by the watch from the day you said them.
+
+Main menu → *Notes* lists the open tasks of all notes (by day) and the ideas, four to a page; tap to tick a task, hold one for its menu. After the tasks comes what was done: this week's count, a bar a day, the days in a row, and the list of everything done.
+
+- **What it needs:** Wi-Fi (2.4 GHz) and **your own OpenAI API key**, both set on the **[settings page](https://yanxuceo.github.io/knoedel-watch/settings/)** over USB. Best a key of its own project with a monthly spend limit. A note costs a fraction of a cent.
+- **Offline:** memos are kept (about six minutes of them) and go out when the watch is online again. On battery they go in batches to save power; on USB power, or with the notes page open, at once.
+- **Privacy:** your recordings and their text go to OpenAI under your key, from the watch directly; there is no server of this project in between. The key stays on the watch and is never shown again (only its last four characters).
+- **Boards:** the M5Stack StopWatch. The Waveshare board's microphones are not used yet.
 
 ## Clock
 

@@ -48,5 +48,9 @@ the licenses above. Please report problems with them as an issue.
 | M5Unified's button and touch state machines | `main/board/waveshare_175c/` (Waveshare board only) | MIT, see `LICENSE.M5Stack` there |
 | esp_lcd_co5300, esp_codec_dev, esp_lcd_touch_cst9217 | fetched into `managed_components/` for the Waveshare board only | Apache 2.0 |
 | minimp3 | `main/third_party/minimp3.h` | CC0 1.0 |
+| cJSON | fetched into `managed_components/` at build time | MIT |
+| esp_littlefs (with littlefs) | fetched into `managed_components/` at build time | MIT (littlefs: BSD 3-Clause) |
+| esp_audio_codec (the Opus encoder of the voice notes) | fetched into `managed_components/` at build time | Espressif Modified MIT: for use with Espressif chips only |
+| Root certificates for api.openai.com | `main/certs/api_roots.pem`, copied from ESP-IDF's bundle (Mozilla's list) | MPL 2.0 (the list), the certificates are public |
 | Bricolage Grotesque | `tools/fonts/`, glyphs embedded in the content packs (`font_de_*.vlw`, `font_clock.vlw`, English `font_loc*.vlw`) | SIL OFL 1.1, see `tools/fonts/OFL-Bricolage.txt` |
-| Noto Sans SC | `tools/fonts/`, glyphs embedded in the content packs (Chinese `font_loc*.vlw`) | SIL OFL 1.1, see `tools/fonts/OFL-NotoSansSC.txt` |
+| Noto Sans SC | `tools/fonts/`, glyphs embedded in the content packs (Chinese `font_loc*.vlw`, and `font_notes.vlw` for notes and sentences) | SIL OFL 1.1, see `tools/fonts/OFL-NotoSansSC.txt` |
