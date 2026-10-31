@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Knödel Watch – sentence book</title>
+<meta name="description" content="Add your own German sentences to the watch's sentence book over USB: one by one, pasted in groups, or from a file.">
+<style>
+  :root {
+    --bg: #f8efdf; --card: #fffaf2; --ink: #2b2230; --soft: #6b6170; --line: #e7d8bd;
+    --accent: #c8862b; --accent-ink: #ffffff; --ok: #2f7d4f; --err: #b8323a; --field: #ffffff; --pattern: #a8660f;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #17141a; --card: #221e26; --ink: #f2eee8; --soft: #b3aab5; --line: #3a3340; --accent: #e0a24a;
+            --accent-ink: #1b1508; --ok: #6cc28f; --err: #f07178; --field: #1b181e; --pattern: #f0b85a; }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 17px/1.55 system-ui, -apple-system, "Segoe UI", "PingFang SC", "Noto Sans SC", sans-serif;
+  }
+  main { max-width: 820px; margin: 0 auto; padding: 28px 16px 64px; }
+  header { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .brand { font-weight: 800; font-size: 15px; letter-spacing: .02em; color: var(--accent); }
+  .brand a { color: inherit; text-decoration: none; }
+  .lang button {
+    border: 1px solid var(--line); background: var(--card); color: var(--soft);
+    padding: 4px 12px; border-radius: 999px; font: inherit; font-size: 14px; cursor: pointer;
+  }
+  .lang button[aria-pressed="true"] { color: var(--ink); border-color: var(--accent); }
+  h1 { font-size: clamp(30px, 6vw, 44px); line-height: 1.15; margin: 28px 0 10px; }
+  .lead { color: var(--soft); margin: 0 0 22px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 20px 22px; margin: 0 0 16px; }
+  .card h2 { font-size: 19px; margin: 0 0 4px; }
+  .card > p.hint, .hint { color: var(--soft); font-size: 15px; margin: 0 0 12px; }
+  body:not(.connected) .needs { opacity: .45; pointer-events: none; }
+  .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; margin: 10px 0 0; }
+  .button {
+    border: 0; border-radius: 999px; padding: 11px 22px; cursor: pointer;
+    background: var(--accent); color: var(--accent-ink); font: inherit; font-weight: 700; font-size: 16px;
+  }
+  .button.big { padding: 14px 28px; font-size: 18px; }
+  .button.quiet { background: transparent; color: var(--ink); border: 1px solid var(--line); font-weight: 600; }
+  .button.danger { background: transparent; color: var(--err); border: 1px solid var(--line); font-weight: 600; }
+  .button:hover { filter: brightness(1.06); }
+  .button:disabled { opacity: .5; cursor: default; }
+  .button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible, .icon:focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--accent) 60%, transparent); outline-offset: 2px;
+  }
+  label { font-size: 14px; font-weight: 600; color: var(--soft); display: block; margin: 0 0 4px; }
+  label .opt { font-weight: 400; }
+  input, textarea, select {
+    width: 100%; font: inherit; font-size: 16px; color: var(--ink); background: var(--field);
+    border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px;
+  }
+  textarea { min-height: 72px; resize: vertical; }
+  #paste { min-height: 180px; }
+  .field { flex: 1 1 260px; min-width: 0; }
+  .field.wide { flex-basis: 100%; }
+  .status { margin: 12px 0 0; font-size: 15px; min-height: 1.4em; }
+  .status.ok { color: var(--ok); }
+  .status.err { color: var(--err); }
+  .list { list-style: none; padding: 0; margin: 12px 0 0; }
+  .item { border-top: 1px solid var(--line); padding: 12px 0; display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; }
+  .item:first-child { border-top: 0; }
+  .item .meaning { font-weight: 600; }
+  .item .german { font-size: 16px; }
+  .item .pattern { color: var(--pattern); font-size: 15px; }
+  .item .topic { color: var(--soft); font-size: 13px; }
+  .item .actions { grid-row: 1 / span 4; grid-column: 2; display: flex; gap: 4px; align-items: start; }
+  .item.pick { grid-template-columns: auto 1fr; }
+  .item.pick input { width: 20px; height: 20px; margin: 3px 0 0; grid-row: 1 / span 4; }
+  .icon {
+    border: 1px solid var(--line); background: transparent; color: var(--soft); cursor: pointer;
+    border-radius: 999px; font: inherit; font-size: 14px; padding: 6px 12px; min-height: 36px;
+  }
+  .icon:hover { color: var(--ink); border-color: var(--accent); }
+  .icon.del:hover { color: var(--err); border-color: var(--err); }
+  .count { color: var(--soft); font-size: 15px; font-weight: 400; }
+  code { background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; font-size: 14px; }
+  a { color: var(--accent); }
+  footer { margin-top: 36px; color: var(--soft); font-size: 13px; }
+  [data-lang="zh"] .en, [data-lang="en"] .zh { display: none; }
+</style>
+</head>
+<body data-lang="en">
+<main>
+  <header>
+    <div class="brand"><a href="../">KNÖDEL WATCH</a> · <span class="en">SENTENCE BOOK</span><span class="zh">句子本</span></div>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">English</button>
+      <button type="button" data-set="zh" aria-pressed="false">中文</button>
+    </div>
+  </header>
+
+  <h1><span class="en">Sentence book</span><span class="zh">句子本</span></h1>
+  <p class="lead">
+    <span class="en">Your own sentences, from a podcast or an article, for the watch's sentence book: the meaning on the
+      first side, the German on the second, the pattern on the third. Nothing leaves your computer but for the watch.</span>
+    <span class="zh">把你从听力、文章里总结的句子放进手表的「句子本」：第一面是中文（或英文），第二面是德语，第三面是句式。
+      内容只会从你的电脑发到手表，不经过任何其他地方。</span>
+  </p>
+
+  <section class="card">
+    <h2><span class="en">Connect the watch</span><span class="zh">连接手表</span></h2>
+    <p class="hint">
+      <span class="en">Chrome or Edge on a computer, a USB data cable. The watch restarts once when it connects.</span>
+      <span class="zh">需要电脑上的 Chrome 或 Edge，用能传数据的 USB 线连接。连接时手表会重启一次。</span>
+    </p>
+    <div class="row"><button type="button" class="button big" id="connect"><span class="en">Connect</span><span class="zh">连接手表</span></button></div>
+    <p class="status" id="connect-status" role="status"></p>
+  </section>
+
+  <section class="card needs" aria-labelledby="h-add">
+    <h2 id="h-add"><span id="form-title-en" class="en">Add a sentence</span><span id="form-title-zh" class="zh">添加一句</span></h2>
+    <div class="row">
+      <div class="field"><label for="f-zh">中文</label><textarea id="f-zh" rows="2"></textarea></div>
+      <div class="field"><label for="f-en">English <span class="opt">(<span class="en">optional</span><span class="zh">选填</span>)</span></label><textarea id="f-en" rows="2"></textarea></div>
+      <div class="field wide"><label for="f-de">Deutsch</label><textarea id="f-de" rows="2" lang="de"></textarea></div>
+      <div class="field"><label for="f-pattern"><span class="en">Pattern / grammar</span><span class="zh">句式 / 语法</span> <span class="opt">(<span class="en">optional</span><span class="zh">选填</span>)</span></label><input id="f-pattern" placeholder="sich vorstellen können + zu + Infinitiv"></div>
+      <div class="field"><label for="f-topic"><span class="en">Topic</span><span class="zh">主题</span> <span class="opt">(<span class="en">optional</span><span class="zh">选填</span>)</span></label><input id="f-topic" list="topics"></div>
+    </div>
+    <datalist id="topics"></datalist>
+    <div class="row">
+      <button type="button" class="button" id="save"><span class="en">Add to the watch</span><span class="zh">添加到手表</span></button>
+      <button type="button" class="button quiet" id="cancel-edit" hidden><span class="en">Cancel</span><span class="zh">取消编辑</span></button>
+    </div>
+    <p class="status" id="form-status" role="status"></p>
+  </section>
+
+  <section class="card needs" aria-labelledby="h-paste">
+    <h2 id="h-paste"><span class="en">Paste many</span><span class="zh">批量粘贴</span></h2>
+    <p class="hint">
+      <span class="en">Paste a whole exercise: each sentence as its meaning, then the German, then (if there is one) the pattern,
+        one per line. A line like “场景练习：…” becomes the topic; “练习 1”, “收起” and the like are left out. You see them before they are saved.</span>
+      <span class="zh">把整组练习直接粘贴进来：每句依次是中文、德语、句式（如果有），各占一行。像「场景练习：…」这样的行会当作主题，
+        「练习 1」「收起」这类会被跳过。保存之前你会先看到拆分结果。</span>
+    </p>
+    <textarea id="paste" spellcheck="false"></textarea>
+    <div class="row">
+      <button type="button" class="button quiet" id="split"><span class="en">Split into sentences</span><span class="zh">拆分成句子</span></button>
+    </div>
+    <ul class="list" id="preview"></ul>
+    <div class="row" id="preview-actions" hidden>
+      <button type="button" class="button" id="save-picked"></button>
+    </div>
+    <p class="status" id="paste-status" role="status"></p>
+  </section>
+
+  <section class="card needs" aria-labelledby="h-list">
+    <h2 id="h-list"><span class="en">On the watch</span><span class="zh">手表上的句子</span> <span class="count" id="count"></span></h2>
+    <div class="row">
+      <div class="field" style="flex:0 1 280px"><label for="filter"><span class="en">Topic</span><span class="zh">主题</span></label><select id="filter"></select></div>
+      <button type="button" class="button quiet" id="export-json"><span class="en">Save as JSON</span><span class="zh">导出 JSON</span></button>
+      <button type="button" class="button quiet" id="export-md"><span class="en">Save as Markdown</span><span class="zh">导出 Markdown</span></button>
+      <button type="button" class="button quiet" id="import"><span class="en">Add from a JSON file</span><span class="zh">从 JSON 导入</span></button>
+      <input type="file" id="import-file" accept=".json,application/json" hidden>
+    </div>
+    <ul class="list" id="list"></ul>
+    <p class="status" id="list-status" role="status"></p>
+  </section>
+
+  <footer>
+    <a href="../settings/"><span class="en">Watch settings</span><span class="zh">手表设置</span></a> ·
+    <a href="../"><span class="en">Install</span><span class="zh">安装页</span></a>
+  </footer>
+</main>
+
+<script>
+  // ---- language --------------------------------------------------------------------------------
+  const langButtons = document.querySelectorAll(".lang button");
+  const L = (en, zh) => document.body.dataset.lang === "zh" ? zh : en;
+  function setLang(lang) {
+    document.body.dataset.lang = lang;
+    document.documentElement.lang = lang === "zh" ? "zh-Hans" : "en";
+    langButtons.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.set === lang)));
+    try { localStorage.setItem("lang", lang); } catch (e) {}
+    render();
+    if (picked.length) showPreview();
+  }
+
+  // ---- the watch over USB (main/usb_commands.h): the same as the settings page ------------------
+  const $ = id => document.getElementById(id);
+  let port = null, lastData = 0, waiter = null, queue = Promise.resolve();
+  const status = (id, text, kind) => { const el = $(id); el.textContent = text; el.className = "status" + (kind ? " " + kind : ""); };
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+  async function readLoop() {
+    const reader = port.readable.pipeThrough(new TextDecoderStream()).getReader();
+    let buf = "";
+    try {
+      for (;;) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        lastData = Date.now();
+        buf += value;
+        const parts = buf.split(/\r?\n/);
+        buf = parts.pop();
+        for (const line of parts) onLine(line);
+      }
+    } catch (e) {}
+    port = null;
+    document.body.classList.remove("connected");
+    status("connect-status", L("Disconnected.", "已断开。"));
+  }
+
+  function onLine(line) {
+    if (!waiter) return;
+    if (line.startsWith("SENT ")) { waiter.items.push(line.slice(5)); return; }
+    if (line.startsWith("OK") || line.startsWith("ERR")) {
+      const w = waiter; waiter = null;
+      w.resolve({ ok: line.startsWith("OK"), text: line.replace(/^(OK|ERR) ?/, ""), items: w.items });
+    }
+  }
+
+  function send(command, seconds = 10) {
+    const run = async () => {
+      if (!port) return { ok: false, text: L("not connected", "未连接"), items: [] };
+      const answer = new Promise(resolve => { waiter = { resolve, items: [] }; });
+      const writer = port.writable.getWriter();
+      await writer.write(new TextEncoder().encode(command + "\n"));
+      writer.releaseLock();
+      const timeout = new Promise(r => setTimeout(() => r({ ok: false, text: L("no answer from the watch", "手表没有回应"), items: [] }), seconds * 1000));
+      const result = await Promise.race([answer, timeout]);
+      waiter = null;
+      return result;
+    };
+    const p = queue.then(run, run);
+    queue = p.catch(() => {});
+    return p;
+  }
+
+  async function connect() {
+    if (!("serial" in navigator)) {
+      status("connect-status", L("Please open this page in Chrome or Edge on a computer.", "请在电脑上用 Chrome 或 Edge 打开这个页面。"), "err");
+      return;
+    }
+    try {
+      port = await navigator.serial.requestPort({ filters: [{ usbVendorId: 0x303a }] });
+      await port.open({ baudRate: 115200 });
+      try { await port.setSignals({ dataTerminalReady: false, requestToSend: false }); } catch (e) {}
+    } catch (e) {
+      port = null;
+      if (e.name !== "NotFoundError") status("connect-status", e.message, "err");
+      return;
+    }
+    $("connect").disabled = true;
+    status("connect-status", L("Connecting… the watch starts up", "正在连接…手表正在启动"));
+    lastData = Date.now();
+    readLoop();
+    const t0 = Date.now();
+    while (Date.now() - lastData < 1500 && Date.now() - t0 < 9000) await sleep(200);
+    const ok = await load();
+    $("connect").disabled = false;
+    if (ok) {
+      document.body.classList.add("connected");
+      status("connect-status", L("Connected.", "已连接。"), "ok");
+    } else {
+      status("connect-status", L("The watch does not answer: is it the firmware with the sentence book?",
+                                 "手表没有回应：手表上的固件是带句子本的版本吗？"), "err");
+    }
+  }
+
+  // ---- the sentences ---------------------------------------------------------------------------------
+  let sentences = [], editing = null;
+
+  async function load() {
+    const r = await send("sent list", 20);
+    if (!r.ok) return false;
+    sentences = r.items.map(s => { try { return JSON.parse(s); } catch (e) { return null; } }).filter(Boolean);
+    render();
+    return true;
+  }
+
+  const topics = () => [...new Set(sentences.map(s => s.topic).filter(Boolean))];
+
+  function render() {
+    const filter = $("filter").value;
+    const all = topics();
+    $("filter").innerHTML = "";
+    for (const [v, t] of [["", L("All topics", "全部主题")], ...all.map(t => [t, t])]) {
+      const o = document.createElement("option");
+      o.value = v; o.textContent = t;
+      $("filter").append(o);
+    }
+    $("filter").value = all.includes(filter) ? filter : "";
+    $("topics").innerHTML = all.map(t => `<option></option>`).join("");
+    [...$("topics").children].forEach((o, i) => o.value = all[i]);
+    const shown = sentences.filter(s => !$("filter").value || s.topic === $("filter").value).slice().reverse();
+    $("count").textContent = `· ${sentences.length}`;
+    const list = $("list");
+    list.innerHTML = "";
+    for (const s of shown) {
+      const li = document.createElement("li");
+      li.className = "item";
+      li.innerHTML = '<div class="meaning"></div><div class="german" lang="de"></div><div class="pattern"></div><div class="topic"></div>' +
+                     '<div class="actions"><button type="button" class="icon edit"></button><button type="button" class="icon del"></button></div>';
+      li.querySelector(".meaning").textContent = [s.zh, s.en].filter(Boolean).join(" · ");
+      li.querySelector(".german").textContent = s.de;
+      li.querySelector(".pattern").textContent = s.pattern;
+      li.querySelector(".topic").textContent = s.topic;
+      li.querySelector(".edit").textContent = L("Edit", "编辑");
+      li.querySelector(".del").textContent = L("Delete", "删除");
+      li.querySelector(".edit").setAttribute("aria-label", L("Edit: ", "编辑：") + s.de);
+      li.querySelector(".del").setAttribute("aria-label", L("Delete: ", "删除：") + s.de);
+      li.querySelector(".edit").onclick = () => edit(s);
+      li.querySelector(".del").onclick = () => remove(s);
+      list.append(li);
+    }
+    if (!shown.length) {
+      const li = document.createElement("li");
+      li.className = "hint";
+      li.textContent = L("No sentences yet.", "还没有句子。");
+      list.append(li);
+    }
+  }
+
+  const fields = ["zh", "en", "de", "pattern", "topic"];
+  const formValue = () => Object.fromEntries(fields.map(f => [f, $("f-" + f).value.trim()]));
+
+  function edit(s) {
+    editing = s.id;
+    fields.forEach(f => $("f-" + f).value = s[f] || "");
+    $("form-title-en").textContent = "Edit the sentence";
+    $("form-title-zh").textContent = "编辑句子";
+    $("save").querySelector(".en").textContent = "Save changes";
+    $("save").querySelector(".zh").textContent = "保存修改";
+    $("cancel-edit").hidden = false;
+    $("h-add").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function resetForm() {
+    editing = null;
+    fields.forEach(f => { if (f !== "topic") $("f-" + f).value = ""; });  // the topic stays for the next one
+    $("form-title-en").textContent = "Add a sentence";
+    $("form-title-zh").textContent = "添加一句";
+    $("save").querySelector(".en").textContent = "Add to the watch";
+    $("save").querySelector(".zh").textContent = "添加到手表";
+    $("cancel-edit").hidden = true;
+  }
+
+  async function save() {
+    const s = formValue();
+    if (!s.de || (!s.zh && !s.en)) {
+      status("form-status", L("The German and its meaning (Chinese or English) are needed.", "德语和意思（中文或英文）都需要填写。"), "err");
+      return;
+    }
+    const r = editing ? await send("sent update " + JSON.stringify({ id: editing, ...s }))
+                      : await send("sent add " + JSON.stringify(s));
+    status("form-status", r.ok ? (editing ? L("Saved.", "已保存。") : L("Added to the watch.", "已添加到手表。")) : r.text, r.ok ? "ok" : "err");
+    if (r.ok) { resetForm(); await load(); $("f-zh").focus(); }
+  }
+
+  async function remove(s) {
+    if (!confirm(L("Delete this sentence from the watch?\n\n", "从手表上删除这一句？\n\n") + s.de)) return;
+    const r = await send("sent remove " + s.id);
+    status("list-status", r.ok ? L("Deleted.", "已删除。") : r.text, r.ok ? "ok" : "err");
+    await load();
+  }
+
+  // ---- pasting many -------------------------------------------------------------------------------
+  // The lines of an exercise: the meaning (mostly Chinese), the German (Latin), then a pattern (Latin,
+  // perhaps with a few Chinese words like 从句). Headings like "练习 1" or "收起" are left out.
+  const NOISE = /^(练习\s*\d+|第\s*\d+\s*[题句]|收起|展开|点击查看参考答案|参考答案|答案|\d+[.、)]?)$/;
+  const cjkShare = s => { const chars = [...s.replace(/\s/g, "")]; return chars.length ? chars.filter(c => /[⺀-鿿＀-￯]/.test(c)).length / chars.length : 0; };
+  let picked = [];
+
+  function split(text) {
+    const out = [];
+    let topic = $("f-topic").value.trim(), cur = null;
+    for (let line of text.split(/\r?\n/)) {
+      line = line.trim().replace(/^[-•*]\s*/, "");
+      if (!line || NOISE.test(line)) continue;
+      const head = /^(?:场景练习|场景|主题|Thema|Topic)\s*[:：]\s*(.+)$/.exec(line);
+      if (head) { topic = head[1].trim(); continue; }
+      const chinese = cjkShare(line) > 0.5;
+      if (chinese) {
+        if (cur && cur.de) out.push(cur);
+        cur = { zh: line, en: "", de: "", pattern: "", topic };
+      } else if (cur && !cur.de) {
+        cur.de = line;
+      } else if (cur && !cur.pattern) {
+        cur.pattern = line;
+      }
+    }
+    if (cur && cur.de) out.push(cur);
+    return out;
+  }
+
+  function showPreview() {
+    const list = $("preview");
+    list.innerHTML = "";
+    picked.forEach((s, i) => {
+      const li = document.createElement("li");
+      li.className = "item pick";
+      li.innerHTML = '<input type="checkbox" checked><div class="meaning"></div><div class="german" lang="de"></div><div class="pattern"></div><div class="topic"></div>';
+      li.querySelector("input").setAttribute("aria-label", s.de);
+      li.querySelector("input").onchange = e => { s.keep = e.target.checked; label(); };
+      li.querySelector(".meaning").textContent = s.zh;
+      li.querySelector(".german").textContent = s.de;
+      li.querySelector(".pattern").textContent = s.pattern;
+      li.querySelector(".topic").textContent = s.topic;
+      list.append(li);
+    });
+    $("preview-actions").hidden = picked.length === 0;
+    label();
+  }
+
+  function label() {
+    const n = picked.filter(s => s.keep !== false).length;
+    $("save-picked").textContent = L(`Add ${n} sentences to the watch`, `添加 ${n} 句到手表`);
+    $("save-picked").disabled = n === 0;
+  }
+
+  function doSplit() {
+    picked = split($("paste").value);
+    showPreview();
+    status("paste-status", picked.length ? L(`${picked.length} sentences found: look them over, untick any you do not want.`,
+                                              `拆出 ${picked.length} 句：请检查一遍，不需要的取消勾选。`)
+                                         : L("No sentences found: each needs a line of Chinese and then one of German.",
+                                             "没有拆出句子：每句需要一行中文，下一行是德语。"), picked.length ? "" : "err");
+  }
+
+  async function addMany(items, statusId) {
+    let done = 0;
+    for (const s of items) {
+      const { keep, ...plain } = s;
+      const r = await send("sent add " + JSON.stringify(plain));
+      if (!r.ok) { status(statusId, r.text, "err"); break; }
+      done++;
+      status(statusId, L(`Adding… ${done} / ${items.length}`, `正在添加… ${done} / ${items.length}`));
+    }
+    await load();
+    return done;
+  }
+
+  async function savePicked() {
+    const items = picked.filter(s => s.keep !== false);
+    const done = await addMany(items, "paste-status");
+    if (done === items.length) {
+      status("paste-status", L(`${done} sentences added.`, `已添加 ${done} 句。`), "ok");
+      picked = [];
+      showPreview();
+      $("paste").value = "";
+    }
+  }
+
+  // ---- files ----------------------------------------------------------------------------------------
+  function download(name, text, type) {
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([text], { type }));
+    a.download = name;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+  const today = () => new Date().toISOString().slice(0, 10);
+
+  function exportJson() { download(`knoedel-sentences-${today()}.json`, JSON.stringify(sentences, null, 2), "application/json"); }
+
+  function exportMd() {
+    const by = {};
+    for (const s of sentences) (by[s.topic || L("Without a topic", "无主题")] ||= []).push(s);
+    const md = [`# ${L("Sentence book", "句子本")} · ${today()}`, ""];
+    for (const [topic, list] of Object.entries(by)) {
+      md.push(`## ${topic}`, "");
+      for (const s of list) {
+        md.push(`- ${[s.zh, s.en].filter(Boolean).join(" · ")}`, `  - **${s.de}**`);
+        if (s.pattern) md.push(`  - ${s.pattern}`);
+      }
+      md.push("");
+    }
+    download(`knoedel-sentences-${today()}.md`, md.join("\n"), "text/markdown");
+  }
+
+  async function importJson(file) {
+    let items;
+    try { items = JSON.parse(await file.text()); } catch (e) { status("list-status", L("Not a JSON file.", "不是 JSON 文件。"), "err"); return; }
+    if (!Array.isArray(items)) { status("list-status", L("The file holds no list of sentences.", "文件里没有句子列表。"), "err"); return; }
+    const have = new Set(sentences.map(s => s.de));
+    const fresh = items.filter(s => s && s.de && (s.zh || s.en) && !have.has(s.de))
+                       .map(s => ({ zh: s.zh || "", en: s.en || "", de: s.de, pattern: s.pattern || "", topic: s.topic || "" }));
+    const done = await addMany(fresh, "list-status");
+    status("list-status", L(`${done} sentences added; ${items.length - fresh.length} were there already or incomplete.`,
+                            `已添加 ${done} 句；${items.length - fresh.length} 句已存在或不完整，已跳过。`), "ok");
+  }
+
+  // ---- wiring ------------------------------------------------------------------------------------------
+  let saved = null;
+  try { saved = localStorage.getItem("lang"); } catch (e) {}
+  setLang(saved || ((navigator.language || "").toLowerCase().startsWith("zh") ? "zh" : "en"));
+  langButtons.forEach(b => b.addEventListener("click", () => setLang(b.dataset.set)));
+  $("connect").onclick = () => port ? load() : connect();
+  $("save").onclick = save;
+  $("cancel-edit").onclick = resetForm;
+  $("split").onclick = doSplit;
+  $("save-picked").onclick = savePicked;
+  $("filter").onchange = render;
+  $("export-json").onclick = exportJson;
+  $("export-md").onclick = exportMd;
+  $("import").onclick = () => $("import-file").click();
+  $("import-file").onchange = e => { if (e.target.files[0]) importJson(e.target.files[0]); e.target.value = ""; };
+</script>
+</body>
+</html>
