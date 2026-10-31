@@ -27,6 +27,10 @@ std::string tidy(const std::string &transcript, const char *context);
 void begin_session();
 void end_session();
 
+// A tiny request, to see whether the key works: its HTTP status (200 good,
+// 401 a wrong key, 429 the limit reached or too fast, 0 no answer).
+int check_key();
+
 // The HTTP status of the last request, 0 when it got no answer at all.
 // 429 with spend_limited(): the project's monthly limit is reached.
 int status();

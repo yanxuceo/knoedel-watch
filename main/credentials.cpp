@@ -88,6 +88,45 @@ bool add_network(const char *ssid, const char *password)
 
 void clear_networks() { write_networks(nullptr, 0); }
 
+bool remove_network(const char *ssid)
+{
+    Network list[MAX_NETWORKS];
+    const int n = networks(list, MAX_NETWORKS);
+    int kept = 0;
+    for (int i = 0; i < n; i++) {
+        if (strcmp(list[i].ssid, ssid) != 0) {
+            list[kept++] = list[i];
+        }
+    }
+    return kept < n && write_networks(list, kept);
+}
+
+std::string words()
+{
+    nvs_handle_t h;
+    std::string s;
+    if (open(NVS_READONLY, h)) {
+        char buf[WORDS_MAX + 1];
+        size_t size = sizeof buf;
+        if (nvs_get_str(h, "words", buf, &size) == ESP_OK) {
+            s = buf;
+        }
+        nvs_close(h);
+    }
+    return s;
+}
+
+bool set_words(const std::string &lines)
+{
+    nvs_handle_t h;
+    if (lines.size() > WORDS_MAX || !open(NVS_READWRITE, h)) {
+        return false;
+    }
+    const bool ok = nvs_set_str(h, "words", lines.c_str()) == ESP_OK && nvs_commit(h) == ESP_OK;
+    nvs_close(h);
+    return ok;
+}
+
 bool openai_key(char *out, size_t size)
 {
     nvs_handle_t h;

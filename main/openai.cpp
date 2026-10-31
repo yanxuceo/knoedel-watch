@@ -172,7 +172,16 @@ static std::string transcribe_parts(const char *filename, const char *mime, cons
 {
     const char *boundary = "knoedelwatchmemo7Hq2";
     std::string head;
-    const char *fields[][2] = {{"model", TRANSCRIBE_MODEL}, {"prompt", TRANSCRIBE_PROMPT}};
+    // The personal words (places, names) help the model spell what it hears.
+    std::string prompt = TRANSCRIBE_PROMPT;
+    std::string words = credentials::words();
+    if (!words.empty()) {
+        for (char &c : words) {
+            c = c == '\n' ? ',' : c;
+        }
+        prompt += " Words that may come up: " + words + ".";
+    }
+    const char *fields[][2] = {{"model", TRANSCRIBE_MODEL}, {"prompt", prompt.c_str()}};
     for (const auto &f : fields) {
         head += std::string("--") + boundary + "\r\nContent-Disposition: form-data; name=\"" + f[0] + "\"\r\n\r\n" +
                 f[1] + "\r\n";
@@ -232,6 +241,15 @@ std::string transcribe(const int16_t *pcm, size_t samples, uint32_t rate)
     const void *parts[] = {wav, pcm};
     const size_t sizes[] = {sizeof wav, bytes};
     return transcribe_parts("memo.wav", "audio/wav", parts, sizes, 2);
+}
+
+int check_key()
+{
+    const char *body = R"({"model":"gpt-5-mini","input":"ok","reasoning":{"effort":"minimal"},"max_output_tokens":16})";
+    const void *parts[] = {body};
+    const size_t sizes[] = {strlen(body)};
+    post("responses", "application/json", parts, sizes, 1);
+    return last_status;
 }
 
 std::string tidy(const std::string &transcript, const char *context)

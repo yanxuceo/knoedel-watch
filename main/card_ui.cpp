@@ -1163,8 +1163,10 @@ bool draw_menu(G *g, int index, int count, const char *title, const char *sub)
 }
 
 // The notes: a note card whose tasks get their ticks one after the other, and
-// a microphone giving out sound.
-static void notes_icon(G *g, const character::Stage &st, float clock)
+// a microphone giving out sound. What does not move (the disc and its light,
+// the card, the microphone) is drawn once into a sprite: the light alone is
+// 14 circles of up to 150 px, and drawn every frame the main menu ran at 8 fps.
+static void notes_icon_still(G *g, const character::Stage &st)
 {
     stage_disc(g, st, 0);
     const float k = st.r / 150.0f, cx = st.cx, cy = st.cy;
@@ -1172,7 +1174,40 @@ static void notes_icon(G *g, const character::Stage &st, float clock)
     const vec::Pen card = vec::Pen::make(g, cx - 22 * k, cy + 2 * k, k).turn(-5);
     card.rect(-60, -78, 120, 156, 16, 0xE0C79C);  // shadow
     card.move(-3, -4).rect(-60, -78, 120, 156, 16, 0xFFFDF7, 0xE6D3B0, 2.5f);
-    const vec::Pen rows = card.move(-3, -4);
+    const float mx = cx + 74 * k, my = cy + 18 * k;
+    gfxu::wedge(g, mx, my - 30 * k, mx, my - 2 * k, 15 * k, 15 * k, 0x3C4250);
+    gfxu::wedge(g, mx - 6 * k, my - 34 * k, mx - 6 * k, my - 16 * k, 3 * k, 3 * k, 0x6A7386);
+    for (int i = 0; i < 9; i++) {  // the holder, a half ring under the head
+        const float a0 = (i / 9.0f) * 3.14159265f, a1 = ((i + 1) / 9.0f) * 3.14159265f;
+        gfxu::line(g, mx + cosf(a0) * 23 * k, my - 10 * k + sinf(a0) * 23 * k, mx + cosf(a1) * 23 * k,
+                   my - 10 * k + sinf(a1) * 23 * k, 4 * k, 0x3C4250);
+    }
+    gfxu::line(g, mx, my + 13 * k, mx, my + 30 * k, 4.5f * k, 0x3C4250);
+    gfxu::wedge(g, mx - 14 * k, my + 31 * k, mx + 14 * k, my + 31 * k, 3 * k, 3 * k, 0x3C4250);
+}
+
+static void notes_icon(G *g, const character::Stage &st, float clock)
+{
+    static lgfx::LGFX_Sprite still;
+    const int size = st.r * 2 + 3;
+    if (still.getBuffer() == nullptr || still.width() != size) {
+        still.deleteSprite();
+        still.setPsram(true);
+        still.setColorDepth(16);
+        if (still.createSprite(size, size) != nullptr) {
+            still.fillScreen(BG);
+            character::Stage at = st;
+            at.cx = at.cy = st.r + 1;
+            notes_icon_still(&still, at);
+        }
+    }
+    if (still.getBuffer() != nullptr) {
+        still.pushSprite(g, st.cx - st.r - 1, st.cy - st.r - 1);
+    } else {
+        notes_icon_still(g, st);
+    }
+    const float k = st.r / 150.0f, cx = st.cx, cy = st.cy;
+    const vec::Pen rows = vec::Pen::make(g, cx - 22 * k, cy + 2 * k, k).turn(-5).move(-3, -4);
     const int ticked = (int)fmodf(clock / 0.9f, 5.0f);  // 0..3 ticks, then a pause
     static const float LINE[3] = {66, 52, 60};
     for (int i = 0; i < 3; i++) {
@@ -1185,17 +1220,7 @@ static void notes_icon(G *g, const character::Stage &st, float clock)
         }
         rows.rect(-12, y - 5, LINE[i], 10, 5, on ? 0xE8DCC6 : 0xCDB48C);
     }
-    // The microphone, with sound coming out of it.
     const float mx = cx + 74 * k, my = cy + 18 * k;
-    gfxu::wedge(g, mx, my - 30 * k, mx, my - 2 * k, 15 * k, 15 * k, 0x3C4250);
-    gfxu::wedge(g, mx - 6 * k, my - 34 * k, mx - 6 * k, my - 16 * k, 3 * k, 3 * k, 0x6A7386);
-    for (int i = 0; i < 9; i++) {  // the holder, a half ring under the head
-        const float a0 = (i / 9.0f) * 3.14159265f, a1 = ((i + 1) / 9.0f) * 3.14159265f;
-        gfxu::line(g, mx + cosf(a0) * 23 * k, my - 10 * k + sinf(a0) * 23 * k, mx + cosf(a1) * 23 * k,
-                   my - 10 * k + sinf(a1) * 23 * k, 4 * k, 0x3C4250);
-    }
-    gfxu::line(g, mx, my + 13 * k, mx, my + 30 * k, 4.5f * k, 0x3C4250);
-    gfxu::wedge(g, mx - 14 * k, my + 31 * k, mx + 14 * k, my + 31 * k, 3 * k, 3 * k, 0x3C4250);
     for (int w = 0; w < 3; w++) {  // waves going out to the right, fading as they go
         const float phase = fmodf(clock * 0.8f + w / 3.0f, 1.0f), r = (30 + 34 * phase) * k;
         const uint32_t col = mix(0x2FAF9C, 0xF1D7AC, phase);

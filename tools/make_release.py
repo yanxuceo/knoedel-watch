@@ -124,6 +124,9 @@ def main():
     (site / "index.html").write_text(page.replace("{{VERSION}}", version).replace("{{PACK}}", pack_name), encoding="utf-8")
     if (ROOT / "web" / "img").exists():
         shutil.copytree(ROOT / "web" / "img", site / "img")
+    # The settings of the voice notes, over Web Serial (main/usb_commands.h).
+    (site / "settings").mkdir()
+    shutil.copy(ROOT / "web" / "settings.html", site / "settings" / "index.html")
     # The cards of the pack, to browse before installing (built from the same library).
     n_decks = build_showcase.build(site / "decks", Path(a.library))
 

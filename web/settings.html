@@ -1,0 +1,578 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Knödel Watch – settings</title>
+<meta name="description" content="Set up the voice notes of Knödel Watch over USB: Wi-Fi, the OpenAI key, personal words, and your notes.">
+<style>
+  :root {
+    --bg: #f8efdf; --card: #fffaf2; --ink: #2b2230; --soft: #6b6170; --line: #e7d8bd;
+    --accent: #c8862b; --accent-ink: #ffffff; --ok: #2f7d4f; --err: #b8323a; --field: #ffffff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #17141a; --card: #221e26; --ink: #f2eee8; --soft: #b3aab5; --line: #3a3340; --accent: #e0a24a;
+            --accent-ink: #1b1508; --ok: #6cc28f; --err: #f07178; --field: #1b181e; }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 17px/1.55 system-ui, -apple-system, "Segoe UI", "PingFang SC", "Noto Sans SC", sans-serif;
+  }
+  main { max-width: 760px; margin: 0 auto; padding: 28px 16px 64px; }
+  header { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .brand { font-weight: 800; font-size: 15px; letter-spacing: .02em; color: var(--accent); }
+  .brand a { color: inherit; text-decoration: none; }
+  .lang button {
+    border: 1px solid var(--line); background: var(--card); color: var(--soft);
+    padding: 4px 12px; border-radius: 999px; font: inherit; font-size: 14px; cursor: pointer;
+  }
+  .lang button[aria-pressed="true"] { color: var(--ink); border-color: var(--accent); }
+  h1 { font-size: clamp(30px, 6vw, 44px); line-height: 1.15; margin: 28px 0 10px; }
+  .lead { color: var(--soft); margin: 0 0 22px; }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 20px;
+    padding: 20px 22px; margin: 0 0 16px;
+  }
+  .card h2 { font-size: 19px; margin: 0 0 4px; display: flex; align-items: center; gap: 10px; }
+  .card h2 .num {
+    width: 26px; height: 26px; border-radius: 50%; background: var(--accent); color: var(--accent-ink);
+    font-size: 14px; display: inline-grid; place-items: center; flex: none;
+  }
+  .card > p.hint { color: var(--soft); font-size: 15px; margin: 0 0 14px; }
+  body:not(.connected) .needs { opacity: .45; pointer-events: none; }
+  .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 10px 0 0; }
+  .button {
+    border: 0; border-radius: 999px; padding: 11px 22px; cursor: pointer;
+    background: var(--accent); color: var(--accent-ink); font: inherit; font-weight: 700; font-size: 16px;
+  }
+  .button.big { padding: 14px 28px; font-size: 18px; }
+  .button.quiet { background: transparent; color: var(--ink); border: 1px solid var(--line); font-weight: 600; }
+  .button.danger { background: transparent; color: var(--err); border: 1px solid var(--line); font-weight: 600; }
+  .button:hover { filter: brightness(1.06); }
+  .button:disabled { opacity: .5; cursor: progress; }
+  .button:focus-visible, input:focus-visible, textarea:focus-visible, .seg button:focus-visible, .chip button:focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--accent) 60%, transparent); outline-offset: 2px;
+  }
+  label { font-size: 14px; font-weight: 600; color: var(--soft); display: block; margin: 0 0 4px; }
+  input, textarea {
+    width: 100%; font: inherit; font-size: 16px; color: var(--ink); background: var(--field);
+    border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px;
+  }
+  textarea { min-height: 120px; resize: vertical; }
+  .field { flex: 1 1 220px; min-width: 0; }
+  .status { margin: 12px 0 0; font-size: 15px; min-height: 1.4em; }
+  .status.ok { color: var(--ok); }
+  .status.err { color: var(--err); }
+  .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin: 16px 0 0; }
+  .fact { border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; }
+  .fact small { display: block; color: var(--soft); font-size: 13px; }
+  .fact b { font-size: 17px; overflow-wrap: anywhere; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 0; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); border-radius: 999px;
+    padding: 5px 6px 5px 14px; font-size: 15px;
+  }
+  .chip button {
+    border: 0; background: transparent; color: var(--soft); cursor: pointer; font: inherit; font-size: 15px;
+    width: 30px; height: 30px; border-radius: 50%;
+  }
+  .chip button:hover { color: var(--err); background: color-mix(in srgb, var(--err) 10%, transparent); }
+  .found { list-style: none; padding: 0; margin: 10px 0 0; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+  .found li + li { border-top: 1px solid var(--line); }
+  .found button {
+    width: 100%; display: flex; justify-content: space-between; gap: 10px; align-items: center; padding: 10px 14px;
+    border: 0; background: transparent; color: var(--ink); font: inherit; font-size: 16px; cursor: pointer; text-align: left;
+  }
+  .found button:hover { background: color-mix(in srgb, var(--accent) 10%, transparent); }
+  .found .meta { color: var(--soft); font-size: 14px; white-space: nowrap; }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 3px; gap: 3px; }
+  .seg button {
+    border: 0; border-radius: 999px; padding: 8px 16px; font: inherit; font-size: 15px; cursor: pointer;
+    background: transparent; color: var(--soft);
+  }
+  .seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); font-weight: 700; }
+  .notes h3 { font-size: 15px; color: var(--soft); margin: 18px 0 6px; font-weight: 700; }
+  .notes ul { list-style: none; padding: 0; margin: 0; }
+  .notes li { padding: 8px 0; border-top: 1px solid var(--line); display: flex; gap: 10px; align-items: baseline; }
+  .notes li:first-child { border-top: 0; }
+  .notes .mark { flex: none; width: 1.2em; color: var(--accent); }
+  .notes .done { color: var(--soft); text-decoration: line-through; }
+  .notes .when { margin-left: auto; color: var(--soft); font-size: 14px; white-space: nowrap; }
+  .note { border-left: 3px solid var(--accent); padding: 2px 0 2px 14px; color: var(--soft); font-size: 15px; margin: 14px 0 0; }
+  code { background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; font-size: 14px; }
+  a { color: var(--accent); }
+  footer { margin-top: 36px; color: var(--soft); font-size: 13px; }
+  [data-lang="zh"] .en, [data-lang="en"] .zh { display: none; }
+</style>
+</head>
+<body data-lang="en">
+<main>
+  <header>
+    <div class="brand"><a href="../">KNÖDEL WATCH</a> · <span class="en">SETTINGS</span><span class="zh">设置</span></div>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-set="en" aria-pressed="true">English</button>
+      <button type="button" data-set="zh" aria-pressed="false">中文</button>
+    </div>
+  </header>
+
+  <h1><span class="en">Watch settings</span><span class="zh">手表设置</span></h1>
+  <p class="lead">
+    <span class="en">Set up the voice notes over a USB cable: Wi-Fi, the OpenAI key, your own words, and look at your notes.
+      This page has no server: what you type goes from your computer straight to the watch, nowhere else.</span>
+    <span class="zh">用 USB 线设置手表的速记功能：Wi-Fi、OpenAI key、个人词表，还能查看和导出你的速记。
+      这个网页没有服务器：你输入的内容只会从你的电脑直接发到手表上，不会经过任何其他地方。</span>
+  </p>
+
+  <section class="card" aria-labelledby="h-connect">
+    <h2 id="h-connect"><span class="num">1</span><span class="en">Connect the watch</span><span class="zh">连接手表</span></h2>
+    <p class="hint">
+      <span class="en">Chrome or Edge on a computer, the watch on a USB data cable. It restarts once when it connects; that is normal.</span>
+      <span class="zh">需要电脑上的 Chrome 或 Edge 浏览器，并用能传数据的 USB 线连接手表。连接时手表会重启一次，这是正常的。</span>
+    </p>
+    <div class="row">
+      <button type="button" class="button big" id="connect"><span class="en">Connect</span><span class="zh">连接手表</span></button>
+    </div>
+    <p class="status" id="connect-status" role="status"></p>
+    <div class="facts needs" id="facts"></div>
+  </section>
+
+  <section class="card needs" aria-labelledby="h-wifi">
+    <h2 id="h-wifi"><span class="num">2</span>Wi-Fi</h2>
+    <p class="hint">
+      <span class="en">The watch goes online with these to send your notes. Up to five; the newest is tried first. 2.4 GHz networks only.</span>
+      <span class="zh">手表用这些网络上传速记，最多保存 5 个，最新加的优先尝试。只支持 2.4 GHz 网络。</span>
+    </p>
+    <label><span class="en">Saved on the watch</span><span class="zh">手表上已保存</span></label>
+    <div class="chips" id="networks"></div>
+    <div class="row">
+      <button type="button" class="button quiet" id="scan"><span class="en">Look for networks</span><span class="zh">扫描附近网络</span></button>
+      <button type="button" class="button quiet" id="net-test"><span class="en">Try going online</span><span class="zh">测试连接</span></button>
+    </div>
+    <ul class="found" id="found" hidden></ul>
+    <div class="row">
+      <div class="field">
+        <label for="ssid"><span class="en">Network name</span><span class="zh">网络名称</span></label>
+        <input id="ssid" autocomplete="off" spellcheck="false">
+      </div>
+      <div class="field">
+        <label for="password"><span class="en">Password</span><span class="zh">密码</span></label>
+        <input id="password" type="password" autocomplete="off">
+      </div>
+    </div>
+    <div class="row">
+      <button type="button" class="button" id="wifi-add"><span class="en">Save network</span><span class="zh">保存网络</span></button>
+    </div>
+    <p class="status" id="wifi-status" role="status"></p>
+  </section>
+
+  <section class="card needs" aria-labelledby="h-key">
+    <h2 id="h-key"><span class="num">3</span><span class="en">OpenAI key</span><span class="zh">OpenAI key</span></h2>
+    <p class="hint">
+      <span class="en">Your notes are transcribed and tidied with your own key. Best a key of its own project, with only the
+        permissions it needs and a monthly spend limit. The watch never gives the key back: it shows only the last four characters.</span>
+      <span class="zh">速记用你自己的 key 转录和整理。建议为手表单独建一个项目 key，只开放需要的权限，并设置每月消费上限。
+        手表不会把 key 传回来，只显示最后 4 位。</span>
+    </p>
+    <div class="facts"><div class="fact"><small><span class="en">On the watch</span><span class="zh">手表上的 key</span></small><b id="key-hint">–</b></div></div>
+    <div class="row">
+      <div class="field">
+        <label for="key"><span class="en">New key</span><span class="zh">新的 key</span></label>
+        <input id="key" type="password" autocomplete="off" spellcheck="false" placeholder="sk-…">
+      </div>
+    </div>
+    <div class="row">
+      <button type="button" class="button" id="key-save"><span class="en">Save key</span><span class="zh">保存 key</span></button>
+      <button type="button" class="button quiet" id="key-test"><span class="en">Try the key</span><span class="zh">测试 key</span></button>
+    </div>
+    <p class="status" id="key-status" role="status"></p>
+  </section>
+
+  <section class="card needs" aria-labelledby="h-notes-set">
+    <h2 id="h-notes-set"><span class="num">4</span><span class="en">Notes</span><span class="zh">速记设置</span></h2>
+    <label><span class="en">Sending</span><span class="zh">上传方式</span></label>
+    <div class="seg" role="group" aria-label="Sending">
+      <button type="button" data-mode="saving" aria-pressed="false"><span class="en">Save battery</span><span class="zh">省电</span></button>
+      <button type="button" data-mode="now" aria-pressed="false"><span class="en">At once</span><span class="zh">立即</span></button>
+    </div>
+    <p class="hint" style="margin-top:8px">
+      <span class="en">Save battery: on battery, memos go together once three are waiting or the oldest is 15 minutes old;
+        at once on USB power or with the notes page open.</span>
+      <span class="zh">省电：用电池时攒够 3 条，或最早的一条等了 15 分钟才一起上传；插着 USB 或打开速记页时马上上传。</span>
+    </p>
+    <div class="row">
+      <div class="field">
+        <label for="words"><span class="en">Your words, one a line: places, names, words the watch should spell right</span>
+          <span class="zh">个人词表，每行一个：地名、人名，希望手表能认对的词</span></label>
+        <textarea id="words" spellcheck="false" placeholder="Stuttgart&#10;Vignette&#10;Quartalsbericht"></textarea>
+      </div>
+    </div>
+    <div class="row">
+      <button type="button" class="button" id="words-save"><span class="en">Save words</span><span class="zh">保存词表</span></button>
+      <span class="hint" id="words-size" style="color:var(--soft);font-size:14px"></span>
+    </div>
+    <p class="status" id="notes-set-status" role="status"></p>
+  </section>
+
+  <section class="card needs" aria-labelledby="h-mine">
+    <h2 id="h-mine"><span class="num">5</span><span class="en">My notes</span><span class="zh">我的速记</span></h2>
+    <div class="row">
+      <button type="button" class="button quiet" id="notes-read"><span class="en">Read the notes</span><span class="zh">读取速记</span></button>
+      <button type="button" class="button quiet" id="notes-export" disabled><span class="en">Save as Markdown</span><span class="zh">导出 Markdown</span></button>
+      <button type="button" class="button danger" id="notes-clear"><span class="en">Delete all notes</span><span class="zh">清空速记</span></button>
+    </div>
+    <p class="status" id="mine-status" role="status"></p>
+    <div class="notes" id="notes"></div>
+  </section>
+
+  <footer>
+    <span class="en">The page talks to the watch with Web Serial; the commands are in <code>main/usb_commands.h</code>.</span>
+    <span class="zh">网页通过 Web Serial 和手表通信，命令见 <code>main/usb_commands.h</code>。</span>
+    <a href="../"><span class="en">← Install</span><span class="zh">← 安装页</span></a>
+  </footer>
+</main>
+
+<script>
+  // ---- language -------------------------------------------------------------------
+  const langButtons = document.querySelectorAll(".lang button");
+  function setLang(lang) {
+    document.body.dataset.lang = lang;
+    document.documentElement.lang = lang === "zh" ? "zh-Hans" : "en";
+    langButtons.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.set === lang)));
+    try { localStorage.setItem("lang", lang); } catch (e) {}
+    if (lastNotes) showNotes(lastNotes);
+  }
+  const L = (en, zh) => document.body.dataset.lang === "zh" ? zh : en;
+  let lastNotes = null;
+
+  // ---- the watch over USB (main/usb_commands.h) ------------------------------------------
+  const $ = id => document.getElementById(id);
+  let port = null, lastData = 0, lines = [], waiter = null, queue = Promise.resolve();
+
+  function status(id, text, kind) {
+    const el = $(id);
+    el.textContent = text;
+    el.className = "status" + (kind ? " " + kind : "");
+  }
+
+  async function readLoop() {
+    const reader = port.readable.pipeThrough(new TextDecoderStream()).getReader();
+    let buf = "";
+    try {
+      for (;;) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        lastData = Date.now();
+        buf += value;
+        const parts = buf.split(/\r?\n/);
+        buf = parts.pop();
+        for (const line of parts) onLine(line);
+      }
+    } catch (e) { /* unplugged */ }
+    disconnected();
+  }
+
+  function onLine(line) {
+    if (!waiter) return;  // the watch's log
+    if (line.startsWith("NOTE ")) { waiter.notes.push(line.slice(5)); return; }
+    if (line.startsWith("OK") || line.startsWith("ERR")) {
+      const w = waiter; waiter = null;
+      w.resolve({ ok: line.startsWith("OK"), text: line.replace(/^(OK|ERR) ?/, ""), notes: w.notes });
+    }
+  }
+
+  // One command at a time; its answer is the next line starting with OK or ERR.
+  function send(command, seconds = 10) {
+    const run = async () => {
+      if (!port) throw new Error("not connected");
+      const answer = new Promise((resolve) => { waiter = { resolve, notes: [] }; });
+      const writer = port.writable.getWriter();
+      await writer.write(new TextEncoder().encode(command + "\n"));
+      writer.releaseLock();
+      const timeout = new Promise(r => setTimeout(() => r({ ok: false, text: L("no answer from the watch", "手表没有回应"), notes: [] }), seconds * 1000));
+      const result = await Promise.race([answer, timeout]);
+      waiter = null;
+      return result;
+    };
+    const p = queue.then(run, run);
+    queue = p.catch(() => {});
+    return p;
+  }
+
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+  async function connect() {
+    if (!("serial" in navigator)) {
+      status("connect-status", L("This browser cannot talk to USB devices: please open the page in Chrome or Edge on a computer.",
+                                 "这个浏览器不支持连接 USB 设备，请在电脑上用 Chrome 或 Edge 打开这个页面。"), "err");
+      return;
+    }
+    try {
+      port = await navigator.serial.requestPort({ filters: [{ usbVendorId: 0x303a }] });
+      await port.open({ baudRate: 115200 });
+      try { await port.setSignals({ dataTerminalReady: false, requestToSend: false }); } catch (e) {}
+    } catch (e) {
+      port = null;
+      if (e.name !== "NotFoundError") status("connect-status", L("Could not open the watch: ", "无法打开手表：") + e.message, "err");
+      return;
+    }
+    $("connect").disabled = true;
+    status("connect-status", L("Connecting… the watch starts up", "正在连接…手表正在启动"));
+    lastData = Date.now();
+    readLoop();
+    // The watch may restart on connecting: wait until its start-up log is quiet.
+    const t0 = Date.now();
+    while (Date.now() - lastData < 1500 && Date.now() - t0 < 9000) await sleep(200);
+    const ok = await refresh();
+    $("connect").disabled = false;
+    if (ok) {
+      document.body.classList.add("connected");
+      $("connect").querySelector(".en").textContent = "Read again";
+      $("connect").querySelector(".zh").textContent = "重新读取";
+      status("connect-status", L("Connected.", "已连接。"), "ok");
+    } else {
+      status("connect-status", L("The watch does not answer: is it the firmware with notes (v0.3 or later)?",
+                                 "手表没有回应：手表上的固件是带速记功能的版本吗（v0.3 或更新）？"), "err");
+    }
+  }
+
+  function disconnected() {
+    port = null;
+    document.body.classList.remove("connected");
+    status("connect-status", L("Disconnected.", "已断开。"));
+  }
+
+  async function refresh() {
+    const info = await send("info");
+    if (!info.ok) return false;
+    const i = JSON.parse(info.text);
+    const facts = [
+      [L("Firmware", "固件"), "v" + i.version],
+      [L("Battery", "电量"), i.battery < 0 ? "–" : i.battery + " %" + (i.usb ? " ⚡" : "")],
+      [L("Notes", "速记"), i.notes + (i.waiting ? L(` · ${i.waiting} waiting`, ` · ${i.waiting} 条待转录`) : "")],
+      [L("Storage", "存储"), `${i.used_kb} / ${i.total_kb} KB`],
+    ];
+    $("facts").innerHTML = "";
+    for (const [k, v] of facts) {
+      const d = document.createElement("div");
+      d.className = "fact";
+      d.innerHTML = "<small></small><b></b>";
+      d.querySelector("small").textContent = k;
+      d.querySelector("b").textContent = v;
+      $("facts").append(d);
+    }
+    $("key-hint").textContent = i.key || L("none yet", "还没有");
+    document.querySelectorAll(".seg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.mode === i.mode)));
+    await listNetworks();
+    const words = await send("words get");
+    if (words.ok) { $("words").value = JSON.parse(words.text); wordsSize(); }
+    return true;
+  }
+
+  // ---- Wi-Fi -------------------------------------------------------------------------
+  async function listNetworks() {
+    const r = await send("wifi list");
+    $("networks").innerHTML = "";
+    if (!r.ok) return;
+    const names = JSON.parse(r.text);
+    if (!names.length) {
+      const s = document.createElement("span");
+      s.style.color = "var(--soft)";
+      s.textContent = L("none yet", "还没有");
+      $("networks").append(s);
+    }
+    for (const name of names) {
+      const chip = document.createElement("span");
+      chip.className = "chip";
+      chip.append(name);
+      const x = document.createElement("button");
+      x.type = "button";
+      x.textContent = "✕";
+      x.setAttribute("aria-label", L("Forget ", "删除 ") + name);
+      x.onclick = async () => {
+        const r = await send("wifi remove " + name);
+        status("wifi-status", r.ok ? L(`Forgot “${name}”.`, `已删除「${name}」。`) : r.text, r.ok ? "ok" : "err");
+        listNetworks();
+      };
+      chip.append(x);
+      $("networks").append(chip);
+    }
+  }
+
+  async function scan() {
+    status("wifi-status", L("Looking for networks…", "正在扫描…"));
+    $("scan").disabled = true;
+    const r = await send("wifi scan", 20);
+    $("scan").disabled = false;
+    if (!r.ok) { status("wifi-status", r.text, "err"); return; }
+    const found = JSON.parse(r.text);
+    const list = $("found");
+    list.innerHTML = "";
+    for (const f of found.slice(0, 12)) {
+      const li = document.createElement("li");
+      const b = document.createElement("button");
+      b.type = "button";
+      const bars = f.rssi > -55 ? "▂▄▆█" : f.rssi > -67 ? "▂▄▆" : f.rssi > -78 ? "▂▄" : "▂";
+      b.innerHTML = '<span class="name"></span><span class="meta"></span>';
+      b.querySelector(".name").textContent = f.ssid;
+      b.querySelector(".meta").textContent = (f.secure ? "🔒 " : "") + bars;
+      b.onclick = () => { $("ssid").value = f.ssid; $("password").focus(); };
+      li.append(b);
+      list.append(li);
+    }
+    list.hidden = found.length === 0;
+    status("wifi-status", found.length ? L("Pick one, then type its password.", "选择一个网络，再输入密码。")
+                                       : L("No networks found.", "没有找到网络。"), found.length ? "" : "err");
+  }
+
+  async function addNetwork() {
+    const ssid = $("ssid").value.trim(), password = $("password").value;
+    if (!ssid) { status("wifi-status", L("Type or pick a network name.", "请输入或选择网络名称。"), "err"); return; }
+    if (/[\t\n]/.test(ssid + password)) { status("wifi-status", L("Tabs and line breaks cannot be sent.", "不能包含制表符或换行。"), "err"); return; }
+    const r = await send(`wifi add ${ssid}\t${password}`);
+    status("wifi-status", r.ok ? L(`Saved “${ssid}”.`, `已保存「${ssid}」。`) : r.text, r.ok ? "ok" : "err");
+    if (r.ok) { $("password").value = ""; listNetworks(); }
+  }
+
+  async function netTest() {
+    status("wifi-status", L("Going online… (up to half a minute)", "正在连网…（最多半分钟）"));
+    const r = await send("net test", 70);
+    status("wifi-status", r.ok ? L("Online: ", "连接成功：") + r.text.replace(/^online over /, "") : r.text, r.ok ? "ok" : "err");
+  }
+
+  // ---- the key ---------------------------------------------------------------------------
+  async function saveKey() {
+    const key = $("key").value.trim();
+    if (!/^sk-[A-Za-z0-9_\-]{17,}$/.test(key)) { status("key-status", L("That does not look like an OpenAI key (sk-…).", "这看起来不像 OpenAI 的 key（sk-…）。"), "err"); return; }
+    const r = await send("key set " + key);
+    $("key").value = "";
+    status("key-status", r.ok ? L("Key saved on the watch.", "key 已保存到手表。") : r.text, r.ok ? "ok" : "err");
+    refresh();
+  }
+
+  async function testKey() {
+    status("key-status", L("Trying the key… (the watch goes online)", "正在测试 key…（手表正在连网）"));
+    const r = await send("key test", 90);
+    status("key-status", r.ok ? L("The key works.", "key 可以正常使用。") : r.text, r.ok ? "ok" : "err");
+  }
+
+  // ---- notes settings --------------------------------------------------------------------------
+  const wordsBytes = () => new TextEncoder().encode($("words").value.trim()).length;
+  function wordsSize() { $("words-size").textContent = `${wordsBytes()} / 800`; }
+
+  async function saveWords() {
+    const text = $("words").value.split("\n").map(s => s.trim()).filter(Boolean).join("\n");
+    if (new TextEncoder().encode(text).length > 800) { status("notes-set-status", L("Too many words: at most 800 bytes.", "词太多了：最多 800 字节。"), "err"); return; }
+    const r = await send("words set " + JSON.stringify(text));
+    status("notes-set-status", r.ok ? L("Words saved.", "词表已保存。") : r.text, r.ok ? "ok" : "err");
+    $("words").value = text;
+    wordsSize();
+  }
+
+  async function setMode(mode) {
+    const r = await send("mode set " + mode);
+    if (r.ok) document.querySelectorAll(".seg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.mode === mode)));
+    status("notes-set-status", r.ok ? L("Saved.", "已保存。") : r.text, r.ok ? "ok" : "err");
+  }
+
+  // ---- my notes ---------------------------------------------------------------------------------
+  function when(id) {
+    const m = /^(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})/.exec(id);
+    return m ? `${m[1]}-${m[2]}-${m[3]} ${m[4]}:${m[5]}` : id;
+  }
+
+  function sorted(notes) {
+    const open = [], done = [], ideas = [];
+    for (const n of notes) {
+      const items = (n.note && n.note.items) || [];
+      if (n.note && n.note.kind === "todo" && items.length) {
+        for (const it of items) (it.done ? done : open).push({ text: it.text, due: it.due, on: it.done_on, id: n.id });
+      } else {
+        ideas.push({ text: (n.note && n.note.text) || n.transcript, id: n.id });
+      }
+    }
+    open.sort((a, b) => (a.due || "9999").localeCompare(b.due || "9999"));
+    done.sort((a, b) => (b.on || "").localeCompare(a.on || ""));
+    return { open, done, ideas };
+  }
+
+  function showNotes(notes) {
+    const { open, done, ideas } = sorted(notes);
+    const box = $("notes");
+    box.innerHTML = "";
+    const section = (title, rows, mark, cls, side) => {
+      const h = document.createElement("h3");
+      h.textContent = `${title} · ${rows.length}`;
+      box.append(h);
+      const ul = document.createElement("ul");
+      for (const r of rows) {
+        const li = document.createElement("li");
+        li.innerHTML = '<span class="mark"></span><span class="text"></span><span class="when"></span>';
+        li.querySelector(".mark").textContent = mark;
+        li.querySelector(".text").textContent = r.text;
+        if (cls) li.querySelector(".text").className = "text " + cls;
+        li.querySelector(".when").textContent = side(r) || "";
+        ul.append(li);
+      }
+      box.append(ul);
+    };
+    section(L("To do", "待办"), open, "○", "", r => r.due || "");
+    section(L("Done", "已完成"), done, "✓", "done", r => r.on || "");
+    section(L("Ideas", "想法"), ideas, "•", "", r => when(r.id));
+  }
+
+  async function readNotes() {
+    status("mine-status", L("Reading…", "正在读取…"));
+    const r = await send("notes list", 20);
+    if (!r.ok) { status("mine-status", r.text, "err"); return; }
+    lastNotes = r.notes.map(n => { try { return JSON.parse(n); } catch (e) { return null; } }).filter(Boolean);
+    showNotes(lastNotes);
+    $("notes-export").disabled = lastNotes.length === 0;
+    status("mine-status", L(`${lastNotes.length} notes.`, `共 ${lastNotes.length} 条速记。`), "ok");
+  }
+
+  function exportNotes() {
+    const { open, done, ideas } = sorted(lastNotes || []);
+    const today = new Date().toISOString().slice(0, 10);
+    const md = [`# ${L("Notes", "速记")} · ${today}`, "", `## ${L("To do", "待办")}`, "",
+      ...open.map(r => `- [ ] ${r.text}${r.due ? ` (${r.due})` : ""}`), "", `## ${L("Done", "已完成")}`, "",
+      ...done.map(r => `- [x] ${r.text}${r.on ? ` (${r.on})` : ""}`), "", `## ${L("Ideas", "想法")}`, "",
+      ...ideas.map(r => `- ${r.text} (${when(r.id)})`), ""].join("\n");
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([md], { type: "text/markdown" }));
+    a.download = `knoedel-notes-${today}.md`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  async function clearNotes() {
+    if (!confirm(L("Delete all notes on the watch? This cannot be undone.", "删除手表上的所有速记？此操作无法撤销。"))) return;
+    const r = await send("notes clear");
+    status("mine-status", r.ok ? L("All notes deleted.", "已清空所有速记。") : r.text, r.ok ? "ok" : "err");
+    lastNotes = [];
+    $("notes").innerHTML = "";
+    $("notes-export").disabled = true;
+    refresh();
+  }
+
+  // ---- wiring ------------------------------------------------------------------------------------
+  let saved = null;
+  try { saved = localStorage.getItem("lang"); } catch (e) {}
+  setLang(saved || ((navigator.language || "").toLowerCase().startsWith("zh") ? "zh" : "en"));
+  langButtons.forEach(b => b.addEventListener("click", () => setLang(b.dataset.set)));
+  $("connect").onclick = () => port ? refresh() : connect();
+  $("scan").onclick = scan;
+  $("net-test").onclick = netTest;
+  $("wifi-add").onclick = addNetwork;
+  $("key-save").onclick = saveKey;
+  $("key-test").onclick = testKey;
+  $("words-save").onclick = saveWords;
+  $("words").oninput = wordsSize;
+  document.querySelectorAll(".seg button").forEach(b => b.onclick = () => setMode(b.dataset.mode));
+  $("notes-read").onclick = readNotes;
+  $("notes-export").onclick = exportNotes;
+  $("notes-clear").onclick = clearNotes;
+  if ("serial" in navigator) navigator.serial.addEventListener("disconnect", e => { if (e.target === port) disconnected(); });
+</script>
+</body>
+</html>

@@ -117,6 +117,40 @@ void disconnect()
 
 bool connected() { return up; }
 
+std::vector<Found> scan()
+{
+    std::vector<Found> found;
+    if (!init()) {
+        return found;
+    }
+    const bool was_started = started;
+    if (!started && esp_wifi_start() == ESP_OK) {
+        started = true;
+    }
+    wifi_scan_config_t cfg = {};
+    if (esp_wifi_scan_start(&cfg, true) == ESP_OK) {
+        uint16_t n = 0;
+        esp_wifi_scan_get_ap_num(&n);
+        std::vector<wifi_ap_record_t> aps(n);
+        if (n > 0 && esp_wifi_scan_get_ap_records(&n, aps.data()) == ESP_OK) {
+            for (uint16_t i = 0; i < n; i++) {
+                const std::string ssid((const char *)aps[i].ssid);
+                bool seen = ssid.empty();
+                for (const Found &f : found) {
+                    seen |= f.ssid == ssid;
+                }
+                if (!seen) {  // the records come strongest first
+                    found.push_back({ssid, aps[i].rssi, aps[i].authmode != WIFI_AUTH_OPEN});
+                }
+            }
+        }
+    }
+    if (!was_started && !up) {
+        disconnect();
+    }
+    return found;
+}
+
 const char *network() { return reached; }
 
 bool sync_time(uint32_t timeout_ms)

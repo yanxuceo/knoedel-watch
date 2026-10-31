@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <string>
+
 namespace credentials {
 
 static constexpr int MAX_NETWORKS = 5;
@@ -21,6 +23,7 @@ int networks(Network *out, int max);
 // places are taken, the oldest one goes.
 bool add_network(const char *ssid, const char *password);
 void clear_networks();
+bool remove_network(const char *ssid);
 
 bool has_key();
 // The whole key, for the requests only.
@@ -28,5 +31,11 @@ bool openai_key(char *out, size_t size);
 // "sk-…" plus the last four characters, or "none".
 void key_hint(char *out, size_t size);
 bool set_openai_key(const char *key);
+
+// Words the transcription should know (places, names: "Stuttgart"), one per
+// line, at most WORDS_MAX bytes. Not secret: they go into the request's prompt.
+static constexpr size_t WORDS_MAX = 800;
+std::string words();
+bool set_words(const std::string &lines);
 
 }  // namespace credentials

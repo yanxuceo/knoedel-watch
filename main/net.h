@@ -3,6 +3,9 @@
 
 #include <stdint.h>
 
+#include <string>
+#include <vector>
+
 namespace net {
 
 // Tries the saved networks (credentials.h) one after the other, until one
@@ -16,6 +19,14 @@ bool connected();
 
 // The name of the network connect() reached.
 const char *network();
+
+struct Found {
+    std::string ssid;
+    int rssi;     // dBm: -50 strong, -80 weak
+    bool secure;
+};
+// The networks around, strongest first, each name once (Wi-Fi on for a moment).
+std::vector<Found> scan();
 
 // Sets the watch's clock from the internet, in German time (needs connect()).
 bool sync_time(uint32_t timeout_ms = 6000);
