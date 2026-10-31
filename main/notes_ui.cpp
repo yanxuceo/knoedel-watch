@@ -296,11 +296,13 @@ static void status_line(G *g, const Status &s)
     if (label == nullptr) {
         return;
     }
+    // The icon spans y-7..y+8 around the y it is given: its middle on the text's.
+    static constexpr int Y = 46;
     const int w = width(g, loc_s(), label) + (icon ? 28 : 0);
     if (icon) {
-        wifi(g, CX - w / 2 + 9, 44, col, off);
+        wifi(g, CX - w / 2 + 9, Y, col, off);
     }
-    text(g, loc_s(), label, CX - w / 2 + (icon ? 28 : 0), 52, middle_left, col);
+    text(g, loc_s(), label, CX - w / 2 + (icon ? 28 : 0), Y, middle_left, col);
 }
 
 static void pager(G *g, int index, int count)
