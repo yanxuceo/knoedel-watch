@@ -1,7 +1,7 @@
 set(srcs "main.cpp" "card_ui.cpp" "character.cpp" "knoedel.cpp" "knoedel_bubbles.cpp" "katze.cpp" "dinge.cpp" "scenery.cpp"
          "deck.cpp" "content.cpp" "progress.cpp" "motion.cpp" "audio_player.cpp" "third_party/minimp3_impl.c"
          "credentials.cpp" "usb_commands.cpp" "net.cpp" "openai.cpp" "memos.cpp" "notes_sync.cpp" "notes_flow.cpp"
-         "notes_ui.cpp" "notes_page.cpp")
+         "notes_ui.cpp" "notes_page.cpp" "sentences.cpp")
 
 # The board's side of main/board/board.h, chosen in Kconfig ("Target board").
 if(CONFIG_KNOEDEL_BOARD_M5_STOPWATCH)

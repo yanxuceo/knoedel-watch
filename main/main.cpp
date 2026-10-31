@@ -47,6 +47,7 @@
 #include "notes_page.h"
 #include "notes_sync.h"
 #include "notes_ui.h"
+#include "sentences.h"
 #include "usb_commands.h"
 #if CONFIG_KNOEDEL_MIC_TEST
 #include "mic_test.h"
@@ -73,8 +74,8 @@ static constexpr uint32_t SAVE_AFTER_MS = 2000;
 static constexpr uint32_t FRAME_MS = 33;
 static constexpr int FLIP_STEPS = 5;
 
-enum Screen : uint8_t { HOME, DECKS, CARDS, SETTINGS, PRACTICE, CLOCK, TIMER, NOTES };
-enum HomeItem { ITEM_CLOCK, ITEM_LEARN, ITEM_PRACTICE, ITEM_NOTES, ITEM_TIMER, ITEM_SETTINGS, HOME_ITEMS };
+enum Screen : uint8_t { HOME, DECKS, CARDS, SETTINGS, PRACTICE, CLOCK, TIMER, NOTES, SENTENCES };
+enum HomeItem { ITEM_CLOCK, ITEM_LEARN, ITEM_PRACTICE, ITEM_SENTENCES, ITEM_NOTES, ITEM_TIMER, ITEM_SETTINGS, HOME_ITEMS };
 enum Setting { SET_LANGUAGE, SET_TIME, SET_VOLUME, SET_BRIGHTNESS, SET_NOTES, SET_POWER_OFF, SETTING_COUNT };
 
 // Everything the watch remembers across power cycles.
@@ -359,8 +360,8 @@ static void render_stage()
     uint32_t now = millis();
     float t = fmodf((now - face_shown_ms) / 1000.0f, character::LOOP_SECONDS), clock = now / 1000.0f;
     if (st.screen == HOME) {
-        static const ui::MenuIcon ICONS[HOME_ITEMS] = {ui::ICON_CLOCK, ui::ICON_KNOEDEL, ui::ICON_BREZEL, ui::ICON_NOTES,
-                                                       ui::ICON_TIMER, ui::ICON_GEAR};
+        static const ui::MenuIcon ICONS[HOME_ITEMS] = {ui::ICON_CLOCK, ui::ICON_KNOEDEL, ui::ICON_BREZEL, ui::ICON_SENTENCES,
+                                                       ui::ICON_NOTES, ui::ICON_TIMER, ui::ICON_GEAR};
         ui::draw_menu_stage(&fb, ICONS[st.home_item], t, clock);
     } else if (st.screen == CLOCK) {
         std::string date;
@@ -436,12 +437,32 @@ static void render_setting()
     ui::draw_setting(&fb, st.setting, SETTING_COUNT, name, st.setting == SET_POWER_OFF ? nullptr : value.c_str(), hint);
 }
 
+// The sentence book: the meaning in the learner's language (or the other one
+// when only that was given), the German, the pattern.
+static int sentence_pos = 0;
+
+static void render_sentence()
+{
+    const auto list = sentences::all();
+    if (list.empty()) {
+        notes_ui::draw_no_sentences(&fb);
+        return;
+    }
+    sentence_pos = sentence_pos < (int)list.size() ? sentence_pos : 0;
+    const sentences::Sentence &s = list[sentence_pos];
+    const bool zh = strncmp(deck_locale(), "zh", 2) == 0;
+    const std::string &meaning = zh ? (s.zh.empty() ? s.en : s.zh) : (s.en.empty() ? s.zh : s.en);
+    notes_ui::draw_sentence(&fb, {meaning.c_str(), s.de.c_str(), s.pattern.c_str(), s.topic.c_str()}, face, sentence_pos,
+                            (int)list.size());
+}
+
 static void render()
 {
     const UiText &tx = ui_text(deck_locale());
     switch (st.screen) {
     case HOME: {
-        const char *const TITLES[HOME_ITEMS] = {tx.clock, tx.learn, tx.practice, tx.notes, tx.timer, tx.settings};
+        const char *const TITLES[HOME_ITEMS] = {tx.clock, tx.learn, tx.practice, tx.sentences, tx.notes, tx.timer,
+                                                tx.settings};
         char sub[40] = "";
         const int done = st.home_item == ITEM_NOTES ? notes_page::done_today() : 0;
         if (done > 0) {  // what was done today, under Notes
@@ -475,6 +496,9 @@ static void render()
         break;
     case NOTES:
         notes_page::draw(&fb, millis() / 1000.0f);
+        break;
+    case SENTENCES:
+        render_sentence();
         break;
     case PRACTICE:
         if (pr.phase == ASK) {
@@ -548,7 +572,7 @@ static void next_face()
     for (int i = 1; i <= FLIP_STEPS; i++) {
         push_squashed(cosf(i * 1.5708f / (FLIP_STEPS + 0.6f)));
     }
-    face = (face + 1) % ui::face_count(st.deck, st.card);
+    face = (face + 1) % (st.screen == SENTENCES ? 3 : ui::face_count(st.deck, st.card));
     face_shown_ms = millis();
     render();
     speak();
@@ -843,6 +867,11 @@ static void step(int dir)
     case NOTES:
         notes_page::step(dir);
         break;
+    case SENTENCES: {
+        const int n = (int)sentences::all().size();
+        sentence_pos = n ? wrap(sentence_pos + dir, n) : 0;
+        break;
+    }
     default:
         break;
     }
@@ -912,6 +941,11 @@ static void tap()
             show();
             break;
         }
+        if (st.home_item == ITEM_SENTENCES) {
+            st.screen = SENTENCES;
+            show();
+            break;
+        }
         st.screen = st.home_item == ITEM_CLOCK ? CLOCK : st.home_item == ITEM_LEARN ? DECKS : st.home_item == ITEM_TIMER ? TIMER : SETTINGS;
         if (st.screen == CLOCK) {
             pick_word(false);
@@ -940,6 +974,11 @@ static void tap()
         break;
     case PRACTICE:
         practice_input(0);
+        break;
+    case SENTENCES:
+        if (!sentences::all().empty()) {
+            next_face();
+        }
         break;
     case NOTES: {
         int x, y;

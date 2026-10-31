@@ -127,6 +127,9 @@ def main():
     # The settings of the voice notes, over Web Serial (main/usb_commands.h).
     (site / "settings").mkdir()
     shutil.copy(ROOT / "web" / "settings.html", site / "settings" / "index.html")
+    # The sentence book: the learner's own sentences, added over Web Serial too.
+    (site / "sentences").mkdir()
+    shutil.copy(ROOT / "web" / "sentences.html", site / "sentences" / "index.html")
     # The cards of the pack, to browse before installing (built from the same library).
     n_decks = build_showcase.build(site / "decks", Path(a.library))
 

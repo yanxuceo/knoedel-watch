@@ -730,6 +730,60 @@ void draw_message(G *g, Message m, float t)
     text(g, loc_s(), sub, CX, CY + 70, middle_center, m == KEPT_NO_KEY ? WARN : mix(BLACK, MUTED, gfxu::clampf(t * 4)));
 }
 
+// ---- the sentence book -------------------------------------------------------------------
+
+// Lines centred as one block around the screen's middle.
+static void centred(G *g, const lgfx::IFont *f, const std::vector<std::string> &lines, int line_h, int mid, uint32_t col)
+{
+    const int top = mid - (int)(lines.size() - 1) * line_h / 2;
+    for (size_t i = 0; i < lines.size(); i++) {
+        text(g, f, lines[i], CX, top + (int)i * line_h, middle_center, col);
+    }
+}
+
+void draw_sentence(G *g, const Sentence &s, int face, int index, int count)
+{
+    g->fillScreen(BLACK);
+    static constexpr int WIDTH = 340, MID = CY - 6;
+    const char *label = face == 0 ? tx->sentences : face == 1 ? tx->german : tx->pattern;
+    text(g, loc_s(), label, CX, 66, middle_center, face == 2 ? AMBER : DIM);
+    if (face == 0) {
+        centred(g, nf(), wrap(g, nf(), s.meaning, WIDTH, 6), 38, MID, INK);
+    } else if (face == 1) {
+        // German in the cards' typeface; a long sentence in the smaller one.
+        const lgfx::IFont *de = ui::font(ui::FontId::DE_M);
+        auto lines = wrap(g, de, s.german, WIDTH, 7);
+        if (lines.size() > 5) {
+            centred(g, nf(), wrap(g, nf(), s.german, WIDTH, 7), 34, MID, INK);
+        } else {
+            centred(g, de, lines, 40, MID, INK);
+        }
+    } else {
+        const auto pattern = wrap(g, nf(), s.pattern[0] ? s.pattern : "–", WIDTH, 4);
+        const auto topic = s.topic[0] ? wrap(g, nf(), s.topic, WIDTH - 40, 2) : std::vector<std::string>();
+        const int h = (int)pattern.size() * 36 + (topic.empty() ? 0 : 24 + (int)topic.size() * 32);
+        centred(g, nf(), pattern, 36, MID - h / 2 + (int)pattern.size() * 18, AMBER);
+        if (!topic.empty()) {
+            const int ty = MID - h / 2 + (int)pattern.size() * 36 + 24;
+            g->drawFastHLine(CX - 30, ty - 12, 60, LINE);
+            centred(g, nf(), topic, 32, ty + (int)(topic.size() - 1) * 16 + 16, DIM);
+        }
+    }
+    if (face < 2) {
+        text(g, loc_s(), face == 0 ? tx->tap_german : tx->tap_pattern, CX, 396, middle_center, FAINT);
+    }
+    if (count > 1) {
+        pager(g, index, count);
+    }
+}
+
+void draw_no_sentences(G *g)
+{
+    g->fillScreen(BLACK);
+    text(g, loc_m(), tx->no_sentences, CX, CY - 10, middle_center, INK);
+    text(g, loc_s(), tx->add_on_site, CX, CY + 30, middle_center, DIM);
+}
+
 // ---- over any screen -----------------------------------------------------------------------
 
 static constexpr int TOAST_Y = 360, TOAST_H = 46, TOAST_MAX_W = 340;

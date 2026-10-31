@@ -1234,9 +1234,81 @@ static void notes_icon(G *g, const character::Stage &st, float clock)
     twinkle(g, cx + 96 * k, cy - 62 * k, (4 + 6 * fabsf(sinf(clock * 1.3f + 2))) * k, 0xFFFFFF);
 }
 
+// The sentence book: an open book with German quotation marks on the left
+// page, lines being written on the right one. The book and its light are
+// drawn once into a sprite, like the notes' picture.
+static void sentences_still(G *g, const character::Stage &st)
+{
+    stage_disc(g, st, 0);
+    const float k = st.r / 150.0f, cx = st.cx, cy = st.cy;
+    disc_rgradient(g, cx, cy, st.r, 0xEEF6F3, 0xBFDCD3);
+    const vec::Pen p = vec::Pen::make(g, cx, cy + 10 * k, k);
+    // shadow, pages, spine
+    vec::Path shadow;
+    shadow.to(-96, -56).to(0, -44).to(96, -56).to(96, 62).to(0, 74).to(-96, 62);
+    p.move(0, 6).area(shadow, 0x9CC3B6);
+    vec::Path left, right;
+    left.to(-92, -60).quad(-46, -70, -2, -50).to(-2, 66).quad(-46, 50, -92, 58);
+    right.to(2, -50).quad(46, -70, 92, -60).to(92, 58).quad(46, 50, 2, 66);
+    p.area(left, 0xFFFDF8, 0xD8CBB4, 2.2f);
+    p.area(right, 0xFFFDF8, 0xD8CBB4, 2.2f);
+    p.line(0, -50, 0, 66, 2.4f, 0xC9B99C);
+    // „ “ on the left page, in the colour of the cards' accent
+    const uint32_t q = 0xE0A526;
+    p.ell(-62, 22, 7, 7, q);
+    p.wedge(-58, 24, -64, 38, 3.5f, 2, q);
+    p.ell(-42, 22, 7, 7, q);
+    p.wedge(-38, 24, -44, 38, 3.5f, 2, q);
+    p.ell(-36, -18, 7, 7, q);
+    p.wedge(-40, -20, -34, -34, 3.5f, 2, q);
+    p.ell(-16, -18, 7, 7, q);
+    p.wedge(-20, -20, -14, -34, 3.5f, 2, q);
+}
+
+static void sentences_icon(G *g, const character::Stage &st, float clock)
+{
+    static lgfx::LGFX_Sprite still;
+    const int size = st.r * 2 + 3;
+    if (still.getBuffer() == nullptr || still.width() != size) {
+        still.deleteSprite();
+        still.setPsram(true);
+        still.setColorDepth(16);
+        if (still.createSprite(size, size) != nullptr) {
+            still.fillScreen(BG);
+            character::Stage at = st;
+            at.cx = at.cy = st.r + 1;
+            sentences_still(&still, at);
+        }
+    }
+    if (still.getBuffer() != nullptr) {
+        still.pushSprite(g, st.cx - st.r - 1, st.cy - st.r - 1);
+    } else {
+        sentences_still(g, st);
+    }
+    const float k = st.r / 150.0f;
+    const vec::Pen p = vec::Pen::make(g, st.cx, st.cy + 10 * k, k);
+    // Four lines written one after the other on the right page, then a pause.
+    const float t = fmodf(clock / 3.2f, 1.0f) * 5.0f;
+    static const float LEN[4] = {62, 54, 66, 40};
+    for (int i = 0; i < 4; i++) {
+        const float u = gfxu::clampf(t - i);
+        if (u > 0) {
+            const float y = -30 + i * 20;
+            p.wedge(16, y, 16 + LEN[i] * u, y, 3, 3, i == 1 ? 0x2FAF9C : 0xB9AE98);
+        }
+    }
+    twinkle(g, st.cx - 96 * k, st.cy - 78 * k, (5 + 5 * fabsf(sinf(clock * 1.5f))) * k, 0xFFFFFF);
+    twinkle(g, st.cx + 92 * k, st.cy - 70 * k, (4 + 6 * fabsf(sinf(clock * 1.2f + 1))) * k, 0xFFFFFF);
+}
+
 void draw_menu_stage(G *g, MenuIcon icon, float t, float clock)
 {
     character::Stage st = stage_at(CX, MENU_CY, MENU_R, icon == ICON_GEAR ? 0xE3E7EEu : COVER_BG, COVER_COLOR);
+    if (icon == ICON_SENTENCES) {
+        sentences_icon(g, st, clock);
+        restore_ring(g);
+        return;
+    }
     if (icon == ICON_NOTES) {
         notes_icon(g, st, clock);
         restore_ring(g);

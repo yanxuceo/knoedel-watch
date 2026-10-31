@@ -33,11 +33,13 @@ struct UiText {
     // What was done: the page after the open tasks, its list, the main menu
     const char *week_done, *tasks_unit, *streak, *see_all, *done_list, *undo, *done_today;  // "%d"
     const char *week_initials[7];                 // Monday first
+    // The sentence book
+    const char *sentences, *german, *pattern, *tap_german, *tap_pattern, *no_sentences, *add_on_site;
 };
 
 inline const UiText &ui_text(const char *locale)
 {
-    static const UiText ZH = {"学德语", "练习", "设置", "语言", "中文", "音量", "亮度", "关机", "轻触更改", "轻触关机", "静音",
+    static const UiText ZH = {"单词学习", "单词复习", "设置", "语言", "中文", "音量", "亮度", "关机", "轻触更改", "轻触关机", "静音",
                               "做得好", "还没有卡片",
                               "时钟", "番茄钟", "时间", "按键调整 · 轻触下一项",
                               "专注", "休息", "轻触开始 · 或把手表扣过来", "轻触暂停", "轻触继续",
@@ -57,8 +59,9 @@ inline const UiText &ui_text(const char *locale)
                               "稍后一起转录，更省电",
                               "速记上传", "省电", "立即",
                               "本周完成", "件", "连续 %d 天都有完成", "查看全部", "已完成", "撤销完成", "今天完成 %d 件",
-                              {"一", "二", "三", "四", "五", "六", "日"}};
-    static const UiText EN = {"Learn German", "Practice", "Settings", "Language", "English", "Volume", "Brightness", "Power off",
+                              {"一", "二", "三", "四", "五", "六", "日"},
+                              "句子本", "德语", "句式", "轻触看德语", "轻触看句式", "句子本还是空的", "在设置网页上添加句子"};
+    static const UiText EN = {"Words", "Review", "Settings", "Language", "English", "Volume", "Brightness", "Power off",
                               "Tap to change", "Tap to switch off", "Muted",
                               "Well done", "No cards yet",
                               "Clock", "Focus timer", "Time", "Keys: adjust · Tap: next",
@@ -84,6 +87,8 @@ inline const UiText &ui_text(const char *locale)
                               "Notes upload", "Save battery", "At once",
                               "Done this week", "tasks", "%d days in a row", "See all", "Done", "Not done",
                               "%d done today",
-                              {"M", "T", "W", "T", "F", "S", "S"}};
+                              {"M", "T", "W", "T", "F", "S", "S"},
+                              "Sentences", "German", "Pattern", "Tap for the German", "Tap for the pattern",
+                              "No sentences yet", "Add them on the settings site"};
     return strncmp(locale, "zh", 2) == 0 ? ZH : EN;
 }

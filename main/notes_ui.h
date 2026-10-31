@@ -100,6 +100,17 @@ void draw_recording(lgfx::LovyanGFX *g, float seconds, float max_seconds, float 
 enum Message { KEPT_ONLINE, KEPT_LATER, KEPT_OFFLINE, KEPT_NO_KEY, TOO_SHORT, CANCELLED };
 void draw_message(lgfx::LovyanGFX *g, Message m, float t);
 
+// ---- the sentence book (sentences.h) ------------------------------------------------------
+
+// One sentence, face 0 (the meaning), 1 (the German) or 2 (the pattern and
+// topic); `index` of `count`.
+struct Sentence {
+    const char *meaning, *german, *pattern, *topic;
+};
+void draw_sentence(lgfx::LovyanGFX *g, const Sentence &s, int face, int index, int count);
+// The book without sentences: where to add them.
+void draw_no_sentences(lgfx::LovyanGFX *g);
+
 // ---- over any screen ------------------------------------------------------------------
 
 // "已记下：..." near the bottom.

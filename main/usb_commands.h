@@ -20,6 +20,10 @@
 //   notes list                       one "NOTE <json>" line per note, newest first
 //   notes sync                       send the memos waiting
 //   notes clear                      delete all notes (not the memos waiting)
+//   sent list                        one "SENT <json>" line per sentence, then OK and the count
+//   sent add <json> | sent update <json> | sent remove <id> | sent clear
+//                                    the sentence book (sentences.h): {"id", "zh", "en", "de",
+//                                    "pattern", "topic"}; add answers OK and the id
 
 namespace usb_commands {
 

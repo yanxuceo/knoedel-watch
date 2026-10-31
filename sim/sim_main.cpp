@@ -259,6 +259,26 @@ int main(int argc, char **argv)
         notes_ui::draw_list(&fb, lp, none, 0);
         notes_ui::draw_cheer(&fb, 0.8f, 4.0f);
         shot("cheer");
+        const notes_ui::Sentence sent = {zh ? "我完全可以想象以后在德国长期生活。" : "I can well imagine living in Germany for good one day.",
+                                         "Ich kann mir gut vorstellen, später langfristig in Deutschland zu leben.",
+                                         "sich vorstellen können + zu + Infinitiv",
+                                         zh ? "表达犹豫、观点与决定" : "Doubts, opinions and decisions"};
+        for (int f = 0; f < 3; f++) {
+            notes_ui::draw_sentence(&fb, sent, f, 2, 42);
+            shot(f == 0 ? "sentence_meaning" : f == 1 ? "sentence_german" : "sentence_pattern");
+        }
+        const notes_ui::Sentence mixed = {"别误会我的意思，但我觉得我们应该再考虑一下。",
+                                          "Versteh mich nicht falsch, aber ich finde, dass wir uns das noch mal überlegen sollten.",
+                                          "Versteh mich nicht falsch + dass 从句", ""};
+        notes_ui::draw_sentence(&fb, mixed, 1, 0, 42);
+        shot("sentence_long");
+        notes_ui::draw_sentence(&fb, mixed, 2, 0, 42);
+        shot("sentence_pattern_mixed");
+        notes_ui::draw_no_sentences(&fb);
+        shot("sentences_empty");
+        ui::draw_menu(&fb, 3, 7, t.sentences);
+        ui::draw_menu_stage(&fb, ui::ICON_SENTENCES, 0, 2.0f);
+        shot("home_sentences");
         return 0;
     }
     if (mode == "anim") {

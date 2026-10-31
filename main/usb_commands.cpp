@@ -17,6 +17,7 @@
 #include "net.h"
 #include "notes_sync.h"
 #include "openai.h"
+#include "sentences.h"
 
 namespace usb_commands {
 
@@ -145,6 +146,24 @@ static void handle(char *line)
     } else if (strcmp(line, "mode set saving") == 0 || strcmp(line, "mode set now") == 0) {
         notes_sync::set_saving(strcmp(line, "mode set saving") == 0);
         reply("OK mode saved");
+    } else if (strcmp(line, "sent list") == 0) {
+        const auto list = sentences::all();
+        for (const sentences::Sentence &s : list) {
+            printf("SENT %s\n", sentences::to_json(s).c_str());
+        }
+        char text[24];
+        snprintf(text, sizeof text, "%u", (unsigned)list.size());
+        reply("OK %s", text);
+    } else if (strncmp(line, "sent add ", 9) == 0) {
+        const std::string id = sentences::add(line + 9);
+        reply(id.empty() ? "ERR not a sentence: \"de\" and \"zh\" or \"en\" are needed%s" : "OK %s", id.c_str());
+    } else if (strncmp(line, "sent update ", 12) == 0) {
+        reply(sentences::update(line + 12) ? "OK saved" : "ERR no sentence with that id, or one without German");
+    } else if (strncmp(line, "sent remove ", 12) == 0) {
+        reply(sentences::remove(line + 12) ? "OK removed" : "ERR no sentence %s", line + 12);
+    } else if (strcmp(line, "sent clear") == 0) {
+        sentences::clear();
+        reply("OK all sentences deleted");
     } else if (strcmp(line, "notes list") == 0) {
         const auto ids = memos::notes();
         for (const auto &id : ids) {
