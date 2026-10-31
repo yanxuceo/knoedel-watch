@@ -1,7 +1,6 @@
 #include "openai.h"
 
 #include <cJSON.h>
-#include <esp_crt_bundle.h>
 #include <esp_http_client.h>
 #include <esp_log.h>
 #include <string.h>
@@ -17,18 +16,26 @@ static const char *TIDY_MODEL = "gpt-5-mini";
 // here was given back as the transcript when the start of a memo was unclear: never use one.
 static const char *TRANSCRIBE_PROMPT = "A voice memo. The speaker mixes Chinese, German and English, often within one sentence; write each word in the language it is spoken in.";
 
-// Tried on real memos (tools/mic_test.py): without the rule on reasons,
-// "给房东打电话 wegen der Heizung" became two tasks, one of them made up.
+// Tried on real memos (tools/mic_test.py). Without the rule on reasons,
+// "给房东打电话 wegen der Heizung" became two tasks, one made up; asked to tidy
+// more freely, it wrote Milch as Milk; counting days itself it put Freitag three
+// weeks late, hence the calendar in the input (notes_sync.cpp). Reasoning
+// "low" was 2-4 times slower and dropped a task.
+// "早晨七点就得去" became a task of its own, and "厕所的厕所的那个纸" stayed as said,
+// until the rule on times and repeated words.
 static const char *TIDY_INSTRUCTIONS =
     "You turn a short voice memo into a note for a small watch screen. The memo may mix Chinese, German "
-    "and English, even within one sentence. Use the speaker's own words in the language they were spoken in; "
-    "never translate or paraphrase, never add anything. Drop only filler words (嗯, 那个, 然后 at the start, "
-    "äh, um) and repetitions. kind is 'todo' when the memo asks for things to do, else 'idea'. For a todo: "
-    "one item per task; a reason or detail (wegen …, 因为 …, 关于 …) stays in the item of its task in the speaker's words, with no linking words added; "
-    "it is not a task of its own. Keep items short. due is an ISO date only when the memo names a day for "
-    "that task (a day said before several tasks joined by 然后/und/and counts for each of them); else null. "
-    "text is ''. For an idea: items is empty and text is the tidied memo. Weekdays mean the next such day "
-    "after now.";
+    "and English, even within one sentence. Copy the speaker's words exactly as spoken, each in its own "
+    "language: never translate a single word (Milch stays Milch), never rephrase, never add a word. "
+    "kind is 'todo' when the memo asks for things to do, else 'idea'. For a todo: one item per task, "
+    "only the task itself: leave out filler and reminder words (嗯, 那个, 这个, 记得, 要, 然后, äh, um, I need to), "
+    "the day words once they are in due (明天, 下周一, 之前, Freitag, tomorrow), and background that is "
+    "not a task. A reason (wegen …, 因为 …) or a time of day (早晨七点, um 7 Uhr, at 9) stays in its task, it is "
+    "not a task of its own. Inside a task, drop words said twice and fillers in the middle too "
+    "(买一卷那个厕所的厕所的那个纸 becomes 买一卷厕所的纸); keep every other word. due: the date "
+    "from the calendar given when the memo names a day for that task (a day said before several tasks "
+    "joined by 然后/und/and counts for each of them); else null. text is ''. For an idea: items is empty "
+    "and text is the memo without filler words.";
 
 static const char *TIDY_SCHEMA =
     R"({"type":"object","additionalProperties":false,"required":["kind","items","text"],"properties":{)"
@@ -36,6 +43,13 @@ static const char *TIDY_SCHEMA =
     R"("items":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["text","due"],)"
     R"("properties":{"text":{"type":"string"},"due":{"type":["string","null"]}}}},)"
     R"("text":{"type":"string"}}})";
+
+// api.openai.com is checked against a few roots of our own, not the bundle:
+// its chain ends with GTS Root R4 cross-signed by GlobalSign Root CA, which the
+// bundle lacks, and the bundle's look-up by the last issuer then failed (it
+// passed now and then with CROSS_SIGNED_VERIFY, then failed four times in a
+// row). With the roots given, mbedTLS finds GTS Root R4 itself.
+extern const char API_ROOTS[] asm("_binary_api_roots_pem_start");
 
 static int last_status;
 static bool last_spend_limited;
@@ -61,7 +75,7 @@ static std::string post(const char *path, const char *content_type, const void *
     esp_http_client_config_t cfg = {};
     cfg.url = url.c_str();
     cfg.method = HTTP_METHOD_POST;
-    cfg.crt_bundle_attach = esp_crt_bundle_attach;
+    cfg.cert_pem = API_ROOTS;
     cfg.timeout_ms = 60000;
     cfg.buffer_size = 4096;
     cfg.buffer_size_tx = 2048;
@@ -177,12 +191,12 @@ std::string transcribe(const int16_t *pcm, size_t samples, uint32_t rate)
     return transcribe_parts("memo.wav", "audio/wav", parts, sizes, 2);
 }
 
-std::string tidy(const std::string &transcript, const char *now)
+std::string tidy(const std::string &transcript, const char *context)
 {
     cJSON *body = cJSON_CreateObject();
     cJSON_AddStringToObject(body, "model", TIDY_MODEL);
     cJSON_AddStringToObject(body, "instructions", TIDY_INSTRUCTIONS);
-    cJSON_AddStringToObject(body, "input", (std::string("Now: ") + now + "\nMemo: " + transcript).c_str());
+    cJSON_AddStringToObject(body, "input", (std::string(context) + "\nMemo: " + transcript).c_str());
     cJSON_AddStringToObject(cJSON_AddObjectToObject(body, "reasoning"), "effort", "minimal");
     cJSON *format = cJSON_AddObjectToObject(cJSON_AddObjectToObject(body, "text"), "format");
     cJSON_AddStringToObject(format, "type", "json_schema");

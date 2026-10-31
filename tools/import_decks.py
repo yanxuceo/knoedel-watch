@@ -57,6 +57,23 @@ LOC_FONTS = {
               "loc_s": (BRICOLAGE, 22, {"opsz": 22, "wght": 400, "wdth": 100}),
               "loc_l": (BRICOLAGE, 38, {"opsz": 38, "wght": 800, "wdth": 100})},
 }
+# The notes (voice memos, main/notes_ui.h) show whatever was said: the 3755
+# common Chinese characters (GB2312 level 1), Chinese and full-width
+# punctuation, and Latin with the German letters, in one size.
+NOTES_FONT = (NOTO, 24, {"wght": 500})
+
+
+def notes_chars():
+    chars = set(LATIN) | {chr(c) for c in range(0xA0, 0x100)} | set("€‘’“”–—…•→")
+    for hi in list(range(0xA1, 0xA4)) + list(range(0xB0, 0xD8)):  # symbol rows 1-3, level-1 rows 16-55
+        for lo in range(0xA1, 0xFF):
+            try:
+                chars.add(bytes([hi, lo]).decode("gb2312"))
+            except UnicodeDecodeError:
+                pass
+    return {c for c in chars if c.isprintable()}
+
+
 AXIS_ORDER = {"Optical size": "opsz", "Weight": "wght", "Width": "wdth"}
 KASUS = {None: 0, "Akk": 1, "Dat": 2, "Gen": 3}
 GRAMMAR = {"verb": 1, "noun": 2, "pattern": 3}
@@ -244,17 +261,37 @@ def write_assets(out, decks, locales, clips=None):
         local = set("".join(strip(t) for d, _ in decks for c in d["cards"] for t in (
             c["gloss"][locale], c["example"]["translations"][locale], (c.get("tip") or {}).get(locale, ""))))
         local |= set("".join(d["title"].get(locale, "") for d, _ in decks)) | ui_chars(locale)
-        wanted = (local | {c for c in chars if is_cjk(c)} | set("0123456789 /")) if cjk else german | set(LATIN)
+        # The notes show times ("今天 14:32") and counts in the locale font too.
+        wanted = (local | {c for c in chars if is_cjk(c)} | set("0123456789 /:·…+")) if cjk else german | set(LATIN)
         for name, spec in LOC_FONTS["cjk" if cjk else "latin"].items():
             # The large size is for menu titles only (main/ui_strings.h).
             chars_for = ui_chars(locale) if name == "loc_l" else wanted
             font(name.replace("loc", f"font_loc{slot}"), spec, chars_for, f"locale {locale}")
     for name, spec in DE_FONTS.items():
         font(f"font_{name}", spec, set("0123456789:") if name == "clock" else de_chars, "German and menu text")
+    font("font_notes", NOTES_FONT, notes_chars(), "notes")
     return problems, sizes
 
 
+# The decks keep their audio as made (48 kbit/s); the pack gets it at 32 kbit/s,
+# which sounded the same on the watch's speaker and leaves room for the notes'
+# font. Converted copies are kept in packs/.audio<kbps>/ for the next build.
+AUDIO_KBPS = 32
+
+
+def pack_clip(deck_dir, f):
+    cache = ROOT / "packs" / f".audio{AUDIO_KBPS}" / deck_dir.name / f.name
+    if not cache.exists() or cache.stat().st_mtime < f.stat().st_mtime:
+        cache.parent.mkdir(parents=True, exist_ok=True)
+        run(["ffmpeg", "-v", "error", "-y", "-i", str(f), "-codec:a", "libmp3lame", "-b:a", f"{AUDIO_KBPS}k",
+             "-ar", "24000", "-ac", "1", "-map_metadata", "-1", "-id3v2_version", "0", "-write_xing", "0",
+             str(cache)], check=True)
+    return cache.read_bytes()
+
+
 def pack_audio(decks):
+    if shutil.which("ffmpeg") is None:
+        sys.exit("ffmpeg is needed for the pack's audio (brew install ffmpeg)")
     pak, clips = bytearray(), {}
     for deck, deck_dir in decks:
         for card in deck["cards"]:
@@ -262,7 +299,7 @@ def pack_audio(decks):
             for n in range(4):
                 f = deck_dir / "audio" / f"{card['id']}_{n}.mp3"
                 if n in spoken_lines(card) and f.exists():
-                    blob = f.read_bytes()
+                    blob = pack_clip(deck_dir, f)
                     entry.append((len(pak), len(blob)))
                     pak += blob
                 else:

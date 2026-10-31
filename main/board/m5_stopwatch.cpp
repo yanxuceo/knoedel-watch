@@ -41,6 +41,8 @@ void begin()
 
 lgfx::LGFX_Device &display() { return M5.Display; }
 
+static int tap_x, tap_y;
+
 Event update()
 {
     M5.update();
@@ -61,9 +63,29 @@ Event update()
         return touch.distanceX() < 0 ? Event::NEXT : Event::PREVIOUS;
     }
     if (touch.wasClicked()) {
+        tap_x = touch.x;
+        tap_y = touch.y;
         return Event::SELECT;
     }
     return Event::NONE;
+}
+
+void tap_point(int &x, int &y)
+{
+    x = tap_x;
+    y = tap_y;
+}
+
+bool cancel_key_held() { return M5.BtnA.isPressed(); }
+
+void wait_keys_released()
+{
+    do {
+        vTaskDelay(pdMS_TO_TICKS(10));
+        M5.update();
+    } while (M5.BtnA.isPressed() || M5.BtnB.isPressed());
+    vTaskDelay(pdMS_TO_TICKS(20));
+    M5.update();
 }
 
 bool touched() { return M5.Touch.getDetail().isPressed() || M5.BtnA.isPressed() || M5.BtnB.isPressed(); }

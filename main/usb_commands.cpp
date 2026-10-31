@@ -78,8 +78,17 @@ static void handle(char *line)
         snprintf(text, sizeof text, "%u notes, %u memos waiting, %u of %u KB used", (unsigned)ids.size(),
                  (unsigned)memos::waiting().size(), (unsigned)(used / 1024), (unsigned)(total / 1024));
         reply("OK %s", text);
+    } else if (strcmp(line, "notes sync") == 0 && memos::waiting().empty()) {
+        reply("OK no memos waiting");
     } else if (strcmp(line, "notes sync") == 0) {
-        const notes_sync::Result r = notes_sync::run();
+        // Asks the background task and waits for its next go to finish.
+        uint32_t before = 0, now = 0;
+        notes_sync::last(&before);
+        notes_sync::request();
+        for (int i = 0; i < 3000 && (notes_sync::last(&now), now == before); i++) {
+            vTaskDelay(pdMS_TO_TICKS(100));
+        }
+        const notes_sync::Result r = notes_sync::last();
         char text[96];
         snprintf(text, sizeof text, "%d done, %d left%s%s", r.done, r.left, r.offline ? ", offline" : "",
                  r.limited ? ", monthly limit reached" : "");

@@ -48,6 +48,13 @@ bool finish(const std::string &id, const std::string &note_json);
 // Notes, newest first.
 std::vector<std::string> notes();
 std::string note(const std::string &id);
+// Rewrites a note (a task ticked), atomically like finish().
+bool save_note(const std::string &id, const std::string &note_json);
+void remove_note(const std::string &id);
+// Deletes a memo that is still waiting, unsent.
+void remove_memo(const std::string &id);
+// The size of a memo waiting, in bytes (for its length on the page).
+size_t memo_size(const std::string &id);
 
 // Bytes used and the size of the partition.
 void usage(size_t &used, size_t &total);

@@ -102,6 +102,7 @@ void begin() {
         ESP_LOGE(TAG, "speaker unavailable");
 }
 lgfx::LGFX_Device &display() { return screen; }
+static int tap_x, tap_y;  // where the last tap was
 Event update() {
     uint32_t now = esp_timer_get_time() / 1000;
     boot.setRawState(now, gpio_get_level(WS_BTN_BOOT) == 0);
@@ -127,11 +128,20 @@ Event update() {
         return Event::NEXT;
     if (detail.wasFlicked() && abs(detail.distanceX()) > abs(detail.distanceY()))
         return detail.distanceX() < 0 ? Event::NEXT : Event::PREVIOUS;
-    if (detail.wasClicked())
+    if (detail.wasClicked()) {
+        tap_x = detail.x;
+        tap_y = detail.y;
         return Event::SELECT;
+    }
     return Event::NONE;
 }
 bool touched() { return boot.isPressed() || power_key.isPressed() || touch.getDetail().isPressed(); }
+void tap_point(int &x, int &y) {
+    x = tap_x;
+    y = tap_y;
+}
+bool cancel_key_held() { return false; }
+void wait_keys_released() {}
 // The board's two microphones (ES7210) are not used yet.
 bool has_mic() { return false; }
 bool talk_key_held() { return false; }

@@ -8,6 +8,7 @@
 #include "deck.h"
 #include "gfx_util.h"
 #include "character.h"
+#include "scenery.h"
 #include "vec.h"
 
 using namespace gfxu;
@@ -1154,9 +1155,61 @@ bool draw_menu(G *g, int index, int count, const char *title)
     return draw_single(g, title, bright(COVER_COLOR), false, TITLE, 2, MENU_TITLE_Y);
 }
 
+// The notes: a note card whose tasks get their ticks one after the other, and
+// a microphone giving out sound.
+static void notes_icon(G *g, const character::Stage &st, float clock)
+{
+    stage_disc(g, st, 0);
+    const float k = st.r / 150.0f, cx = st.cx, cy = st.cy;
+    disc_rgradient(g, cx, cy, st.r, 0xFFF8EC, 0xF1D7AC);
+    const vec::Pen card = vec::Pen::make(g, cx - 22 * k, cy + 2 * k, k).turn(-5);
+    card.rect(-60, -78, 120, 156, 16, 0xE0C79C);  // shadow
+    card.move(-3, -4).rect(-60, -78, 120, 156, 16, 0xFFFDF7, 0xE6D3B0, 2.5f);
+    const vec::Pen rows = card.move(-3, -4);
+    const int ticked = (int)fmodf(clock / 0.9f, 5.0f);  // 0..3 ticks, then a pause
+    static const float LINE[3] = {66, 52, 60};
+    for (int i = 0; i < 3; i++) {
+        const float y = -44 + i * 40;
+        const bool on = i < ticked;
+        rows.rect(-44, y - 12, 24, 24, 7, on ? 0x2FAF9C : 0xFFFDF7, 0x2FAF9C, 2.6f);
+        if (on) {
+            rows.line(-38, y + 1, -33, y + 6, 3.4f, 0xFFFFFF);
+            rows.line(-33, y + 6, -25, y - 5, 3.4f, 0xFFFFFF);
+        }
+        rows.rect(-12, y - 5, LINE[i], 10, 5, on ? 0xE8DCC6 : 0xCDB48C);
+    }
+    // The microphone, with sound coming out of it.
+    const float mx = cx + 74 * k, my = cy + 18 * k;
+    gfxu::wedge(g, mx, my - 30 * k, mx, my - 2 * k, 15 * k, 15 * k, 0x3C4250);
+    gfxu::wedge(g, mx - 6 * k, my - 34 * k, mx - 6 * k, my - 16 * k, 3 * k, 3 * k, 0x6A7386);
+    for (int i = 0; i < 9; i++) {  // the holder, a half ring under the head
+        const float a0 = (i / 9.0f) * 3.14159265f, a1 = ((i + 1) / 9.0f) * 3.14159265f;
+        gfxu::line(g, mx + cosf(a0) * 23 * k, my - 10 * k + sinf(a0) * 23 * k, mx + cosf(a1) * 23 * k,
+                   my - 10 * k + sinf(a1) * 23 * k, 4 * k, 0x3C4250);
+    }
+    gfxu::line(g, mx, my + 13 * k, mx, my + 30 * k, 4.5f * k, 0x3C4250);
+    gfxu::wedge(g, mx - 14 * k, my + 31 * k, mx + 14 * k, my + 31 * k, 3 * k, 3 * k, 0x3C4250);
+    for (int w = 0; w < 3; w++) {  // waves going out to the right, fading as they go
+        const float phase = fmodf(clock * 0.8f + w / 3.0f, 1.0f), r = (30 + 34 * phase) * k;
+        const uint32_t col = mix(0x2FAF9C, 0xF1D7AC, phase);
+        for (int i = 0; i < 6; i++) {
+            const float a0 = (-40 + i * 14) * DEG, a1 = (-40 + (i + 1) * 14) * DEG;
+            gfxu::line(g, mx + cosf(a0) * r, my - 16 * k + sinf(a0) * r, mx + cosf(a1) * r, my - 16 * k + sinf(a1) * r,
+                       3.5f * k, col);
+        }
+    }
+    twinkle(g, cx - 92 * k, cy - 74 * k, (5 + 5 * fabsf(sinf(clock * 1.6f))) * k, 0xFFFFFF);
+    twinkle(g, cx + 96 * k, cy - 62 * k, (4 + 6 * fabsf(sinf(clock * 1.3f + 2))) * k, 0xFFFFFF);
+}
+
 void draw_menu_stage(G *g, MenuIcon icon, float t, float clock)
 {
     character::Stage st = stage_at(CX, MENU_CY, MENU_R, icon == ICON_GEAR ? 0xE3E7EEu : COVER_BG, COVER_COLOR);
+    if (icon == ICON_NOTES) {
+        notes_icon(g, st, clock);
+        restore_ring(g);
+        return;
+    }
     if (icon == ICON_CLOCK || icon == ICON_TIMER) {
         menu_icon(g, st, icon, clock);
         restore_ring(g);
@@ -1485,6 +1538,27 @@ bool draw_setting_edit(G *g, int index, int count, const char *name, const char 
     bool fits = draw_single(g, name, MUTED, false, LOCAL, 2, 160);
     fits = draw_single(g, value, DOT_OFF, true, HEAD, 3, 232, bright(COVER_COLOR)) && fits;
     return draw_single(g, hint, MUTED, false, LOCAL_S, 1, 305) && fits;
+}
+
+const lgfx::IFont *font(FontId id)
+{
+    switch (id) {
+    case FontId::DE_XS: return &f_de_xs.font;
+    case FontId::DE_S: return &f_de_s.font;
+    case FontId::DE_M: return &f_de_m.font;
+    case FontId::DE_MB: return &f_de_mb.font;
+    case FontId::LOC_S: return &f_loc_s.font;
+    case FontId::LOC_M: return &f_loc_m.font;
+    case FontId::LOC_L: return &f_loc_l.font;
+    case FontId::CLOCK: return &f_clock.font;
+    }
+    return &f_loc_m.font;
+}
+
+void draw_buddy(G *g, float x, float y, float height, int mood, float clock)
+{
+    const character::Stage st = stage_at((int)x, (int)y, (int)height, 0x000000, COVER_COLOR);
+    scenery::buddy(vec::Pen::make(g, x, y, height / 32.0f), (scenery::Mood)mood, clock, st);
 }
 
 }  // namespace ui

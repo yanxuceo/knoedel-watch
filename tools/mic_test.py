@@ -33,19 +33,20 @@ TIDY_MODEL = "gpt-5-mini"
 # here was given back as the transcript when the start of a memo was unclear: never use one.
 TRANSCRIBE_PROMPT = "A voice memo. The speaker mixes Chinese, German and English, often within one sentence; write each word in the language it is spoken in."
 
-# Tried on real memos: without the rule on reasons, "给房东打电话 wegen der Heizung"
-# became two tasks, one of them made up. Reasoning effort "low" was slower and
-# copied whole sentences; "minimal" is used.
+# Tried on real memos (see main/openai.cpp): the same rules and calendar as the watch.
 TIDY_INSTRUCTIONS = (
     "You turn a short voice memo into a note for a small watch screen. The memo may mix Chinese, German "
-    "and English, even within one sentence. Use the speaker's own words in the language they were spoken in; "
-    "never translate or paraphrase, never add anything. Drop only filler words (嗯, 那个, 然后 at the start, "
-    "äh, um) and repetitions. kind is 'todo' when the memo asks for things to do, else 'idea'. For a todo: "
-    "one item per task; a reason or detail (wegen …, 因为 …, 关于 …) stays in the item of its task in the speaker's words, with no linking words added; "
-    "it is not a task of its own. Keep items short. due is an ISO date only when the memo names a day for "
-    "that task (a day said before several tasks joined by 然后/und/and counts for each of them); else null. "
-    "text is ''. For an idea: items is empty and text is the tidied memo. Weekdays mean the next such day "
-    "after now."
+    "and English, even within one sentence. Copy the speaker's words exactly as spoken, each in its own "
+    "language: never translate a single word (Milch stays Milch), never rephrase, never add a word. "
+    "kind is 'todo' when the memo asks for things to do, else 'idea'. For a todo: one item per task, "
+    "only the task itself: leave out filler and reminder words (嗯, 那个, 这个, 记得, 要, 然后, äh, um, I need to), "
+    "the day words once they are in due (明天, 下周一, 之前, Freitag, tomorrow), and background that is "
+    "not a task. A reason (wegen …, 因为 …) or a time of day (早晨七点, um 7 Uhr, at 9) stays in its task, it is "
+    "not a task of its own. Inside a task, drop words said twice and fillers in the middle too "
+    "(买一卷那个厕所的厕所的那个纸 becomes 买一卷厕所的纸); keep every other word. due: the date "
+    "from the calendar given when the memo names a day for that task (a day said before several tasks "
+    "joined by 然后/und/and counts for each of them); else null. text is ''. For an idea: items is empty "
+    "and text is the memo without filler words."
 )
 TIDY_SCHEMA = {
     "type": "object",
@@ -93,11 +94,14 @@ def transcribe(key, wav_path):
 
 
 def tidy(key, text):
-    now = datetime.datetime.now().strftime("%A, %Y-%m-%d, %H:%M")
+    today = datetime.date.today()
+    days = [today + datetime.timedelta(d) for d in range(15)]
+    context = (f"Today: {today:%A, %Y-%m-%d}\nCalendar: "
+               + ", ".join(f"{d:%a %Y-%m-%d}" for d in days))
     body = {
         "model": TIDY_MODEL,
         "instructions": TIDY_INSTRUCTIONS,
-        "input": f"Now: {now}\nMemo: {text}",
+        "input": f"{context}\nMemo: {text}",
         "reasoning": {"effort": "minimal"},
         "text": {"format": {"type": "json_schema", "name": "note", "strict": True, "schema": TIDY_SCHEMA}},
     }

@@ -3,9 +3,16 @@
 #include <cJSON.h>
 #include <esp_log.h>
 #include <esp_timer.h>
+#include <freertos/FreeRTOS.h>
+#include <freertos/semphr.h>
+#include <freertos/task.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
+#include <atomic>
+
+#include "credentials.h"
 #include "memos.h"
 #include "net.h"
 #include "openai.h"
@@ -14,30 +21,44 @@ namespace notes_sync {
 
 static const char *TAG = "notes_sync";
 
-// "Saturday, 2026-10-31, 11:15" from the memo's id "20261031-111508": the model
-// counts "tomorrow" from when it was said, not from when it went online.
-static std::string said_at(const std::string &id)
+// What the model needs to turn "明天" or "Freitag" into a date: the day the
+// memo was said (its id, "20261031-111508") and the two weeks after it. Left
+// to count days itself, the model once put a Friday three weeks late.
+static std::string context(const std::string &id)
 {
-    static const char *DAYS[] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
-    static const int OFFSET[] = {0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4};
-    int year, month, day, hour, minute;
-    if (sscanf(id.c_str(), "%4d%2d%2d-%2d%2d", &year, &month, &day, &hour, &minute) != 5 || year < 2001 || month < 1 ||
-        month > 12) {
-        return "unknown";
+    struct tm t = {};
+    if (sscanf(id.c_str(), "%4d%2d%2d", &t.tm_year, &t.tm_mon, &t.tm_mday) != 3 || t.tm_year < 2001) {
+        return "Today: unknown";
     }
-    const int y = year - (month < 3);
-    const int weekday = (y + y / 4 - y / 100 + y / 400 + OFFSET[month - 1] + day) % 7;
-    char s[48];
-    snprintf(s, sizeof s, "%s, %04d-%02d-%02d, %02d:%02d", DAYS[weekday], year, month, day, hour, minute);
+    t.tm_year -= 1900;
+    t.tm_mon -= 1;
+    t.tm_hour = 12;
+    static const char *DAY[] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+    std::string s;
+    for (int d = 0; d < 15; d++) {
+        struct tm day = t;
+        day.tm_mday += d;
+        mktime(&day);  // normalises the date and sets the weekday
+        char buf[48];
+        if (d == 0) {
+            snprintf(buf, sizeof buf, "Today: %s, %04d-%02d-%02d\nCalendar: ", DAY[day.tm_wday], day.tm_year + 1900,
+                     day.tm_mon + 1, day.tm_mday);
+            s += buf;
+        }
+        snprintf(buf, sizeof buf, "%s%.3s %04d-%02d-%02d", d ? ", " : "", DAY[day.tm_wday], day.tm_year + 1900,
+                 day.tm_mon + 1, day.tm_mday);
+        s += buf;
+    }
     return s;
 }
 
-Result run(void (*progress)(int index, int count))
+// One go: online, every memo waiting, offline again.
+static Result go()
 {
     Result r;
     const auto ids = memos::waiting();
     r.left = (int)ids.size();
-    if (ids.empty()) {
+    if (ids.empty() || !credentials::has_key()) {
         return r;
     }
     const int64_t t0 = esp_timer_get_time();
@@ -54,11 +75,7 @@ Result run(void (*progress)(int index, int count))
     }
     const int64_t online_us = esp_timer_get_time();
 
-    for (size_t i = 0; i < ids.size(); i++) {
-        if (progress != nullptr) {
-            progress((int)i, (int)ids.size());
-        }
-        const std::string &id = ids[i];
+    for (const std::string &id : ids) {
         size_t size = 0;
         uint8_t *ogg = memos::read(id, size);
         if (ogg == nullptr) {
@@ -73,7 +90,7 @@ Result run(void (*progress)(int index, int count))
             break;  // try again next time
         }
         // A tidying that fails leaves the transcript as an idea: nothing said is lost.
-        std::string note = text.empty() ? "" : openai::tidy(text, said_at(id).c_str());
+        const std::string note = text.empty() ? "" : openai::tidy(text, context(id).c_str());
         const int64_t c = esp_timer_get_time();
         cJSON *n = note.empty() ? nullptr : cJSON_Parse(note.c_str());
         if (n == nullptr) {
@@ -104,6 +121,73 @@ Result run(void (*progress)(int index, int count))
     r.left = (int)memos::waiting().size();
     ESP_LOGI(TAG, "%d done, %d left; online in %lld ms, all in %lld ms", r.done, r.left, (online_us - t0) / 1000,
              (esp_timer_get_time() - t0) / 1000);
+    return r;
+}
+
+// ---- the task ---------------------------------------------------------------------
+
+static TaskHandle_t handle;
+static SemaphoreHandle_t lock;  // guards `latest`
+static Result latest;
+static std::atomic<uint32_t> count;
+static std::atomic<bool> running;
+
+static void task(void *)
+{
+    static const uint32_t RETRY_MIN[] = {1, 5, 15, 60};
+    int retry = 0;
+    TickType_t wait = 0;  // memos from before go at once
+    while (true) {
+        if (ulTaskNotifyTake(pdTRUE, wait) > 0) {
+            retry = 0;  // asked: a new memo
+        }
+        if (memos::waiting().empty() || !credentials::has_key()) {
+            wait = portMAX_DELAY;
+            continue;
+        }
+        running = true;
+        const Result r = go();
+        running = false;
+        xSemaphoreTake(lock, portMAX_DELAY);
+        latest = r;
+        xSemaphoreGive(lock);
+        count++;
+        if (r.left == 0) {
+            retry = 0;
+            wait = portMAX_DELAY;
+        } else {
+            wait = pdMS_TO_TICKS(RETRY_MIN[retry] * 60 * 1000);
+            ESP_LOGI(TAG, "%d memos waiting: next try in %lu min", r.left, (unsigned long)RETRY_MIN[retry]);
+            retry = retry < 3 ? retry + 1 : 3;
+        }
+    }
+}
+
+// TLS and the JSON of the answers want more than the default stack; internal
+// RAM, as Wi-Fi and flash are used from it.
+void start()
+{
+    lock = xSemaphoreCreateMutex();
+    xTaskCreatePinnedToCore(task, "notes_sync", 16 * 1024, nullptr, 3, &handle, 0);
+}
+
+void request()
+{
+    if (handle != nullptr) {
+        xTaskNotifyGive(handle);
+    }
+}
+
+bool busy() { return running; }
+
+Result last(uint32_t *n)
+{
+    xSemaphoreTake(lock, portMAX_DELAY);
+    Result r = latest;
+    xSemaphoreGive(lock);
+    if (n != nullptr) {
+        *n = count;
+    }
     return r;
 }
 

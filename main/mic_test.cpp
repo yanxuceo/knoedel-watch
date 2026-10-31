@@ -96,7 +96,7 @@ static void now_text(char *out, size_t size)
     }
     const int y = t.year - (t.month < 3);
     const int weekday = (y + y / 4 - y / 100 + y / 400 + OFFSET[t.month - 1] + t.day) % 7;
-    snprintf(out, size, "%s, %04d-%02d-%02d, %02d:%02d", DAYS[weekday], t.year, t.month, t.day, t.hour, t.minute);
+    snprintf(out, size, "Today: %s, %04d-%02d-%02d", DAYS[weekday], t.year, t.month, t.day);
 }
 
 // Online as the notes will be: Wi-Fi, the clock, the transcript, the note.

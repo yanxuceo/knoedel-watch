@@ -21,6 +21,7 @@
 #include "deck.h"
 #include "progress.h"
 #include "character.h"
+#include "notes_ui.h"
 #include "ui_strings.h"
 
 static std::vector<uint8_t> read_file(const std::string &path)
@@ -129,12 +130,12 @@ int main(int argc, char **argv)
         print_ids();
         return 0;
     }
-    if (argc < 3 || (mode != "render" && mode != "anim" && mode != "check" && mode != "schedule" && mode != "clockpop")) {
+    if (argc < 3 || (mode != "render" && mode != "anim" && mode != "check" && mode != "schedule" && mode != "clockpop" && mode != "notes")) {
         fprintf(stderr, "usage: card_sim render|anim|check|ids ... (see sim_main.cpp)\n");
         return 2;
     }
     const std::string dir = argv[2], out = argc > 3 ? argv[3] : ".";
-    const char *slot_arg = mode == "check" ? (argc > 3 ? argv[3] : "0") : mode == "render" ? (argc > 4 ? argv[4] : "0") : "0";
+    const char *slot_arg = mode == "check" ? (argc > 3 ? argv[3] : "0") : mode == "render" || mode == "notes" ? (argc > 4 ? argv[4] : "0") : "0";
     const std::string slot = std::string("loc") + slot_arg;
     static auto pack = read_file(dir + "/decks_" + slot + ".bin");
     static auto de_xl = read_file(dir + "/font_de_xl.vlw"), de_l = read_file(dir + "/font_de_l.vlw"),
@@ -168,6 +169,72 @@ int main(int argc, char **argv)
             snprintf(name, sizeof(name), "/pop_%d.ppm", i);
             save(fb, out + name);
         }
+        return 0;
+    }
+    if (mode == "notes") {
+        // Every state of the notes' screens (notes_ui.h), for a look at the design.
+        static auto notes_font = read_file(dir + "/font_notes.vlw");
+        notes_ui::init(notes_font.data());
+        notes_ui::set_locale(deck_locale());
+        const UiText &t = ui_text(deck_locale());
+        const bool zh = strncmp(deck_locale(), "zh", 2) == 0;
+        const notes_ui::Item todo[] = {{zh ? "给房东打电话 wegen der Heizung" : "Call the landlord wegen der Heizung", t.tomorrow, false},
+                                       {zh ? "买 Milch 和鸡蛋" : "Buy Milch and eggs", nullptr, true},
+                                       {zh ? "交 Quartalsbericht" : "Hand in the Quartalsbericht", t.weekdays_short[5], false}};
+        const notes_ui::Item many[] = {todo[0], todo[1], todo[2], {"Bürgeramt Termin buchen", nullptr, false},
+                                       {"Pick up the parcel at DHL", nullptr, false}};
+        const char *idea = zh ? "手表可以做一个德语口语陪练：每天五分钟，用卡片里学过的词聊天，说错了轻轻纠正。"
+                              : "The watch could talk German with me five minutes a day, with the words of the cards.";
+        const std::string today = std::string(t.today) + " 14:32";
+        const notes_ui::Status none = {false, 0, false, false}, offline = {false, 2, false, false}, online = {true, 1, false, false};
+        const notes_ui::Card c_todo = {notes_ui::TODO, today.c_str(), todo, 3, nullptr, -1, 0};
+        const notes_ui::Card c_many = {notes_ui::TODO, today.c_str(), many, 5, nullptr, -1, 0};
+        const notes_ui::Card c_reveal = {notes_ui::TODO, today.c_str(), todo, 3, nullptr, 20, 0};
+        const std::string yesterday = std::string(t.yesterday) + " 22:10";
+        const notes_ui::Card c_idea = {notes_ui::IDEA, yesterday.c_str(), nullptr, 0, idea, -1, 0};
+        const notes_ui::Card c_wait = {notes_ui::WAITING, today.c_str(), nullptr, 0, nullptr, -1, 9};
+        const notes_ui::Card c_send = {notes_ui::SENDING, today.c_str(), nullptr, 0, nullptr, -1, 9};
+        int n = 0;
+        auto shot = [&](const char *what) {
+            snprintf(name, sizeof(name), "/notes_%02d_%s.ppm", n++, what);
+            save(fb, out + name);
+        };
+        notes_ui::draw_recording(&fb, 7.3f, 60, 0.45f, 3.1f);
+        shot("recording");
+        notes_ui::draw_recording(&fb, 53.6f, 60, 0.7f, 5.2f);
+        shot("recording_late");
+        notes_ui::draw_message(&fb, notes_ui::KEPT_ONLINE, 0.18f);
+        shot("kept_closing");
+        notes_ui::draw_message(&fb, notes_ui::KEPT_OFFLINE, 1);
+        shot("kept_offline");
+        notes_ui::draw_message(&fb, notes_ui::TOO_SHORT, 1);
+        shot("too_short");
+        notes_ui::draw_page(&fb, &c_todo, 1, 5, none, 0);
+        shot("todo");
+        notes_ui::draw_page(&fb, &c_many, 0, 5, none, 0);
+        notes_ui::draw_menu(&fb, true);
+        shot("menu");
+        notes_ui::draw_page(&fb, &c_idea, 2, 5, none, 0);
+        shot("idea");
+        notes_ui::draw_page(&fb, &c_wait, 0, 5, offline, 0);
+        shot("waiting");
+        notes_ui::draw_page(&fb, &c_send, 0, 5, online, 0.2f);
+        shot("sending");
+        notes_ui::draw_page(&fb, &c_reveal, 0, 5, none, 0);
+        shot("coming_in");
+        notes_ui::draw_page(&fb, nullptr, 0, 0, none, 0);
+        shot("empty");
+        ui::draw_menu(&fb, 5, 6, t.notes);
+        ui::draw_menu_stage(&fb, ui::ICON_NOTES, 0, 2.5f);
+        shot("home");
+        const ui::ClockFace face = {14, 35, 20, zh ? "星期六 · 10月31日" : "Saturday, 31 October", 0, 4, false, 1.0f, 1.0f};
+        ui::draw_clock(&fb, face);
+        ui::draw_clock_stage(&fb, face, 0.1f, 10.0f);
+        notes_ui::draw_toast(&fb, (std::string(t.noted) + todo[0].text + "  +2").c_str());
+        shot("toast");
+        notes_ui::draw_page(&fb, &c_todo, 1, 5, none, 0);
+        notes_ui::draw_cheer(&fb, 0.8f, 4.0f);
+        shot("cheer");
         return 0;
     }
     if (mode == "anim") {

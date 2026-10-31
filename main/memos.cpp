@@ -28,6 +28,8 @@ static const char *MEMOS = "/notes/memos", *DONE = "/notes/done";
 
 // ---- the partition ------------------------------------------------------------
 
+static bool make_task();
+
 bool begin()
 {
     esp_vfs_littlefs_conf_t conf = {};
@@ -56,7 +58,7 @@ bool begin()
     usage(used, total);
     ESP_LOGI(TAG, "%u memos waiting, %u notes, %u of %u KB used", (unsigned)waiting().size(), (unsigned)notes().size(),
              (unsigned)(used / 1024), (unsigned)(total / 1024));
-    return true;
+    return make_task();
 }
 
 void usage(size_t &used, size_t &total) { esp_littlefs_info("notes", &total, &used); }
@@ -349,14 +351,20 @@ static void close_all(bool keep)
 
 // The Opus encoder needs about 40 KB of stack, twice what the main task has:
 // the recording runs in a task of its own, with its stack in internal RAM (it
-// writes to flash), only while recording.
+// writes to flash). The task is made at start and stays: made for each
+// recording, it found no 40 KB in one piece once Wi-Fi and TLS had been used.
 static constexpr uint32_t TASK_STACK = 40 * 1024;
+static TaskHandle_t task_handle;
 
 static void task(void *)
 {
-    rec.started = open_all();
-    xSemaphoreGive(rec.signal);
-    if (rec.started) {
+    while (true) {
+        ulTaskNotifyTake(pdTRUE, portMAX_DELAY);  // record_start()
+        rec.started = open_all();
+        xSemaphoreGive(rec.signal);
+        if (!rec.started) {
+            continue;
+        }
         while (!rec.stop) {
             pump();
             rec.full = rec.samples + rec.inflight * CHUNK >= MAX_SECONDS * RATE;
@@ -365,27 +373,33 @@ static void task(void *)
         close_all(rec.keep);
         xSemaphoreGive(rec.signal);
     }
-    vTaskDelete(nullptr);
+}
+
+static bool make_task()
+{
+    rec.ogg = (Ogg *)heap_caps_calloc(1, sizeof(Ogg), MALLOC_CAP_SPIRAM);
+    for (auto &b : rec.bufs) {
+        b = (int16_t *)heap_caps_malloc(CHUNK * sizeof(int16_t), MALLOC_CAP_SPIRAM);
+    }
+    rec.signal = xSemaphoreCreateBinary();
+    if (rec.ogg == nullptr || rec.bufs[BUFFERS - 1] == nullptr || rec.signal == nullptr) {
+        return false;
+    }
+    new (rec.ogg) Ogg();
+    if (xTaskCreatePinnedToCore(task, "memo", TASK_STACK, nullptr, 4, &task_handle, 1) != pdPASS) {
+        ESP_LOGE(TAG, "no memory for the recording task");
+        return false;
+    }
+    return true;
 }
 
 bool record_start()
 {
-    if (rec.ogg == nullptr) {
-        rec.ogg = (Ogg *)heap_caps_calloc(1, sizeof(Ogg), MALLOC_CAP_SPIRAM);
-        for (auto &b : rec.bufs) {
-            b = (int16_t *)heap_caps_malloc(CHUNK * sizeof(int16_t), MALLOC_CAP_SPIRAM);
-        }
-        rec.signal = xSemaphoreCreateBinary();
-        if (rec.ogg == nullptr || rec.bufs[BUFFERS - 1] == nullptr || rec.signal == nullptr) {
-            return false;
-        }
-        new (rec.ogg) Ogg();
-    }
-    rec.stop = rec.full = false;
-    if (xTaskCreatePinnedToCore(task, "memo", TASK_STACK, nullptr, 4, nullptr, 1) != pdPASS) {
-        ESP_LOGE(TAG, "no memory for the recording task");
+    if (task_handle == nullptr) {
         return false;
     }
+    rec.stop = rec.full = false;
+    xTaskNotifyGive(task_handle);
     xSemaphoreTake(rec.signal, portMAX_DELAY);
     rec.on = rec.started;
     return rec.on;
@@ -454,7 +468,7 @@ uint8_t *read(const std::string &id, size_t &size)
     return data;
 }
 
-bool finish(const std::string &id, const std::string &note_json)
+bool save_note(const std::string &id, const std::string &note_json)
 {
     const std::string tmp = std::string(DONE) + "/" + id + ".json.tmp", path = std::string(DONE) + "/" + id + ".json";
     FILE *f = fopen(tmp.c_str(), "wb");
@@ -466,8 +480,26 @@ bool finish(const std::string &id, const std::string &note_json)
         unlink(tmp.c_str());
         return false;
     }
+    return true;
+}
+
+bool finish(const std::string &id, const std::string &note_json)
+{
+    if (!save_note(id, note_json)) {
+        return false;
+    }
     unlink((std::string(MEMOS) + "/" + id + ".ogg").c_str());
     return true;
+}
+
+void remove_note(const std::string &id) { unlink((std::string(DONE) + "/" + id + ".json").c_str()); }
+
+void remove_memo(const std::string &id) { unlink((std::string(MEMOS) + "/" + id + ".ogg").c_str()); }
+
+size_t memo_size(const std::string &id)
+{
+    struct stat st = {};
+    return stat((std::string(MEMOS) + "/" + id + ".ogg").c_str(), &st) == 0 ? (size_t)st.st_size : 0;
 }
 
 std::string note(const std::string &id)

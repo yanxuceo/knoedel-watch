@@ -16,8 +16,9 @@ std::string transcribe(const int16_t *pcm, size_t samples, uint32_t rate);
 std::string transcribe_ogg(const uint8_t *ogg, size_t size);
 
 // The memo as a note, the JSON {"kind": "todo"|"idea", "items": [{"text", "due"}],
-// "text"}; `now` like "Saturday, 2026-10-31, 10:45". Empty when it failed.
-std::string tidy(const std::string &transcript, const char *now);
+// "text"}; `context` tells the day it was said and the two weeks after it
+// ("Today: ...\nCalendar: ..."). Empty when it failed.
+std::string tidy(const std::string &transcript, const char *context);
 
 // The HTTP status of the last request, 0 when it got no answer at all.
 // 429 with spend_limited(): the project's monthly limit is reached.

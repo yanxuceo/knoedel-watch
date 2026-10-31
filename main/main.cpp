@@ -22,6 +22,7 @@
 // and written to the watch by tools/flash_content.py.
 
 #include <esp_app_desc.h>
+#include <esp_heap_caps.h>
 #include <esp_log.h>
 #include <esp_timer.h>
 #include <freertos/FreeRTOS.h>
@@ -43,6 +44,9 @@
 #include "ui_strings.h"
 #include "memos.h"
 #include "notes_flow.h"
+#include "notes_page.h"
+#include "notes_sync.h"
+#include "notes_ui.h"
 #include "usb_commands.h"
 #if CONFIG_KNOEDEL_MIC_TEST
 #include "mic_test.h"
@@ -69,8 +73,8 @@ static constexpr uint32_t SAVE_AFTER_MS = 2000;
 static constexpr uint32_t FRAME_MS = 33;
 static constexpr int FLIP_STEPS = 5;
 
-enum Screen : uint8_t { HOME, DECKS, CARDS, SETTINGS, PRACTICE, CLOCK, TIMER };
-enum HomeItem { ITEM_CLOCK, ITEM_LEARN, ITEM_PRACTICE, ITEM_TIMER, ITEM_SETTINGS, HOME_ITEMS };
+enum Screen : uint8_t { HOME, DECKS, CARDS, SETTINGS, PRACTICE, CLOCK, TIMER, NOTES };
+enum HomeItem { ITEM_CLOCK, ITEM_LEARN, ITEM_PRACTICE, ITEM_NOTES, ITEM_TIMER, ITEM_SETTINGS, HOME_ITEMS };
 enum Setting { SET_LANGUAGE, SET_TIME, SET_VOLUME, SET_BRIGHTNESS, SET_POWER_OFF, SETTING_COUNT };
 
 // Everything the watch remembers across power cycles.
@@ -198,6 +202,7 @@ static void apply_language()
     const Language &lang = LANGUAGES[st.language];
     deck_init(lang.pack.data, lang.pack.size);  // checked by load_content()
     ui::set_locale(lang.font_m.data, lang.font_s.data, lang.font_l.data);
+    notes_ui::set_locale(deck_locale());
 }
 
 // Saved positions may point past the end after a firmware with other decks was flashed.
@@ -225,6 +230,15 @@ static bool animated()
     return st.screen == HOME || st.screen == DECKS || st.screen == PRACTICE || (st.screen == CLOCK && !cw.word_shown) ||
            st.screen == TIMER || (st.screen == CARDS && face == 0);
 }
+
+static void push_fb() { fb.pushSprite(ox, oy); }
+
+// "Noted: ..." over whatever screen shows, when a note was made in the background.
+static constexpr uint32_t TOAST_MS = 3000;
+static struct {
+    std::string text;
+    uint32_t until;
+} toast;
 
 // Only the square of the animated picture changes from frame to frame.
 static void push_stage()
@@ -345,8 +359,8 @@ static void render_stage()
     uint32_t now = millis();
     float t = fmodf((now - face_shown_ms) / 1000.0f, character::LOOP_SECONDS), clock = now / 1000.0f;
     if (st.screen == HOME) {
-        static const ui::MenuIcon ICONS[HOME_ITEMS] = {ui::ICON_CLOCK, ui::ICON_KNOEDEL, ui::ICON_BREZEL, ui::ICON_TIMER,
-                                                       ui::ICON_GEAR};
+        static const ui::MenuIcon ICONS[HOME_ITEMS] = {ui::ICON_CLOCK, ui::ICON_KNOEDEL, ui::ICON_BREZEL, ui::ICON_NOTES,
+                                                       ui::ICON_TIMER, ui::ICON_GEAR};
         ui::draw_menu_stage(&fb, ICONS[st.home_item], t, clock);
     } else if (st.screen == CLOCK) {
         std::string date;
@@ -423,7 +437,7 @@ static void render()
     const UiText &tx = ui_text(deck_locale());
     switch (st.screen) {
     case HOME: {
-        const char *const TITLES[HOME_ITEMS] = {tx.clock, tx.learn, tx.practice, tx.timer, tx.settings};
+        const char *const TITLES[HOME_ITEMS] = {tx.clock, tx.learn, tx.practice, tx.notes, tx.timer, tx.settings};
         ui::draw_menu(&fb, st.home_item, HOME_ITEMS, TITLES[st.home_item]);
         break;
     }
@@ -449,6 +463,9 @@ static void render()
         break;
     case SETTINGS:
         render_setting();
+        break;
+    case NOTES:
+        notes_page::draw(&fb, millis() / 1000.0f);
         break;
     case PRACTICE:
         if (pr.phase == ASK) {
@@ -813,6 +830,9 @@ static void step(int dir)
     case SETTINGS:
         st.setting = wrap(st.setting + dir, SETTING_COUNT);
         break;
+    case NOTES:
+        notes_page::step(dir);
+        break;
     default:
         break;
     }
@@ -873,6 +893,12 @@ static void tap()
             practice_start();
             break;
         }
+        if (st.home_item == ITEM_NOTES) {
+            st.screen = NOTES;
+            notes_page::reload();
+            show();
+            break;
+        }
         st.screen = st.home_item == ITEM_CLOCK ? CLOCK : st.home_item == ITEM_LEARN ? DECKS : st.home_item == ITEM_TIMER ? TIMER : SETTINGS;
         if (st.screen == CLOCK) {
             pick_word(false);
@@ -902,6 +928,14 @@ static void tap()
     case PRACTICE:
         practice_input(0);
         break;
+    case NOTES: {
+        int x, y;
+        board::tap_point(x, y);
+        if (notes_page::tap(x - ox, y - oy)) {
+            redraw();
+        }
+        break;
+    }
     }
 }
 
@@ -918,6 +952,11 @@ static void back()
     }
     if (st.screen == TIMER && tm.alert) {
         timer_next_phase(false);
+    }
+    if (st.screen == NOTES && notes_page::menu_open()) {
+        notes_page::close_menu();
+        redraw();
+        return;
     }
     st.screen = st.screen == CARDS ? DECKS : HOME;
     show();
@@ -956,6 +995,7 @@ static bool load_content()
     }
     two_languages = first != deck_locale();
     ui::init({de[0].data, de[1].data, de[2].data, de[3].data, de[4].data, de[5].data, de[6].data});
+    notes_ui::init(content_file("font_notes.vlw").data);  // packs before the notes have none
     audio_init(audio.data);
     return true;
 }
@@ -1040,6 +1080,9 @@ extern "C" void app_main(void)
         board::mic_warm_up();
         board::set_volume(VOLUMES[st.volume]);
     }
+    notes_sync::start();  // memos left from before go online in the background
+    ESP_LOGI(TAG, "internal RAM: %u KB free, largest block %u KB", (unsigned)(heap_caps_get_free_size(MALLOC_CAP_INTERNAL) / 1024),
+             (unsigned)(heap_caps_get_largest_free_block(MALLOC_CAP_INTERNAL) / 1024));
 
     // last_input_ms: keys and touch, for switching off; last_wake_ms: also
     // picking the watch up, for dimming.
@@ -1068,7 +1111,10 @@ extern "C" void app_main(void)
 #if CONFIG_KNOEDEL_MIC_TEST
             mic_test::run();
 #else
-            notes_flow::talk();
+            notes_flow::talk(&fb, push_fb);
+            if (st.screen == NOTES) {
+                notes_page::reload();
+            }
 #endif
             show();
             break;
@@ -1114,7 +1160,7 @@ extern "C" void app_main(void)
                 board::display().setBrightness(BRIGHTNESS_IDLE);
             }
             dimmed = true;
-        } else if (millis() - last_input_ms > IDLE_OFF_MS && !tm.running && !tm.alert) {
+        } else if (millis() - last_input_ms > IDLE_OFF_MS && !tm.running && !tm.alert && !notes_sync::busy()) {
             // Left alone: switch off, so that the battery (and with it the clock) never runs flat.
             if (!board::on_usb()) {
                 ESP_LOGI(TAG, "idle for %u minutes: switching off", (unsigned)(IDLE_OFF_MS / 60000));
@@ -1129,6 +1175,24 @@ extern "C" void app_main(void)
 
         tune_tick();
         timer_tick();
+        // A note made in the background: it comes in on the notes page; elsewhere a message tells of it.
+        static uint32_t syncs_seen = 0;
+        uint32_t syncs = 0;
+        const notes_sync::Result synced = notes_sync::last(&syncs);
+        if (syncs != syncs_seen) {
+            syncs_seen = syncs;
+            if (st.screen == NOTES) {
+                if (synced.done > 0) {
+                    notes_page::arrived(synced.last);
+                } else {
+                    notes_page::reload();
+                }
+                redraw();
+            } else if (synced.done > 0) {
+                toast.text = std::string(ui_text(deck_locale()).noted) + notes_page::summary(synced.last);
+                toast.until = millis() + TOAST_MS;
+            }
+        }
         if (st.screen == PRACTICE && pr.phase == CHEER && millis() - pr.cheer_ms > CHEER_MS) {
             practice_next();
         }
@@ -1198,6 +1262,24 @@ extern "C" void app_main(void)
             frames = 0;
             render_ms = push_ms = 0;
             fps_ms = millis();
+        }
+
+        if (st.screen == NOTES && notes_page::animating()) {
+            redraw();
+        }
+        // The message over the screen, drawn after the animated picture; then the screen as it was.
+        if (!toast.text.empty()) {
+            if (millis() > toast.until || st.screen == NOTES) {
+                toast.text.clear();
+                redraw();
+            } else {
+                int x, y, w, h;
+                notes_ui::draw_toast(&fb, toast.text.c_str());
+                notes_ui::toast_rect(x, y, w, h);
+                board::display().setClipRect(ox + x, oy + y, w, h);
+                fb.pushSprite(ox, oy);
+                board::display().clearClipRect();
+            }
         }
 
         uint32_t spent = millis() - frame_start;

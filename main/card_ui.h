@@ -57,7 +57,7 @@ void draw_stage(lgfx::LovyanGFX *g, int deck, int card, float t, float clock);
 
 // ---- menus ----
 
-enum MenuIcon { ICON_KNOEDEL, ICON_BREZEL, ICON_GEAR, ICON_CLOCK, ICON_TIMER };
+enum MenuIcon { ICON_KNOEDEL, ICON_BREZEL, ICON_GEAR, ICON_CLOCK, ICON_TIMER, ICON_NOTES };
 
 // One entry of the main menu, or a message: one title in the learner's
 // language, and a ring that shows which of `count` entries this is.
@@ -123,5 +123,15 @@ bool draw_setting_edit(lgfx::LovyanGFX *g, int index, int count, const char *nam
 // One setting, full screen: name, current value, hint. A null value shows the
 // power symbol instead (the power-off item).
 bool draw_setting(lgfx::LovyanGFX *g, int index, int count, const char *name, const char *value, const char *hint);
+
+// ---- for screens drawn elsewhere (notes_ui.h) ----
+
+// The fonts of the pack: German (headword sizes, text, small), the locale's
+// (small, text, menu title) and the clock's digits.
+enum class FontId { DE_XS, DE_S, DE_M, DE_MB, LOC_S, LOC_M, LOC_L, CLOCK };
+const lgfx::IFont *font(FontId id);
+
+// Knödel as a buddy (scenery.h), standing at (x, y) and `height` pixels tall.
+void draw_buddy(lgfx::LovyanGFX *g, float x, float y, float height, int mood, float clock);
 
 }  // namespace ui

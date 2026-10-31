@@ -17,6 +17,17 @@ struct UiText {
     const char *break_now, *back_to_work;         // focus timer: when a phase ends
     const char *in_a_row;                         // practice: "%d" right answers in a row
     const char *weekdays[7], *months[12];         // the clock's date, Sunday first
+    // Notes (voice memos): main menu, recording, the notes page
+    const char *notes;
+    const char *todo, *idea, *memo;               // the kinds of card
+    const char *today, *yesterday, *tomorrow;
+    const char *let_go_keep, *left_cancel, *seconds_left;  // while recording; "%d"
+    const char *kept, *kept_online, *kept_offline, *too_short, *too_short_hint, *cancelled, *cancelled_hint;
+    const char *waiting_wifi, *sending, *waiting_n, *online, *offline, *limit_reached, *no_key;  // "%d"
+    const char *noted;                            // before the note, in the message when one is made
+    const char *no_notes, *no_notes_hint, *this_note, *all_done, *remove, *cancel, *removed, *more_n;  // "%d"
+    const char *weekdays_short[7];                // a task's day, Sunday first
+    const char *date_short;                       // "%d" month, "%d" day, for a task's day further away
 };
 
 inline const UiText &ui_text(const char *locale)
@@ -27,7 +38,17 @@ inline const UiText &ui_text(const char *locale)
                               "专注", "休息", "轻触开始 · 或把手表扣过来", "轻触暂停", "轻触继续",
                               "该休息一下了", "回来继续专注", "连对 %d 个",
                               {"星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"},
-                              {"1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"}};
+                              {"1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"},
+                              "速记",
+                              "待办", "想法", "录音",
+                              "今天", "昨天", "明天",
+                              "松开 保存", "按左键 取消", "还剩 %d 秒",
+                              "已保存", "正在转录…", "联网后自动转录", "太短了", "按住说完再松开", "已取消", "这段录音没有保存",
+                              "等待联网", "转录中…", "%d 条待转录", "在线", "离线", "本月额度已用完", "还没有设置 API key",
+                              "已记下：",
+                              "还没有速记", "按住右键 说一句话", "这条速记", "全部完成", "删除", "取消", "已删除", "还有 %d 项",
+                              {"周日", "周一", "周二", "周三", "周四", "周五", "周六"},
+                              "%d月%d日"};
     static const UiText EN = {"Learn German", "Practice", "Settings", "Language", "English", "Volume", "Brightness", "Power off",
                               "Tap to change", "Tap to switch off", "Muted",
                               "Well done", "No cards yet",
@@ -36,6 +57,19 @@ inline const UiText &ui_text(const char *locale)
                               "Time for a break", "Back to focus", "%d in a row",
                               {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"},
                               {"January", "February", "March", "April", "May", "June", "July", "August", "September",
-                               "October", "November", "December"}};
+                               "October", "November", "December"},
+                              "Notes",
+                              "To do", "Idea", "Memo",
+                              "Today", "Yesterday", "Tomorrow",
+                              "Let go to keep", "Left key: cancel", "%d s left",
+                              "Kept", "Transcribing…", "Goes out when online", "Too short", "Hold the key while you talk",
+                              "Cancelled", "Nothing was kept",
+                              "Waiting for Wi-Fi", "Transcribing…", "%d waiting", "Online", "Offline",
+                              "Monthly limit reached", "No API key yet",
+                              "Noted: ",
+                              "No notes yet", "Hold the right key and talk", "This note", "All done", "Delete", "Cancel",
+                              "Deleted", "%d more",
+                              {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"},
+                              "%d/%d"};
     return strncmp(locale, "zh", 2) == 0 ? ZH : EN;
 }

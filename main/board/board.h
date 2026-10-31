@@ -43,6 +43,16 @@ Event update();
 // A key or the screen is being touched right now (keeps the watch awake).
 bool touched();
 
+// Where the last SELECT tapped, in display pixels.
+void tap_point(int &x, int &y);
+
+// The left key is held down (as read by the last talk_key_held()): cancels a recording.
+bool cancel_key_held();
+
+// Waits until no key is held, and drops the presses that ended meanwhile, so
+// that a key used while recording does not also count as a click.
+void wait_keys_released();
+
 // ---- sound --------------------------------------------------------------------
 
 void set_volume(uint8_t volume);  // 0..255
