@@ -15,9 +15,11 @@ std::string transcribe(const int16_t *pcm, size_t samples, uint32_t rate);
 // The same for an Ogg Opus file (memos.h).
 std::string transcribe_ogg(const uint8_t *ogg, size_t size);
 
-// The memo as a note, the JSON {"kind": "todo"|"idea", "items": [{"text", "due"}],
-// "text"}; `context` tells the day it was said and the two weeks after it
-// ("Today: ...\nCalendar: ..."). Empty when it failed.
+// The memo as a note, the JSON {"kind": "todo"|"idea", "items": [{"text",
+// "when": {"type": "none"|"days"|"weekday"|"date", "days", "weekday",
+// "next_week", "date"}}], "text"}: how each task's day was named, for
+// notes_sync.cpp to count. `context` tells the day it was said
+// ("Today: Saturday, 2026-10-31"). Empty when it failed.
 std::string tidy(const std::string &transcript, const char *context);
 
 // Between these the requests share one connection: TLS's handshake, a second

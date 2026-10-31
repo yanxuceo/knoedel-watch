@@ -518,7 +518,8 @@ int done_today()
     return n;
 }
 
-bool animating() { return cheering || !revealing.empty() || (notes_sync::busy() && !memos::waiting().empty()); }
+// Sending changes only the status line: main.cpp redraws when it starts and ends.
+bool animating() { return cheering || !revealing.empty(); }
 
 void arrived(const std::string &note_json)
 {

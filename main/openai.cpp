@@ -18,11 +18,13 @@ static const char *TRANSCRIBE_PROMPT = "A voice memo. The speaker mixes Chinese,
 
 // Tried on real memos (tools/mic_test.py). Without the rule on reasons,
 // "给房东打电话 wegen der Heizung" became two tasks, one made up; asked to tidy
-// more freely, it wrote Milch as Milk; counting days itself it put Freitag three
-// weeks late, hence the calendar in the input (notes_sync.cpp). Reasoning
-// "low" was 2-4 times slower and dropped a task.
-// "早晨七点就得去" became a task of its own, and "厕所的厕所的那个纸" stayed as said,
-// until the rule on times and repeated words.
+// more freely, it wrote Milch as Milk; "早晨七点就得去" became a task of its own
+// and "厕所的厕所的那个纸" stayed as said until the rule on times and repeated
+// words. Reasoning "low" was 2-4 times slower and dropped a task.
+// Days: counting them itself, the model put a Friday three weeks late, and even
+// with a calendar to look in, "下周三" said on a Saturday came out a week late
+// now and then. So it only says how a day was named ("when"), the same every
+// time, and notes_sync.cpp counts.
 static const char *TIDY_INSTRUCTIONS =
     "You turn a short voice memo into a note for a small watch screen. The memo may mix Chinese, German "
     "and English, even within one sentence. Copy the speaker's words exactly as spoken, each in its own "
@@ -32,16 +34,23 @@ static const char *TIDY_INSTRUCTIONS =
     "the day words once they are in due (明天, 下周一, 之前, Freitag, tomorrow), and background that is "
     "not a task. A reason (wegen …, 因为 …) or a time of day (早晨七点, um 7 Uhr, at 9) stays in its task, it is "
     "not a task of its own. Inside a task, drop words said twice and fillers in the middle too "
-    "(买一卷那个厕所的厕所的那个纸 becomes 买一卷厕所的纸); keep every other word. due: the date "
-    "from the calendar given when the memo names a day for that task (a day said before several tasks "
-    "joined by 然后/und/and counts for each of them); else null. text is ''. For an idea: items is empty "
+    "(买一卷那个厕所的厕所的那个纸 becomes 买一卷厕所的纸); keep every other word. when: how the memo names "
+    "that task's day, nothing more: type 'days' for 今天/明天/后天/heute/morgen/übermorgen/today/tomorrow (days "
+    "0, 1, 2); 'weekday' for a day of the week (weekday 1 = Monday .. 7 = Sunday; next_week true only when the "
+    "memo says 下周/下个星期/nächste Woche/next week, not for 这周/this/plain weekdays); 'date' for a calendar "
+    "date (date as ISO, the year from today); 'none' when no day is named. A day said before several tasks "
+    "joined by 然后/und/and counts for each of them. Never compute dates from weekdays yourself. text is ''. "
+    "For an idea: items is empty "
     "and text is the memo without filler words.";
 
 static const char *TIDY_SCHEMA =
     R"({"type":"object","additionalProperties":false,"required":["kind","items","text"],"properties":{)"
     R"("kind":{"type":"string","enum":["todo","idea"]},)"
-    R"("items":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["text","due"],)"
-    R"("properties":{"text":{"type":"string"},"due":{"type":["string","null"]}}}},)"
+    R"("items":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["text","when"],)"
+    R"("properties":{"text":{"type":"string"},"when":{"type":"object","additionalProperties":false,)"
+    R"("required":["type","days","weekday","next_week","date"],"properties":{)"
+    R"("type":{"type":"string","enum":["none","days","weekday","date"]},"days":{"type":["integer","null"]},)"
+    R"("weekday":{"type":["integer","null"]},"next_week":{"type":"boolean"},"date":{"type":["string","null"]}}}}}},)"
     R"("text":{"type":"string"}}})";
 
 // api.openai.com is checked against a few roots of our own, not the bundle:

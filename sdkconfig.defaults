@@ -19,3 +19,8 @@ CONFIG_COMPILER_OPTIMIZATION_PERF=y
 # Notes go online: Wi-Fi and HTTPS keep their buffers in PSRAM where they can
 CONFIG_SPIRAM_TRY_ALLOCATE_WIFI_LWIP=y
 CONFIG_MBEDTLS_EXTERNAL_MEM_ALLOC=y
+# Core 0 keeps the screen and the keys: Wi-Fi, TCP/IP and the sending of the
+# notes (notes_sync.cpp) run on core 1. Together on core 0 they made the main
+# menu draw in 95-199 ms a frame instead of 24 while a memo was being sent.
+CONFIG_ESP_WIFI_TASK_PINNED_TO_CORE_1=y
+CONFIG_LWIP_TCPIP_TASK_AFFINITY_CPU1=y

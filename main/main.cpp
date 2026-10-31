@@ -1286,9 +1286,13 @@ extern "C" void app_main(void)
             fps_ms = millis();
         }
 
-        if (st.screen == NOTES && notes_page::animating()) {
+        // The notes page: every frame while something moves; once when sending starts or ends.
+        static bool was_sending = false;
+        const bool sending = notes_sync::busy();
+        if (st.screen == NOTES && (notes_page::animating() || sending != was_sending)) {
             redraw();
         }
+        was_sending = sending;
         // The message over the screen, drawn after the animated picture; then the screen as it was.
         if (!toast.text.empty()) {
             if (millis() > toast.until || st.screen == NOTES) {

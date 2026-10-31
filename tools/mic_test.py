@@ -33,7 +33,7 @@ TIDY_MODEL = "gpt-5-mini"
 # here was given back as the transcript when the start of a memo was unclear: never use one.
 TRANSCRIBE_PROMPT = "A voice memo. The speaker mixes Chinese, German and English, often within one sentence; write each word in the language it is spoken in."
 
-# Tried on real memos (see main/openai.cpp): the same rules and calendar as the watch.
+# Tried on real memos (see main/openai.cpp): the same rules as the watch; days are counted here.
 TIDY_INSTRUCTIONS = (
     "You turn a short voice memo into a note for a small watch screen. The memo may mix Chinese, German "
     "and English, even within one sentence. Copy the speaker's words exactly as spoken, each in its own "
@@ -43,9 +43,13 @@ TIDY_INSTRUCTIONS = (
     "the day words once they are in due (明天, 下周一, 之前, Freitag, tomorrow), and background that is "
     "not a task. A reason (wegen …, 因为 …) or a time of day (早晨七点, um 7 Uhr, at 9) stays in its task, it is "
     "not a task of its own. Inside a task, drop words said twice and fillers in the middle too "
-    "(买一卷那个厕所的厕所的那个纸 becomes 买一卷厕所的纸); keep every other word. due: the date "
-    "from the calendar given when the memo names a day for that task (a day said before several tasks "
-    "joined by 然后/und/and counts for each of them); else null. text is ''. For an idea: items is empty "
+    "(买一卷那个厕所的厕所的那个纸 becomes 买一卷厕所的纸); keep every other word. when: how the memo names "
+    "that task's day, nothing more: type 'days' for 今天/明天/后天/heute/morgen/übermorgen/today/tomorrow (days "
+    "0, 1, 2); 'weekday' for a day of the week (weekday 1 = Monday .. 7 = Sunday; next_week true only when the "
+    "memo says 下周/下个星期/nächste Woche/next week, not for 这周/this/plain weekdays); 'date' for a calendar "
+    "date (date as ISO, the year from today); 'none' when no day is named. A day said before several tasks "
+    "joined by 然后/und/and counts for each of them. Never compute dates from weekdays yourself. text is ''. "
+    "For an idea: items is empty "
     "and text is the memo without filler words."
 )
 TIDY_SCHEMA = {
@@ -59,8 +63,13 @@ TIDY_SCHEMA = {
             "items": {
                 "type": "object",
                 "additionalProperties": False,
-                "required": ["text", "due"],
-                "properties": {"text": {"type": "string"}, "due": {"type": ["string", "null"]}},
+                "required": ["text", "when"],
+                "properties": {"text": {"type": "string"}, "when": {
+                    "type": "object", "additionalProperties": False,
+                    "required": ["type", "days", "weekday", "next_week", "date"],
+                    "properties": {"type": {"type": "string", "enum": ["none", "days", "weekday", "date"]},
+                                   "days": {"type": ["integer", "null"]}, "weekday": {"type": ["integer", "null"]},
+                                   "next_week": {"type": "boolean"}, "date": {"type": ["string", "null"]}}}},
             },
         },
         "text": {"type": "string"},
@@ -95,9 +104,7 @@ def transcribe(key, wav_path):
 
 def tidy(key, text):
     today = datetime.date.today()
-    days = [today + datetime.timedelta(d) for d in range(15)]
-    context = (f"Today: {today:%A, %Y-%m-%d}\nCalendar: "
-               + ", ".join(f"{d:%a %Y-%m-%d}" for d in days))
+    context = f"Today: {today:%A, %Y-%m-%d}"
     body = {
         "model": TIDY_MODEL,
         "instructions": TIDY_INSTRUCTIONS,
@@ -106,7 +113,28 @@ def tidy(key, text):
         "text": {"format": {"type": "json_schema", "name": "note", "strict": True, "schema": TIDY_SCHEMA}},
     }
     out = openai("responses", key, json.dumps(body).encode(), "application/json")
-    return json.loads(next(c["text"] for o in out["output"] if o["type"] == "message" for c in o["content"]))
+    note = json.loads(next(c["text"] for o in out["output"] if o["type"] == "message" for c in o["content"]))
+    for item in note["items"]:  # counted here, as on the watch (main/notes_sync.cpp)
+        day = count_day(item.pop("when"), today)
+        item["due"] = day.isoformat() if day else None
+    return note
+
+
+def count_day(when, base):
+    """"下周三" is the Wednesday of the week after, "周五" the next Friday, "明天" the day after."""
+    if when["type"] == "days" and when["days"] is not None and 0 <= when["days"] < 400:
+        return base + datetime.timedelta(when["days"])
+    if when["type"] == "weekday" and when["weekday"] and 1 <= when["weekday"] <= 7:
+        today = base.isoweekday()
+        if when["next_week"]:
+            return base + datetime.timedelta(7 - (today - 1) + (when["weekday"] - 1))
+        return base + datetime.timedelta((when["weekday"] - today) % 7 or 7)
+    if when["type"] == "date" and when["date"]:
+        try:
+            return datetime.date.fromisoformat(when["date"])
+        except ValueError:
+            return None
+    return None
 
 
 def handle(samples_b64, rate, samples, out_dir, key):

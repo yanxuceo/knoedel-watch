@@ -8,6 +8,7 @@
 #include <freertos/task.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
 #include <atomic>
@@ -26,35 +27,90 @@ namespace notes_sync {
 
 static const char *TAG = "notes_sync";
 
-// What the model needs to turn "明天" or "Freitag" into a date: the day the
-// memo was said (its id, "20261031-111508") and the two weeks after it. Left
-// to count days itself, the model once put a Friday three weeks late.
+// The day a memo was said, from its id "20261031-111508" (noon, so that
+// adding days never meets a change of summer time); false when unknown.
+static bool said_on(const std::string &id, struct tm &day)
+{
+    day = {};
+    if (sscanf(id.c_str(), "%4d%2d%2d", &day.tm_year, &day.tm_mon, &day.tm_mday) != 3 || day.tm_year < 2001) {
+        return false;
+    }
+    day.tm_year -= 1900;
+    day.tm_mon -= 1;
+    day.tm_hour = 12;
+    mktime(&day);  // sets the weekday
+    return true;
+}
+
+// "Today: Saturday, 2026-10-31": what "明天" or "十一月十号" are counted from.
 static std::string context(const std::string &id)
 {
-    struct tm t = {};
-    if (sscanf(id.c_str(), "%4d%2d%2d", &t.tm_year, &t.tm_mon, &t.tm_mday) != 3 || t.tm_year < 2001) {
+    static const char *DAY[] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+    struct tm t;
+    if (!said_on(id, t)) {
         return "Today: unknown";
     }
-    t.tm_year -= 1900;
-    t.tm_mon -= 1;
-    t.tm_hour = 12;
-    static const char *DAY[] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
-    std::string s;
-    for (int d = 0; d < 15; d++) {
-        struct tm day = t;
-        day.tm_mday += d;
-        mktime(&day);  // normalises the date and sets the weekday
-        char buf[48];
-        if (d == 0) {
-            snprintf(buf, sizeof buf, "Today: %s, %04d-%02d-%02d\nCalendar: ", DAY[day.tm_wday], day.tm_year + 1900,
-                     day.tm_mon + 1, day.tm_mday);
-            s += buf;
-        }
-        snprintf(buf, sizeof buf, "%s%.3s %04d-%02d-%02d", d ? ", " : "", DAY[day.tm_wday], day.tm_year + 1900,
-                 day.tm_mon + 1, day.tm_mday);
-        s += buf;
+    char buf[48];
+    snprintf(buf, sizeof buf, "Today: %s, %04d-%02d-%02d", DAY[t.tm_wday], t.tm_year + 1900, t.tm_mon + 1, t.tm_mday);
+    return buf;
+}
+
+// A task's day as the model heard it (openai.h), counted from the day the memo
+// was said: "下周三" is the Wednesday of the week after, "周五" the next Friday,
+// "明天" the day after. The ISO date, or "" for none.
+static std::string count_day(const cJSON *when, const std::string &id)
+{
+    struct tm day;
+    const cJSON *type = cJSON_GetObjectItem(when, "type");
+    if (!cJSON_IsString(type) || !said_on(id, day)) {
+        return "";
     }
-    return s;
+    const cJSON *days = cJSON_GetObjectItem(when, "days"), *weekday = cJSON_GetObjectItem(when, "weekday"),
+                *date = cJSON_GetObjectItem(when, "date");
+    int add = -1;
+    if (strcmp(type->valuestring, "days") == 0 && cJSON_IsNumber(days) && days->valueint >= 0 && days->valueint < 400) {
+        add = days->valueint;
+    } else if (strcmp(type->valuestring, "weekday") == 0 && cJSON_IsNumber(weekday) && weekday->valueint >= 1 &&
+               weekday->valueint <= 7) {
+        const int today = day.tm_wday == 0 ? 7 : day.tm_wday, want = weekday->valueint;  // Monday 1 .. Sunday 7
+        if (cJSON_IsTrue(cJSON_GetObjectItem(when, "next_week"))) {
+            add = 7 - (today - 1) + (want - 1);  // to Monday of next week, then to the day
+        } else {
+            add = (want - today + 7) % 7;
+            add = add ? add : 7;  // "周五" said on a Friday: the next one
+        }
+    } else if (strcmp(type->valuestring, "date") == 0 && cJSON_IsString(date)) {
+        int y, m, d;
+        if (sscanf(date->valuestring, "%4d-%2d-%2d", &y, &m, &d) == 3 && y > 2000 && m >= 1 && m <= 12 && d >= 1 && d <= 31) {
+            char buf[40];
+            snprintf(buf, sizeof buf, "%04d-%02d-%02d", y, m, d);
+            return buf;
+        }
+    }
+    if (add < 0) {
+        return "";
+    }
+    day.tm_mday += add;
+    mktime(&day);
+    char buf[40];
+    snprintf(buf, sizeof buf, "%04d-%02d-%02d", day.tm_year + 1900, day.tm_mon + 1, day.tm_mday);
+    return buf;
+}
+
+// The tidied note with each task's "when" turned into "due".
+static void count_days(cJSON *note, const std::string &id)
+{
+    cJSON *item;
+    cJSON_ArrayForEach(item, cJSON_GetObjectItem(note, "items"))
+    {
+        const std::string due = count_day(cJSON_GetObjectItem(item, "when"), id);
+        cJSON_DeleteItemFromObject(item, "when");
+        if (due.empty()) {
+            cJSON_AddNullToObject(item, "due");
+        } else {
+            cJSON_AddStringToObject(item, "due", due.c_str());
+        }
+    }
 }
 
 // One go: online, every memo waiting, offline again.
@@ -99,6 +155,9 @@ static Result go()
         const std::string note = text.empty() ? "" : openai::tidy(text, context(id).c_str());
         const int64_t c = esp_timer_get_time();
         cJSON *n = note.empty() ? nullptr : cJSON_Parse(note.c_str());
+        if (n != nullptr) {
+            count_days(n, id);
+        }
         if (n == nullptr) {
             n = cJSON_CreateObject();
             cJSON_AddStringToObject(n, "kind", "idea");
@@ -212,7 +271,9 @@ static void task(void *)
 }
 
 // TLS and the JSON of the answers want more than the default stack; internal
-// RAM, as Wi-Fi and flash are used from it.
+// RAM, as Wi-Fi and flash are used from it. On core 1 and below the main
+// task's priority: TLS's handshake is seconds of arithmetic, which on core 0
+// made the screen and the keys slow.
 void start()
 {
     nvs_handle_t h;
@@ -223,7 +284,7 @@ void start()
     }
     saving_on = v != 0;
     lock = xSemaphoreCreateMutex();
-    xTaskCreatePinnedToCore(task, "notes_sync", 16 * 1024, nullptr, 3, &handle, 0);
+    xTaskCreatePinnedToCore(task, "notes_sync", 16 * 1024, nullptr, 1, &handle, 1);
     request();  // memos from before: looked at now
 }
 
