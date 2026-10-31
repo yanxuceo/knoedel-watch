@@ -1,7 +1,10 @@
-# Name,   Type, SubType, Offset,   Size
+# Name,   Type, SubType,  Offset,   Size
 # The program and the learning content are flashed separately: "content" holds one
-# content pack (decks, fonts, audio), written by tools/flash_content.py.
-nvs,      data, nvs,     0x9000,   0x6000
-phy_init, data, phy,     0xf000,   0x1000
-factory,  app,  factory, 0x10000,  0x300000
-content,  data, 0x40,    0x310000, 0xCF0000
+# content pack (decks, fonts, audio), written by tools/flash_content.py. "notes"
+# keeps the voice memos waiting to go online, and the notes made of them (LittleFS);
+# it was taken from the end of "content", so that a pack already on a watch stays valid.
+nvs,      data, nvs,      0x9000,   0x6000
+phy_init, data, phy,      0xf000,   0x1000
+factory,  app,  factory,  0x10000,  0x300000
+content,  data, 0x40,     0x310000, 0xBF0000
+notes,    data, littlefs, 0xF00000, 0x100000

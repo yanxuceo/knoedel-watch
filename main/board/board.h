@@ -34,6 +34,7 @@ enum class Event : uint8_t {
     NEXT,      // the right key, or a swipe to the left
     SELECT,    // a tap on the screen
     BACK,      // holding the left key
+    TALK,      // holding the right key: talk while it is held (see talk_key_held)
 };
 
 // Call once per frame: reads keys and touch, returns at most one event.
@@ -55,6 +56,34 @@ void stop_sound();
 
 // A beep for the app's little tunes; it plays alongside play_pcm().
 void tone(uint16_t hz, uint16_t ms);
+
+// ---- microphone (optional) ------------------------------------------------------
+
+bool has_mic();
+
+// The right key is held down right now (reads the keys afresh).
+bool talk_key_held();
+
+// Starts the microphone. Sound stops until mic_end(): on some boards the
+// speaker and the microphone share one codec, which may also need up to a
+// second after starting before its samples are more than silence.
+bool mic_begin();
+
+// Queues `samples` 16-bit mono samples at `rate` to be filled into `pcm` in
+// the background. Queued requests follow each other without a gap. False
+// while two are waiting.
+bool mic_record(int16_t *pcm, size_t samples, uint32_t rate);
+
+// Requests queued and not filled yet: 0, 1 or 2.
+int mic_busy();
+
+// Waits for the queued requests, stops the microphone and gives the sound back.
+void mic_end();
+
+// Starts the microphone once and waits until it delivers sound (up to about a
+// second), so that the first recording does not lose its first words. Call it
+// once after starting, when no sound plays.
+void mic_warm_up();
 
 // ---- motion sensor (optional) ---------------------------------------------------
 

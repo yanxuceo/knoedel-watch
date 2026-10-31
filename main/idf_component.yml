@@ -1,6 +1,12 @@
 dependencies:
   idf: ">=5.1"
   m5stack/m5unified: "^0.2.25"
+  # JSON for the OpenAI requests of the notes (no longer part of ESP-IDF 6)
+  espressif/cjson: "^1.7.18"
+  # The notes partition: memos waiting to go online, and the notes (power-loss safe)
+  joltwallet/littlefs: "^1.22.3"
+  # Opus, for the memos: about 2 KB a second instead of 32 KB as WAV
+  espressif/esp_audio_codec: "^2.3.0"
   espressif/esp_lcd_co5300:
     version: "2.2.0"
     rules:

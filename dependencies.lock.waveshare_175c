@@ -1,4 +1,14 @@
 dependencies:
+  espressif/cjson:
+    component_hash: e788323270d90738662d66fffa910bfe1fba019bba087f01557e70c40485b469
+    dependencies:
+    - name: idf
+      require: private
+      version: '>=5.0'
+    source:
+      registry_url: https://components.espressif.com/
+      type: service
+    version: 1.7.19~2
   espressif/cmake_utilities:
     component_hash: 351350613ceafba240b761b4ea991e0f231ac7a9f59a9ee901f751bddc0bb18f
     dependencies:
@@ -9,6 +19,16 @@ dependencies:
       registry_url: https://components.espressif.com
       type: service
     version: 0.5.3
+  espressif/esp_audio_codec:
+    component_hash: a5b9275af74247e3ce536d16a7080e4d77207a185b63e1bea368eb4d57176c2b
+    dependencies:
+    - name: idf
+      require: private
+      version: '>=4.4'
+    source:
+      registry_url: https://components.espressif.com/
+      type: service
+    version: 2.6.2
   espressif/esp_codec_dev:
     component_hash: df70f10af8d7b922add7b9d07372c9c97ab356e58d72b7a892050227c2d44348
     dependencies:
@@ -47,13 +67,23 @@ dependencies:
     source:
       type: idf
     version: 6.0.1
+  joltwallet/littlefs:
+    component_hash: e1a0f4a6adf821759cb34703a91107bbdce5d7ff6f4728f40ab012bb87842974
+    dependencies:
+    - name: idf
+      require: private
+      version: '>=5.0'
+    source:
+      registry_url: https://components.espressif.com/
+      type: service
+    version: 1.23.1
   m5stack/m5gfx:
-    component_hash: 78ae906103ac18fdfc02b80e9d216ee390a7ca940f577b57272c609a0e4d7e1c
+    component_hash: e97781f48f14c6c65b90ba7cfe27deb3ff7eae8ec61a60040ab3615d166c82f4
     dependencies: []
     source:
       registry_url: https://components.espressif.com
       type: service
-    version: 0.2.33
+    version: 0.2.36
   m5stack/m5unified:
     component_hash: 1de722fe61a83c64aaa8f2fc517a601270e758308e7eb4f045530887d74864ef
     dependencies:
@@ -80,11 +110,14 @@ dependencies:
       type: service
     version: 2.0.0
 direct_dependencies:
+- espressif/cjson
+- espressif/esp_audio_codec
 - espressif/esp_codec_dev
 - espressif/esp_lcd_co5300
 - idf
+- joltwallet/littlefs
 - m5stack/m5unified
 - waveshare/esp_lcd_touch_cst9217
-manifest_hash: 9ebe32bfd595239b312eec4f6266eaed865746604d22f85e9f72845c277e879e
+manifest_hash: 90deeb4675b36d9f69654aed58caca4aa041c1479d6cffe676102006688262a8
 target: esp32s3
 version: 3.0.0

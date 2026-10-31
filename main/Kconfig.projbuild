@@ -15,4 +15,12 @@ config KNOEDEL_BOARD_WAVESHARE_175C
 
 endchoice
 
+config KNOEDEL_MIC_TEST
+    bool "Microphone test: hold the right key to record"
+    default n
+    help
+        For trying the microphone: holding the right key records up to 30 s,
+        which then goes out over USB to tools/mic_test.py on the computer.
+        Not for a release.
+
 endmenu

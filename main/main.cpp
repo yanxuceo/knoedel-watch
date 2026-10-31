@@ -41,6 +41,12 @@
 #include "progress.h"
 #include "character.h"
 #include "ui_strings.h"
+#include "memos.h"
+#include "notes_flow.h"
+#include "usb_commands.h"
+#if CONFIG_KNOEDEL_MIC_TEST
+#include "mic_test.h"
+#endif
 
 static const char *TAG = "cards";
 
@@ -988,6 +994,8 @@ extern "C" void app_main(void)
         nvs_flash_init();
     }
     board::begin();
+    memos::begin();
+    usb_commands::start();
     load_state();
 
     const bool mounted = content_mount();
@@ -1027,6 +1035,11 @@ extern "C" void app_main(void)
              two_languages ? " (two in the pack)" : "");
     show();
     st_dirty = false;
+    // While the first screen is up: the microphone is ready before the right key is first held.
+    if (board::has_mic()) {
+        board::mic_warm_up();
+        board::set_volume(VOLUMES[st.volume]);
+    }
 
     // last_input_ms: keys and touch, for switching off; last_wake_ms: also
     // picking the watch up, for dimming.
@@ -1050,6 +1063,14 @@ extern "C" void app_main(void)
             break;
         case board::Event::SELECT:
             tap();
+            break;
+        case board::Event::TALK:
+#if CONFIG_KNOEDEL_MIC_TEST
+            mic_test::run();
+#else
+            notes_flow::talk();
+#endif
+            show();
             break;
         default:
             input = board::touched();

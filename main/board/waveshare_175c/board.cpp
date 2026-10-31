@@ -132,6 +132,14 @@ Event update() {
     return Event::NONE;
 }
 bool touched() { return boot.isPressed() || power_key.isPressed() || touch.getDetail().isPressed(); }
+// The board's two microphones (ES7210) are not used yet.
+bool has_mic() { return false; }
+bool talk_key_held() { return false; }
+bool mic_begin() { return false; }
+bool mic_record(int16_t *, size_t, uint32_t) { return false; }
+int mic_busy() { return 0; }
+void mic_end() {}
+void mic_warm_up() {}
 bool has_motion() { return imu_ready; }
 bool acceleration(float &x, float &y, float &z) {
     uint8_t data[6];

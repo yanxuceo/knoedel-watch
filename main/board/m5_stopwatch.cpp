@@ -3,7 +3,8 @@
 // M5Unified knows all of it.
 //
 //   KEY A : previous     hold KEY A : back     swipe right : previous
-//   KEY B : next         tap        : select   swipe left  : next
+//   KEY B : next         hold KEY B : talk     swipe left  : next
+//                        tap        : select
 
 #include "board.h"
 
@@ -19,9 +20,14 @@ static const char *TAG = "board";
 
 void begin()
 {
-    auto cfg = M5.config();
-    cfg.internal_mic = false;
-    M5.begin(cfg);
+    // The microphone is set up here and started only by mic_begin().
+    M5.begin(M5.config());
+    auto mic = M5.Mic.config();
+    // Raw samples: speech near the watch is about -45 dBFS (rms). The gain is
+    // applied by the app with a soft limiter (memos.cpp): this magnification
+    // clips hard, and at 12 the peaks already reached full scale.
+    mic.magnification = 1;
+    M5.Mic.config(mic);
 
     float ax = 0, ay = 0, az = 0;
     M5.Imu.update();
@@ -44,6 +50,9 @@ Event update()
     }
     if (M5.BtnA.wasClicked()) {
         return Event::PREVIOUS;
+    }
+    if (M5.BtnB.wasHold()) {
+        return Event::TALK;
     }
     if (M5.BtnB.wasClicked()) {
         return Event::NEXT;
@@ -76,6 +85,64 @@ void stop_sound()
 }
 
 void tone(uint16_t hz, uint16_t ms) { M5.Speaker.tone(hz, ms, 1); }
+
+// ---- microphone -----------------------------------------------------------------
+// The ES8311 serves both: the speaker's and the microphone's I2S ports share
+// its clock pins, so only one of them runs at a time.
+
+bool has_mic() { return M5.Mic.isEnabled(); }
+
+bool talk_key_held()
+{
+    M5.update();
+    return M5.BtnB.isPressed();
+}
+
+bool mic_begin()
+{
+    M5.Speaker.end();
+    return M5.Mic.begin();
+}
+
+bool mic_record(int16_t *pcm, size_t samples, uint32_t rate)
+{
+    return M5.Mic.isRecording() < 2 && M5.Mic.record(pcm, samples, rate);
+}
+
+int mic_busy() { return (int)M5.Mic.isRecording(); }
+
+void mic_end()
+{
+    while (M5.Mic.isRecording()) {
+        vTaskDelay(pdMS_TO_TICKS(5));
+    }
+    M5.Mic.end();
+    M5.Speaker.begin();
+}
+
+// After power-up the ES8311 delivers zeros for about a second (measured: 0.99 s
+// at every first recording, none after); it stays ready after mic_end().
+void mic_warm_up()
+{
+    static int16_t chunk[800];  // 50 ms at 16 kHz
+    const TickType_t t0 = xTaskGetTickCount();
+    if (!mic_begin()) {
+        return;
+    }
+    bool ready = false;
+    while (!ready && pdTICKS_TO_MS(xTaskGetTickCount() - t0) < 2000) {
+        if (M5.Mic.record(chunk, 800, 16000)) {
+            while (M5.Mic.isRecording()) {
+                vTaskDelay(pdMS_TO_TICKS(5));
+            }
+            for (int16_t s : chunk) {
+                ready |= s > 2 || s < -2;
+            }
+        }
+    }
+    mic_end();
+    ESP_LOGI(TAG, "microphone %s after %lu ms", ready ? "ready" : "still silent", (unsigned long)pdTICKS_TO_MS(xTaskGetTickCount() - t0));
+}
 
 // ---- motion sensor --------------------------------------------------------------
 
