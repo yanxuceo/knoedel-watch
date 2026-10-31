@@ -57,7 +57,8 @@ jobs:
         shell: bash
         run: |
           apt-get update -qq
-          apt-get install -y -qq --no-install-recommends libsdl2-dev g++ >/dev/null
+          # ffmpeg: the pack holds the decks' audio at 32 kbit/s (tools/import_decks.py)
+          apt-get install -y -qq --no-install-recommends libsdl2-dev g++ ffmpeg >/dev/null
           . $IDF_PATH/export.sh
           python -m pip install -q jsonschema pillow fonttools
       - name: Fetch M5GFX
