@@ -476,8 +476,22 @@ static void render_setting()
 }
 
 // The sentence book: the meaning in the learner's language (or the other one
-// when only that was given), the German, the pattern.
+// when only that was given), the German, the pattern. The sentences come in an
+// order shuffled anew each time the book is opened, and after the last one.
 static int sentence_pos = 0;
+static std::vector<int> sentence_order;
+
+static void shuffle_sentences(int n)
+{
+    sentence_order.resize(n);
+    for (int i = 0; i < n; i++) {
+        sentence_order[i] = i;
+    }
+    for (int i = n - 1; i > 0; i--) {
+        std::swap(sentence_order[i], sentence_order[esp_random() % (i + 1)]);
+    }
+    sentence_pos = 0;
+}
 
 static void render_sentence()
 {
@@ -486,8 +500,10 @@ static void render_sentence()
         notes_ui::draw_no_sentences(&fb);
         return;
     }
-    sentence_pos = sentence_pos < (int)list.size() ? sentence_pos : 0;
-    const sentences::Sentence &s = list[sentence_pos];
+    if (sentence_order.size() != list.size()) {  // changed over USB meanwhile
+        shuffle_sentences((int)list.size());
+    }
+    const sentences::Sentence &s = list[sentence_order[sentence_pos]];
     const bool zh = strncmp(deck_locale(), "zh", 2) == 0;
     const std::string &meaning = zh ? (s.zh.empty() ? s.en : s.zh) : (s.en.empty() ? s.zh : s.en);
     notes_ui::draw_sentence(&fb, {meaning.c_str(), s.de.c_str(), s.pattern.c_str(), s.topic.c_str()}, face, sentence_pos,
@@ -907,7 +923,15 @@ static void step(int dir)
         break;
     case SENTENCES: {
         const int n = (int)sentences::all().size();
-        sentence_pos = n ? wrap(sentence_pos + dir, n) : 0;
+        if (n > 1 && dir > 0 && sentence_pos == n - 1) {
+            const int last = sentence_order[sentence_pos];
+            shuffle_sentences(n);  // a new round, not starting with the one just seen
+            if (sentence_order[0] == last) {
+                std::swap(sentence_order[0], sentence_order[n - 1]);
+            }
+        } else {
+            sentence_pos = n ? wrap(sentence_pos + dir, n) : 0;
+        }
         break;
     }
     default:
@@ -981,6 +1005,7 @@ static void tap()
         }
         if (st.home_item == ITEM_SENTENCES) {
             st.screen = SENTENCES;
+            shuffle_sentences((int)sentences::all().size());
             show();
             break;
         }
