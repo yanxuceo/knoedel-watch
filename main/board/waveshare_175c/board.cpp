@@ -148,6 +148,8 @@ void tap_point(int &x, int &y) {
 bool cancel_key_held() { return false; }
 void wait_keys_released() {}
 // The board's two microphones (ES7210) are not used yet.
+bool has_vibration() { return false; }
+void vibrate(uint8_t) {}
 bool has_mic() { return false; }
 bool talk_key_held() { return false; }
 bool mic_begin() { return false; }

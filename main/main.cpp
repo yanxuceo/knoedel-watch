@@ -112,7 +112,7 @@ static struct {
 } pr;
 
 // The focus timer runs on in the background; when a phase ends the watch
-// shows the timer and calls.
+// shows the timer and buzzes twice, quietly (a tune on boards without a motor).
 static constexpr int FOCUS_S = 25 * 60, BREAK_S = 5 * 60;
 static struct {
     bool focus = true, running = false, alert = false;
@@ -143,6 +143,12 @@ struct Note {
 static const Note CHEER_TUNE[] = {{1047, 90}, {1319, 90}, {1568, 90}, {2093, 220}, {0, 0}};
 static const Note FOCUS_DONE_TUNE[] = {{1568, 150}, {1319, 150}, {1047, 320}, {0, 260}, {1568, 150}, {1319, 150}, {1047, 320}, {0, 0}};
 static const Note BREAK_DONE_TUNE[] = {{1047, 140}, {1319, 140}, {1568, 140}, {2093, 360}, {0, 0}};
+// The motor's pattern: on, off, on, ... in ms; 0 ends it.
+static const uint16_t TIMER_BUZZ[] = {220, 180, 220, 0};
+static constexpr uint8_t BUZZ_LEVEL = 200;
+static const uint16_t *s_buzz;
+static int s_buzz_step;
+static uint32_t s_buzz_ms;
 static const Note *s_tune;
 static int s_note;
 static uint32_t s_note_ms;
@@ -168,6 +174,38 @@ static void tune_tick()
         board::tone(n.hz, n.ms);
     }
     s_note_ms = millis() + n.ms;
+}
+
+static void buzz(const uint16_t *pattern)
+{
+    s_buzz = pattern;
+    s_buzz_step = 0;
+    s_buzz_ms = 0;
+}
+
+static void buzz_tick()
+{
+    if (s_buzz == nullptr || millis() < s_buzz_ms) {
+        return;
+    }
+    const uint16_t ms = s_buzz[s_buzz_step];
+    board::vibrate(ms && s_buzz_step % 2 == 0 ? BUZZ_LEVEL : 0);
+    if (ms == 0) {
+        s_buzz = nullptr;
+        return;
+    }
+    s_buzz_step++;
+    s_buzz_ms = millis() + ms;
+}
+
+// A phase of the timer is over: a buzz where there is a motor, else a tune.
+static void timer_call()
+{
+    if (board::has_vibration()) {
+        buzz(TIMER_BUZZ);
+    } else {
+        play_tune(tm.focus ? FOCUS_DONE_TUNE : BREAK_DONE_TUNE);
+    }
 }
 
 // ---- settings -----------------------------------------------------------------
@@ -762,7 +800,7 @@ static void timer_tick()
     tm.remaining = 0;
     tm.alert = true;
     tm.alert_ms = millis();
-    play_tune(tm.focus ? FOCUS_DONE_TUNE : BREAK_DONE_TUNE);
+    timer_call();
     st.screen = TIMER;
     board::display().setBrightness(BRIGHTNESSES[st.brightness]);
     show();
@@ -1235,6 +1273,7 @@ extern "C" void app_main(void)
         }
 
         tune_tick();
+        buzz_tick();
         timer_tick();
         // A note made in the background: it comes in on the notes page; elsewhere a message tells of it.
         static uint32_t syncs_seen = 0;
@@ -1257,8 +1296,9 @@ extern "C" void app_main(void)
         if (st.screen == PRACTICE && pr.phase == CHEER && millis() - pr.cheer_ms > CHEER_MS) {
             practice_next();
         }
-        // A timer that has run out calls twice more, then waits quietly.
-        if (tm.alert && millis() - tm.alert_ms > 6000 && alert_calls < 2) {
+        // A timer that has run out plays its tune twice more, then waits
+        // quietly; the buzz comes only once.
+        if (tm.alert && !board::has_vibration() && millis() - tm.alert_ms > 6000 && alert_calls < 2) {
             play_tune(tm.focus ? FOCUS_DONE_TUNE : BREAK_DONE_TUNE);
             tm.alert_ms = millis();
             alert_calls++;

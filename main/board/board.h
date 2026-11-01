@@ -68,6 +68,13 @@ void stop_sound();
 // A beep for the app's little tunes; it plays alongside play_pcm().
 void tone(uint16_t hz, uint16_t ms);
 
+// ---- vibration (optional) ------------------------------------------------------
+
+bool has_vibration();
+
+// Runs the motor at `level` (0..255) until it is called again; 0 stops it.
+void vibrate(uint8_t level);
+
 // ---- microphone (optional) ------------------------------------------------------
 
 bool has_mic();

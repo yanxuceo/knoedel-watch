@@ -113,6 +113,13 @@ void stop_sound()
 
 void tone(uint16_t hz, uint16_t ms) { M5.Speaker.tone(hz, ms, 1); }
 
+// ---- vibration ------------------------------------------------------------------
+// The motor hangs on the IO expander's PWM output; M5Unified sets it up.
+
+bool has_vibration() { return true; }
+
+void vibrate(uint8_t level) { M5.Power.setVibration(level); }
+
 // ---- microphone -----------------------------------------------------------------
 // The ES8311 serves both: the speaker's and the microphone's I2S ports share
 // its clock pins, so only one of them runs at a time.
