@@ -112,7 +112,7 @@ Three right answers in a row earn a short celebration. Words you know return aft
 
 Sentences you collect yourself, from a podcast or an article, kept apart from the decks. Add them on the **[sentence book page](https://yanxuceo.github.io/knoedel-watch/sentences/)** (Chrome or Edge, the watch on USB): one by one, or paste a whole exercise and check how it was split into meaning, German and pattern before it is saved. Export and import as JSON or Markdown.
 
-On the watch: Main menu → *Sentences*. Tap to turn: the meaning (in the language of the menus), the German, the pattern with its topic. The keys go to the sentence before or after.
+On the watch: Main menu → *Sentences*. The sentences come in a new random order each time you open the book. Tap to turn: the meaning (in the language of the menus), the German, the pattern with its topic. A long text scrolls when you drag it up or down. The keys, or a sideways swipe, go to the sentence before or after.
 
 ## Voice notes
 
@@ -133,7 +133,7 @@ The time, the date, and a word of the day: its character acts it out, then the w
 
 The ring around the screen runs down with the time left: red while you focus, green during the break. Brezel writes along while you work; Knödel hums during the break. Tap to start or pause, KEY B skips to the other phase, KEY A starts the phase again. Or simply turn the watch face down: the timer starts and the screen goes dark.
 
-When a phase ends, the watch calls with a short tune and a German *Pause!* or *Weiter!*, even if you have left the timer screen. A tap starts the next phase.
+When a phase ends, the watch buzzes twice, without a sound (fine in an office), and shows a German *Pause!* or *Weiter!*, even if you have left the timer screen. The Waveshare board has no motor and plays a short tune instead. A tap starts the next phase.
 
 ## What is on the watch
 
