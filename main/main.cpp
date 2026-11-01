@@ -478,7 +478,7 @@ static void render_setting()
 // The sentence book: the meaning in the learner's language (or the other one
 // when only that was given), the German, the pattern. The sentences come in an
 // order shuffled anew each time the book is opened, and after the last one.
-static int sentence_pos = 0;
+static int sentence_pos = 0, sentence_scroll = 0;
 static std::vector<int> sentence_order;
 
 static void shuffle_sentences(int n)
@@ -507,7 +507,7 @@ static void render_sentence()
     const bool zh = strncmp(deck_locale(), "zh", 2) == 0;
     const std::string &meaning = zh ? (s.zh.empty() ? s.en : s.zh) : (s.en.empty() ? s.zh : s.en);
     notes_ui::draw_sentence(&fb, {meaning.c_str(), s.de.c_str(), s.pattern.c_str(), s.topic.c_str()}, face, sentence_pos,
-                            (int)list.size());
+                            (int)list.size(), sentence_scroll);
 }
 
 static void render()
@@ -598,6 +598,7 @@ static void speak()
 static void show()
 {
     face = 0;
+    sentence_scroll = 0;
     face_shown_ms = millis();
     if (st.screen == CARDS) {
         progress::mark_seen(st.deck, st.card);  // from now on practice may ask for it
@@ -627,6 +628,7 @@ static void next_face()
         push_squashed(cosf(i * 1.5708f / (FLIP_STEPS + 0.6f)));
     }
     face = (face + 1) % (st.screen == SENTENCES ? 3 : ui::face_count(st.deck, st.card));
+    sentence_scroll = 0;
     face_shown_ms = millis();
     render();
     speak();
@@ -1245,6 +1247,12 @@ extern "C" void app_main(void)
         default:
             input = board::touched();
             break;
+        }
+
+        // A long sentence follows the finger up and down.
+        if (const int dy = board::scroll_dy(); dy != 0 && st.screen == SENTENCES) {
+            sentence_scroll -= dy;
+            redraw();
         }
 
         motion::update();

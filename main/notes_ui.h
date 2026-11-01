@@ -107,7 +107,9 @@ void draw_message(lgfx::LovyanGFX *g, Message m, float t);
 struct Sentence {
     const char *meaning, *german, *pattern, *topic;
 };
-void draw_sentence(lgfx::LovyanGFX *g, const Sentence &s, int face, int index, int count);
+// A text too long for the screen starts at its top and scrolls: `scroll` is how
+// far, in pixels, and is kept within the text.
+void draw_sentence(lgfx::LovyanGFX *g, const Sentence &s, int face, int index, int count, int &scroll);
 // The book without sentences: where to add them.
 void draw_no_sentences(lgfx::LovyanGFX *g);
 

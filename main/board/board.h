@@ -47,6 +47,10 @@ bool touched();
 // Where the last SELECT or HOLD touched, in display pixels.
 void tap_point(int &x, int &y);
 
+// While a finger drags up or down: how far it moved since the last update(),
+// in pixels (down is positive); 0 otherwise.
+int scroll_dy();
+
 // The left key is held down (as read by the last talk_key_held()): cancels a recording.
 bool cancel_key_held();
 

@@ -103,6 +103,7 @@ void begin() {
 }
 lgfx::LGFX_Device &display() { return screen; }
 static int tap_x, tap_y;  // where the last tap was
+static int scroll;        // see scroll_dy()
 Event update() {
     uint32_t now = esp_timer_get_time() / 1000;
     boot.setRawState(now, gpio_get_level(WS_BTN_BOOT) == 0);
@@ -120,6 +121,8 @@ Event update() {
     power_key.setRawState(now, power_pressed);
     touch.update(now);
     const auto detail = touch.getDetail();
+    const bool vertical = abs(detail.distanceY()) > abs(detail.distanceX());
+    scroll = (detail.isFlicking() || detail.isDragging()) && vertical ? detail.deltaY() : 0;
     if (boot.wasHold())
         return Event::BACK;
     if (boot.wasClicked())
@@ -141,6 +144,7 @@ Event update() {
     return Event::NONE;
 }
 bool touched() { return boot.isPressed() || power_key.isPressed() || touch.getDetail().isPressed(); }
+int scroll_dy() { return scroll; }
 void tap_point(int &x, int &y) {
     x = tap_x;
     y = tap_y;

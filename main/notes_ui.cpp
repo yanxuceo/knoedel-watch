@@ -732,42 +732,90 @@ void draw_message(G *g, Message m, float t)
 
 // ---- the sentence book -------------------------------------------------------------------
 
-// Lines centred as one block around the screen's middle.
-static void centred(G *g, const lgfx::IFont *f, const std::vector<std::string> &lines, int line_h, int mid, uint32_t col)
+// A face of a sentence as a column of lines; an empty font marks the short
+// rule between the pattern and its topic.
+struct Line {
+    const lgfx::IFont *font;
+    std::string text;
+    int h;
+    uint32_t col;
+};
+
+static void add_lines(std::vector<Line> &out, G *g, const lgfx::IFont *f, const std::string &s, int width, int h,
+                      uint32_t col)
 {
-    const int top = mid - (int)(lines.size() - 1) * line_h / 2;
-    for (size_t i = 0; i < lines.size(); i++) {
-        text(g, f, lines[i], CX, top + (int)i * line_h, middle_center, col);
+    for (std::string &l : wrap(g, f, s, width, 1000)) {
+        out.push_back({f, std::move(l), h, col});
     }
 }
 
-void draw_sentence(G *g, const Sentence &s, int face, int index, int count)
+void draw_sentence(G *g, const Sentence &s, int face, int index, int count, int &scroll)
 {
     g->fillScreen(BLACK);
-    static constexpr int WIDTH = 340, MID = CY - 6;
+    static constexpr int WIDTH = 340, MID = CY - 6, AREA_TOP = 94;
+    const int area_bottom = face < 2 ? 372 : 404;  // above the hint, or the pager
     const char *label = face == 0 ? tx->sentences : face == 1 ? tx->german : tx->pattern;
     text(g, loc_s(), label, CX, 66, middle_center, face == 2 ? AMBER : DIM);
+
+    std::vector<Line> lines;
     if (face == 0) {
-        centred(g, nf(), wrap(g, nf(), s.meaning, WIDTH, 6), 38, MID, INK);
+        add_lines(lines, g, nf(), s.meaning, WIDTH, 38, INK);
     } else if (face == 1) {
         // German in the cards' typeface; a long sentence in the smaller one.
         const lgfx::IFont *de = ui::font(ui::FontId::DE_M);
-        auto lines = wrap(g, de, s.german, WIDTH, 7);
-        if (lines.size() > 5) {
-            centred(g, nf(), wrap(g, nf(), s.german, WIDTH, 7), 34, MID, INK);
+        if (wrap(g, de, s.german, WIDTH, 6).size() > 5) {
+            add_lines(lines, g, nf(), s.german, WIDTH, 34, INK);
         } else {
-            centred(g, de, lines, 40, MID, INK);
+            add_lines(lines, g, de, s.german, WIDTH, 40, INK);
         }
     } else {
-        const auto pattern = wrap(g, nf(), s.pattern[0] ? s.pattern : "–", WIDTH, 4);
-        const auto topic = s.topic[0] ? wrap(g, nf(), s.topic, WIDTH - 40, 2) : std::vector<std::string>();
-        const int h = (int)pattern.size() * 36 + (topic.empty() ? 0 : 24 + (int)topic.size() * 32);
-        centred(g, nf(), pattern, 36, MID - h / 2 + (int)pattern.size() * 18, AMBER);
-        if (!topic.empty()) {
-            const int ty = MID - h / 2 + (int)pattern.size() * 36 + 24;
-            g->drawFastHLine(CX - 30, ty - 12, 60, LINE);
-            centred(g, nf(), topic, 32, ty + (int)(topic.size() - 1) * 16 + 16, DIM);
+        add_lines(lines, g, nf(), s.pattern[0] ? s.pattern : "–", WIDTH, 36, AMBER);
+        if (s.topic[0]) {
+            lines.push_back({nullptr, "", 24, LINE});
+            add_lines(lines, g, nf(), s.topic, WIDTH - 40, 32, DIM);
         }
+    }
+    int h = 0;
+    for (const Line &l : lines) {
+        h += l.h;
+    }
+
+    // Centred when it fits; else from its top, scrolled, with a bar at the side.
+    const int area = area_bottom - AREA_TOP;
+    const bool scrolls = h > area;
+    scroll = scrolls ? std::max(0, std::min(scroll, h - area)) : 0;
+    int y = scrolls ? AREA_TOP - scroll : MID - h / 2;
+    if (scrolls) {
+        g->setClipRect(0, AREA_TOP, ui::SCREEN, area);
+    }
+    for (const Line &l : lines) {
+        if (y + l.h > AREA_TOP - 40 && y < area_bottom + 40) {
+            if (l.font) {
+                text(g, l.font, l.text, CX, y + l.h / 2, middle_center, l.col);
+            } else {
+                g->drawFastHLine(CX - 30, y + l.h / 2, 60, l.col);
+            }
+        }
+        y += l.h;
+    }
+    if (scrolls) {
+        g->clearClipRect();
+        // The text fades out where more of it lies beyond the edge.
+        static constexpr int FADE = 26;
+        for (int i = 0; i < FADE; i++) {
+            const float alpha = 1 - (i + 0.5f) / FADE;
+            if (scroll > 0) {
+                gfxu::span(g, CX - 190, AREA_TOP + i, 380, alpha, BLACK);
+            }
+            if (scroll < h - area) {
+                gfxu::span(g, CX - 190, area_bottom - 1 - i, 380, alpha, BLACK);
+            }
+        }
+        static constexpr int BAR_X = CX + 192, BAR_TOP = 132, BAR_H = 204;
+        const int thumb = std::max(28, BAR_H * area / h);
+        const int at = BAR_TOP + (BAR_H - thumb) * scroll / (h - area);
+        g->fillRoundRect(BAR_X - 1, BAR_TOP, 3, BAR_H, 1, LINE);
+        g->fillRoundRect(BAR_X - 2, at, 5, thumb, 2, MUTED);
     }
     if (face < 2) {
         text(g, loc_s(), face == 0 ? tx->tap_german : tx->tap_pattern, CX, 396, middle_center, FAINT);

@@ -42,11 +42,14 @@ void begin()
 lgfx::LGFX_Device &display() { return M5.Display; }
 
 static int tap_x, tap_y;
+static int scroll;  // see scroll_dy()
 
 Event update()
 {
     M5.update();
     const auto touch = M5.Touch.getDetail();
+    const bool vertical = abs(touch.distanceY()) > abs(touch.distanceX());
+    scroll = (touch.isFlicking() || touch.isDragging()) && vertical ? touch.deltaY() : 0;
     if (M5.BtnA.wasHold()) {
         return Event::BACK;
     }
@@ -74,6 +77,8 @@ Event update()
     }
     return Event::NONE;
 }
+
+int scroll_dy() { return scroll; }
 
 void tap_point(int &x, int &y)
 {

@@ -263,17 +263,35 @@ int main(int argc, char **argv)
                                          "Ich kann mir gut vorstellen, später langfristig in Deutschland zu leben.",
                                          "sich vorstellen können + zu + Infinitiv",
                                          zh ? "表达犹豫、观点与决定" : "Doubts, opinions and decisions"};
+        int scroll = 0;
         for (int f = 0; f < 3; f++) {
-            notes_ui::draw_sentence(&fb, sent, f, 2, 42);
+            notes_ui::draw_sentence(&fb, sent, f, 2, 42, scroll);
             shot(f == 0 ? "sentence_meaning" : f == 1 ? "sentence_german" : "sentence_pattern");
         }
         const notes_ui::Sentence mixed = {"别误会我的意思，但我觉得我们应该再考虑一下。",
                                           "Versteh mich nicht falsch, aber ich finde, dass wir uns das noch mal überlegen sollten.",
                                           "Versteh mich nicht falsch + dass 从句", ""};
-        notes_ui::draw_sentence(&fb, mixed, 1, 0, 42);
+        notes_ui::draw_sentence(&fb, mixed, 1, 0, 42, scroll);
         shot("sentence_long");
-        notes_ui::draw_sentence(&fb, mixed, 2, 0, 42);
+        notes_ui::draw_sentence(&fb, mixed, 2, 0, 42, scroll);
         shot("sentence_pattern_mixed");
+        // A paragraph too long for the screen: its top, then scrolled to the end.
+        const notes_ui::Sentence para = {
+            "在德国，越来越多的人选择在家办公。这样可以节省通勤时间，也能更灵活地安排一天的工作。不过，也有人觉得在家很难把工作和生活分开，"
+            "而且缺少和同事面对面交流的机会。所以很多公司现在采用混合模式：每周在办公室两三天，其余时间在家工作。",
+            "In Deutschland entscheiden sich immer mehr Menschen dafür, von zu Hause aus zu arbeiten. So spart man Zeit für den "
+            "Arbeitsweg und kann den Tag flexibler planen. Manche finden es aber schwierig, Arbeit und Privatleben zu Hause zu "
+            "trennen, und ihnen fehlt der persönliche Austausch mit den Kollegen. Deshalb setzen viele Firmen inzwischen auf ein "
+            "hybrides Modell: zwei bis drei Tage pro Woche im Büro, den Rest von zu Hause.",
+            "sich entscheiden für + Akk. / dafür, … zu + Infinitiv", "Arbeitswelt"};
+        scroll = 0;
+        notes_ui::draw_sentence(&fb, para, 0, 0, 42, scroll);
+        shot("sentence_para_meaning");
+        notes_ui::draw_sentence(&fb, para, 1, 0, 42, scroll);
+        shot("sentence_para_top");
+        scroll = 100000;
+        notes_ui::draw_sentence(&fb, para, 1, 0, 42, scroll);
+        shot("sentence_para_end");
         notes_ui::draw_no_sentences(&fb);
         shot("sentences_empty");
         ui::draw_menu(&fb, 3, 7, t.sentences);
