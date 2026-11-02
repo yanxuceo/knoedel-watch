@@ -88,7 +88,8 @@ int item_at(int x, int y);
 // The ring menu over the page: `first` (ALL_DONE, UNDO, or NOTHING for none),
 // delete, cancel; `title`, the row held (null: "this note").
 enum Choice { NOTHING, ALL_DONE, UNDO, REMOVE, CANCEL };
-void draw_menu(lgfx::LovyanGFX *g, Choice first, const char *title = nullptr);
+// The text held is shown whole; a long one scrolls by `scroll` pixels (kept within it).
+void draw_menu(lgfx::LovyanGFX *g, Choice first, const char *title = nullptr, int *scroll = nullptr);
 Choice menu_at(Choice first, int x, int y);
 
 // ---- recording ------------------------------------------------------------------------

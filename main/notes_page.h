@@ -2,7 +2,7 @@
 // The notes page (main menu > Notes): two lists, the open tasks of all notes
 // (by day: late ones, today, tomorrow, ...; then those without a day) and the
 // ideas (newest first), four rows a page. A tap ticks a task or opens an idea;
-// holding a row selects it and opens a menu (delete). A task ticked stays,
+// holding a row opens a menu with its whole text (delete). A task ticked stays,
 // greyed, until the next day.
 //
 // After the open tasks comes what was done: this week's count, a bar a day
@@ -27,6 +27,10 @@ void draw(lgfx::LovyanGFX *g, float clock);
 // A tap or a hold at (x, y) (pixels of ui::SCREEN). True when the page changed.
 bool tap(int x, int y);
 bool hold(int x, int y);
+
+// A finger dragging up or down by dy pixels: scrolls the text in the menu,
+// for a long task. True when the page changed.
+bool scroll(int dy);
 
 // Tasks ticked today, for the main menu (reads the notes the first time).
 int done_today();

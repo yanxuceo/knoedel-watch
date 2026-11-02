@@ -43,6 +43,7 @@ static notes_ui::List list = notes_ui::TASKS;
 static int page;
 static bool menu;
 static int held = -1;    // the row (on this page) the menu is for
+static int menu_scroll;  // how far its text is scrolled
 static int opened = -1;  // the idea shown whole
 static std::string revealing;  // the note whose rows come in
 static uint32_t reveal_ms, cheer_ms;
@@ -389,7 +390,8 @@ void draw(lgfx::LovyanGFX *g, float clock)
                                        shown.data(), (int)shown.size(), page, pages(), menu ? held : -1};
         notes_ui::draw_list(g, lp, status, clock);
         if (menu && held >= 0 && held < (int)shown.size()) {
-            notes_ui::draw_menu(g, list == notes_ui::DONE ? notes_ui::UNDO : notes_ui::NOTHING, shown[held].text);
+            notes_ui::draw_menu(g, list == notes_ui::DONE ? notes_ui::UNDO : notes_ui::NOTHING, shown[held].text,
+                                &menu_scroll);
         }
     }
     if (cheering) {
@@ -489,6 +491,16 @@ bool hold(int x, int y)
     }
     held = row;
     menu = true;
+    menu_scroll = 0;
+    return true;
+}
+
+bool scroll(int dy)
+{
+    if (!menu) {
+        return false;
+    }
+    menu_scroll -= dy;
     return true;
 }
 

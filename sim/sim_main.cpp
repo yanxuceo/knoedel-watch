@@ -219,6 +219,18 @@ int main(int argc, char **argv)
         notes_ui::draw_list(&fb, lp, none, 0);
         notes_ui::draw_menu(&fb, notes_ui::NOTHING, trows[1].text);
         shot("held");
+        // A long task held: the menu shows it whole, from its top, then scrolled to its end.
+        const char *long_task = "把Steuererklärung弄完，先把去年的Lohnsteuerbescheinigung找出来，然后把Kita的费用的收据也整理一下，"
+                                "再问一下Steuerberater能不能把Homeoffice的Pauschale也算进去，最后在Elster上提交，"
+                                "提交以后记得把Bescheid存到Google Drive的那个文件夹里。";
+        int menu_scroll = 0;
+        notes_ui::draw_list(&fb, lp, none, 0);
+        notes_ui::draw_menu(&fb, notes_ui::NOTHING, long_task, &menu_scroll);
+        shot("held_long");
+        menu_scroll = 100000;
+        notes_ui::draw_list(&fb, lp, none, 0);
+        notes_ui::draw_menu(&fb, notes_ui::NOTHING, long_task, &menu_scroll);
+        shot("held_long_end");
         const notes_ui::ListPage ip = {notes_ui::IDEAS, 7, 2, 23, irows, 2, 0, 1, -1};
         notes_ui::draw_list(&fb, ip, offline, 0);
         shot("ideas");

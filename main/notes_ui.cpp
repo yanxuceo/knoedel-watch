@@ -606,19 +606,87 @@ int row_at(int x, int y, int &tab)
 
 // ---- the menu ---------------------------------------------------------------------------
 
+// Text as a column of lines; an empty font marks a short rule (between a
+// sentence's pattern and its topic).
+struct Line {
+    const lgfx::IFont *font;
+    std::string text;
+    int h;
+    uint32_t col;
+};
+
+static void add_lines(std::vector<Line> &out, G *g, const lgfx::IFont *f, const std::string &s, int width, int h,
+                      uint32_t col)
+{
+    for (std::string &l : wrap(g, f, s, width, 1000)) {
+        out.push_back({f, std::move(l), h, col});
+    }
+}
+
+// The lines centred on `mid` when they fit between `top` and `bottom`; else from
+// their top, `scroll` pixels on (kept within them), with a bar at the side and
+// the text fading out at an edge with more beyond it.
+static void column(G *g, const std::vector<Line> &lines, int top, int bottom, int mid, int &scroll)
+{
+    int h = 0;
+    for (const Line &l : lines) {
+        h += l.h;
+    }
+    const int area = bottom - top;
+    const bool scrolls = h > area;
+    scroll = scrolls ? std::max(0, std::min(scroll, h - area)) : 0;
+    int y = scrolls ? top - scroll : mid - h / 2;
+    if (scrolls) {
+        g->setClipRect(0, top, ui::SCREEN, area);
+    }
+    for (const Line &l : lines) {
+        if (y + l.h > top - 40 && y < bottom + 40) {
+            if (l.font) {
+                text(g, l.font, l.text, CX, y + l.h / 2, middle_center, l.col);
+            } else {
+                g->drawFastHLine(CX - 30, y + l.h / 2, 60, l.col);
+            }
+        }
+        y += l.h;
+    }
+    if (!scrolls) {
+        return;
+    }
+    g->clearClipRect();
+    static constexpr int FADE = 26;
+    for (int i = 0; i < FADE; i++) {
+        const float alpha = 1 - (i + 0.5f) / FADE;
+        if (scroll > 0) {
+            gfxu::span(g, CX - 190, top + i, 380, alpha, BLACK);
+        }
+        if (scroll < h - area) {
+            gfxu::span(g, CX - 190, bottom - 1 - i, 380, alpha, BLACK);
+        }
+    }
+    // The bar, on the circle's right where the column is.
+    const int bar_top = top + 30, bar_h = area - 60, bar_x = CX + 192;
+    const int thumb = std::max(24, bar_h * area / h);
+    const int at = bar_top + (bar_h - thumb) * scroll / (h - area);
+    g->fillRoundRect(bar_x - 1, bar_top, 3, bar_h, 1, LINE);
+    g->fillRoundRect(bar_x - 2, at, 5, thumb, 2, MUTED);
+}
+
 static void button_xy(bool three, int i, float &x, float &y)
 {
     const int n = three ? 3 : 2;
     x = CX + (i - (n - 1) / 2.0f) * 110;
-    y = CY - 6;
+    y = CY + 66;  // below the text held
 }
 
-void draw_menu(G *g, Choice first, const char *title)
+void draw_menu(G *g, Choice first, const char *title, int *scroll)
 {
     const bool three = first == ALL_DONE || first == UNDO;
-    dim(g, 0.86f);
-    if (title != nullptr) {  // the row held, so that a wrong one is seen before anything happens
-        text(g, nf(), fit(g, nf(), title, 300), CX, CY - 96, middle_center, INK);
+    dim(g, 0.93f);
+    if (title != nullptr) {  // the row held, whole: read it all, and see a wrong one before anything happens
+        std::vector<Line> lines;
+        add_lines(lines, g, nf(), title, 300, 34, INK);
+        int fixed = 0;
+        column(g, lines, 80, 242, 162, scroll ? *scroll : fixed);
     } else {
         text(g, loc_s(), tx->this_note, CX, CY - 92, middle_center, DIM);
     }
@@ -732,23 +800,6 @@ void draw_message(G *g, Message m, float t)
 
 // ---- the sentence book -------------------------------------------------------------------
 
-// A face of a sentence as a column of lines; an empty font marks the short
-// rule between the pattern and its topic.
-struct Line {
-    const lgfx::IFont *font;
-    std::string text;
-    int h;
-    uint32_t col;
-};
-
-static void add_lines(std::vector<Line> &out, G *g, const lgfx::IFont *f, const std::string &s, int width, int h,
-                      uint32_t col)
-{
-    for (std::string &l : wrap(g, f, s, width, 1000)) {
-        out.push_back({f, std::move(l), h, col});
-    }
-}
-
 void draw_sentence(G *g, const Sentence &s, int face, int index, int count, int &scroll)
 {
     g->fillScreen(BLACK);
@@ -775,48 +826,7 @@ void draw_sentence(G *g, const Sentence &s, int face, int index, int count, int 
             add_lines(lines, g, nf(), s.topic, WIDTH - 40, 32, DIM);
         }
     }
-    int h = 0;
-    for (const Line &l : lines) {
-        h += l.h;
-    }
-
-    // Centred when it fits; else from its top, scrolled, with a bar at the side.
-    const int area = area_bottom - AREA_TOP;
-    const bool scrolls = h > area;
-    scroll = scrolls ? std::max(0, std::min(scroll, h - area)) : 0;
-    int y = scrolls ? AREA_TOP - scroll : MID - h / 2;
-    if (scrolls) {
-        g->setClipRect(0, AREA_TOP, ui::SCREEN, area);
-    }
-    for (const Line &l : lines) {
-        if (y + l.h > AREA_TOP - 40 && y < area_bottom + 40) {
-            if (l.font) {
-                text(g, l.font, l.text, CX, y + l.h / 2, middle_center, l.col);
-            } else {
-                g->drawFastHLine(CX - 30, y + l.h / 2, 60, l.col);
-            }
-        }
-        y += l.h;
-    }
-    if (scrolls) {
-        g->clearClipRect();
-        // The text fades out where more of it lies beyond the edge.
-        static constexpr int FADE = 26;
-        for (int i = 0; i < FADE; i++) {
-            const float alpha = 1 - (i + 0.5f) / FADE;
-            if (scroll > 0) {
-                gfxu::span(g, CX - 190, AREA_TOP + i, 380, alpha, BLACK);
-            }
-            if (scroll < h - area) {
-                gfxu::span(g, CX - 190, area_bottom - 1 - i, 380, alpha, BLACK);
-            }
-        }
-        static constexpr int BAR_X = CX + 192, BAR_TOP = 132, BAR_H = 204;
-        const int thumb = std::max(28, BAR_H * area / h);
-        const int at = BAR_TOP + (BAR_H - thumb) * scroll / (h - area);
-        g->fillRoundRect(BAR_X - 1, BAR_TOP, 3, BAR_H, 1, LINE);
-        g->fillRoundRect(BAR_X - 2, at, 5, thumb, 2, MUTED);
-    }
+    column(g, lines, AREA_TOP, area_bottom, MID, scroll);
     if (face < 2) {
         text(g, loc_s(), face == 0 ? tx->tap_german : tx->tap_pattern, CX, 396, middle_center, FAINT);
     }

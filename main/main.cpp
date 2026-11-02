@@ -1249,10 +1249,14 @@ extern "C" void app_main(void)
             break;
         }
 
-        // A long sentence follows the finger up and down.
-        if (const int dy = board::scroll_dy(); dy != 0 && st.screen == SENTENCES) {
-            sentence_scroll -= dy;
-            redraw();
+        // A long sentence, or a long task held on the notes page, follows the finger up and down.
+        if (const int dy = board::scroll_dy(); dy != 0) {
+            if (st.screen == SENTENCES) {
+                sentence_scroll -= dy;
+                redraw();
+            } else if (st.screen == NOTES && notes_page::scroll(dy)) {
+                redraw();
+            }
         }
 
         motion::update();

@@ -97,20 +97,42 @@ static std::string count_day(const cJSON *when, const std::string &id)
     return buf;
 }
 
-// The tidied note with each task's "when" turned into "due".
+// The tidied note with the task's "when" turned into "due". A memo is one task:
+// should the model still give several, they become one, in the order said,
+// due on the earliest of their days.
 static void count_days(cJSON *note, const std::string &id)
 {
+    cJSON *items = cJSON_GetObjectItem(note, "items");
+    std::string text, due;
+    bool cjk = false;
     cJSON *item;
-    cJSON_ArrayForEach(item, cJSON_GetObjectItem(note, "items"))
+    cJSON_ArrayForEach(item, items)
     {
-        const std::string due = count_day(cJSON_GetObjectItem(item, "when"), id);
-        cJSON_DeleteItemFromObject(item, "when");
-        if (due.empty()) {
-            cJSON_AddNullToObject(item, "due");
-        } else {
-            cJSON_AddStringToObject(item, "due", due.c_str());
+        const char *t = cJSON_GetStringValue(cJSON_GetObjectItem(item, "text"));
+        if (t == nullptr || *t == 0) {
+            continue;
+        }
+        cjk = cjk || (uint8_t)*t >= 0xE3;  // starts with a CJK character
+        text += text.empty() ? "" : cjk ? "，" : ", ";
+        text += t;
+        const std::string d = count_day(cJSON_GetObjectItem(item, "when"), id);
+        if (!d.empty() && (due.empty() || d < due)) {
+            due = d;
         }
     }
+    if (!cJSON_IsArray(items) || cJSON_GetArraySize(items) == 0) {
+        return;
+    }
+    cJSON *one = cJSON_CreateObject();
+    cJSON_AddStringToObject(one, "text", text.c_str());
+    if (due.empty()) {
+        cJSON_AddNullToObject(one, "due");
+    } else {
+        cJSON_AddStringToObject(one, "due", due.c_str());
+    }
+    cJSON *list = cJSON_CreateArray();
+    cJSON_AddItemToArray(list, one);
+    cJSON_ReplaceItemInObject(note, "items", list);
 }
 
 // One go: online, every memo waiting, offline again.
