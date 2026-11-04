@@ -71,6 +71,7 @@ The watch starts in English. To switch to Chinese: *Settings* → *Language*, ta
 | **Sentences** | your own sentence book: the meaning, the German, the pattern |
 | **Notes** | your voice notes: tasks to tick off, ideas, what was done |
 | **Focus timer** | 25 minutes of focus, 5 of break |
+| **Knödel Orbit** | a little game: tilt to fly, shoot into the vortex |
 | **Settings** | language, time, volume, brightness, how notes are sent, power off |
 
 Menus are in the language chosen in the settings. The watch remembers where you were.
@@ -134,6 +135,21 @@ The time, the date, and a word of the day: its character acts it out, then the w
 The ring around the screen runs down with the time left: red while you focus, green during the break. Brezel writes along while you work; Knödel hums during the break. Tap to start or pause, KEY B skips to the other phase, KEY A starts the phase again. Or simply turn the watch face down: the timer starts and the screen goes dark.
 
 When a phase ends, the watch buzzes twice, without a sound (fine in an office), and shows a German *Pause!* or *Weiter!*, even if you have left the timer screen. The Waveshare board has no motor and plays a short tune instead. A tap starts the next phase.
+
+## Knödel Orbit
+
+A game for the round screen, which is the arena: your ship runs along its rim, and Sauerkraut pours out of the vortex in the middle, shooting outward.
+
+| | |
+|---|---|
+| Tilt the watch | fly round the rim |
+| Right key | fire; held a second and let go, a beam straight through the vortex |
+| Left key | jump through the middle to the other side, taking what is in the way |
+| Shake your wrist three times | a bomb that clears the screen (two a game) |
+| Lay it face down | pause |
+| Hold the left key | quit |
+
+Bullets that pass close by (grazes) score and keep the combo going, and the motor ticks each time. On the title, a tap switches the steering: *marble* (the ship rolls toward the way the watch leans) or *wheel* (left and right turn it). The way you hold the watch when a game starts counts as level. The sounds and music are made by the watch itself. On the Waveshare board there is no motor, and only one sound plays at a time.
 
 ## What is on the watch
 
