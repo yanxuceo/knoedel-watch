@@ -47,6 +47,7 @@
 #include "notes_page.h"
 #include "notes_sync.h"
 #include "notes_ui.h"
+#include "orbit.h"
 #include "sentences.h"
 #include "usb_commands.h"
 #if CONFIG_KNOEDEL_MIC_TEST
@@ -75,7 +76,7 @@ static constexpr uint32_t FRAME_MS = 33;
 static constexpr int FLIP_STEPS = 5;
 
 enum Screen : uint8_t { HOME, DECKS, CARDS, SETTINGS, PRACTICE, CLOCK, TIMER, NOTES, SENTENCES };
-enum HomeItem { ITEM_CLOCK, ITEM_LEARN, ITEM_PRACTICE, ITEM_SENTENCES, ITEM_NOTES, ITEM_TIMER, ITEM_SETTINGS, HOME_ITEMS };
+enum HomeItem { ITEM_CLOCK, ITEM_LEARN, ITEM_PRACTICE, ITEM_SENTENCES, ITEM_NOTES, ITEM_TIMER, ITEM_GAME, ITEM_SETTINGS, HOME_ITEMS };
 enum Setting { SET_LANGUAGE, SET_TIME, SET_VOLUME, SET_BRIGHTNESS, SET_NOTES, SET_POWER_OFF, SETTING_COUNT };
 
 // Everything the watch remembers across power cycles.
@@ -399,7 +400,7 @@ static void render_stage()
     float t = fmodf((now - face_shown_ms) / 1000.0f, character::LOOP_SECONDS), clock = now / 1000.0f;
     if (st.screen == HOME) {
         static const ui::MenuIcon ICONS[HOME_ITEMS] = {ui::ICON_CLOCK, ui::ICON_KNOEDEL, ui::ICON_BREZEL, ui::ICON_SENTENCES,
-                                                       ui::ICON_NOTES, ui::ICON_TIMER, ui::ICON_GEAR};
+                                                       ui::ICON_NOTES, ui::ICON_TIMER, ui::ICON_GAME, ui::ICON_GEAR};
         ui::draw_menu_stage(&fb, ICONS[st.home_item], t, clock);
     } else if (st.screen == CLOCK) {
         std::string date;
@@ -516,7 +517,7 @@ static void render()
     switch (st.screen) {
     case HOME: {
         const char *const TITLES[HOME_ITEMS] = {tx.clock, tx.learn, tx.practice, tx.sentences, tx.notes, tx.timer,
-                                                tx.settings};
+                                                tx.game, tx.settings};
         char sub[40] = "";
         const int done = st.home_item == ITEM_NOTES ? notes_page::done_today() : 0;
         if (done > 0) {  // what was done today, under Notes
@@ -1008,6 +1009,11 @@ static void tap()
         if (st.home_item == ITEM_SENTENCES) {
             st.screen = SENTENCES;
             shuffle_sentences((int)sentences::all().size());
+            show();
+            break;
+        }
+        if (st.home_item == ITEM_GAME) {  // the game runs on its own until the left key is held
+            orbit::run(&fb, ox, oy);
             show();
             break;
         }

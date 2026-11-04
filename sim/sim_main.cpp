@@ -21,6 +21,7 @@
 #include "deck.h"
 #include "progress.h"
 #include "character.h"
+#include "orbit_game.h"
 #include "notes_ui.h"
 #include "ui_strings.h"
 
@@ -130,12 +131,12 @@ int main(int argc, char **argv)
         print_ids();
         return 0;
     }
-    if (argc < 3 || (mode != "render" && mode != "anim" && mode != "check" && mode != "schedule" && mode != "clockpop" && mode != "notes")) {
+    if (argc < 3 || (mode != "render" && mode != "anim" && mode != "check" && mode != "schedule" && mode != "clockpop" && mode != "notes" && mode != "game")) {
         fprintf(stderr, "usage: card_sim render|anim|check|ids ... (see sim_main.cpp)\n");
         return 2;
     }
     const std::string dir = argv[2], out = argc > 3 ? argv[3] : ".";
-    const char *slot_arg = mode == "check" ? (argc > 3 ? argv[3] : "0") : mode == "render" || mode == "notes" ? (argc > 4 ? argv[4] : "0") : "0";
+    const char *slot_arg = mode == "check" ? (argc > 3 ? argv[3] : "0") : mode == "render" || mode == "notes" || mode == "game" ? (argc > 4 ? argv[4] : "0") : "0";
     const std::string slot = std::string("loc") + slot_arg;
     static auto pack = read_file(dir + "/decks_" + slot + ".bin");
     static auto de_xl = read_file(dir + "/font_de_xl.vlw"), de_l = read_file(dir + "/font_de_l.vlw"),
@@ -168,6 +169,52 @@ int main(int argc, char **argv)
             ui::draw_clock_stage(&fb, face, 0.1f, 10.0f);
             snprintf(name, sizeof(name), "/pop_%d.ppm", i);
             save(fb, out + name);
+        }
+        return 0;
+    }
+    if (mode == "game") {
+        // Knödel Orbit (orbit_game.h) played by a script, a frame taken now and then.
+        const UiText &t = ui_text(deck_locale());
+        int n = 0;
+        auto shot = [&](const char *what) {
+            snprintf(name, sizeof(name), "/game_%02d_%s.ppm", n++, what);
+            save(fb, out + name);
+        };
+        ui::draw_menu(&fb, 6, 8, t.game);
+        ui::draw_menu_stage(&fb, ui::ICON_GAME, 0, 2.0f);
+        shot("menu");
+        orbit::begin({nullptr, nullptr}, 12400, 7);
+        orbit::draw(&fb, 1.0f, t);
+        shot("title");
+        const float dt = 1 / 30.0f;
+        orbit::Input in;
+        in.fire = true;
+        orbit::update(dt, in);  // starts
+        in.fire = false;
+        for (int f = 1; f < 9000; f++) {
+            const float clock = 1 + f * dt;
+            in = orbit::Input();
+            in.tilt_x = sinf(f * 0.021f) * 0.9f;
+            in.tilt_y = cosf(f * 0.013f) * 0.5f;
+            in.fire = (f % 6) < 2 || (f >= 600 && f < 645);  // tapping; held for a beam from frame 600
+            in.bomb = f == 700;
+            in.jump = f == 760;
+            if (f > 800) {
+                in.fire = false;  // then let it go wrong
+            }
+            orbit::update(dt, in);
+            if (f == 90 || f == 300 || f == 590 || f == 640 || f == 648 || f == 706 || f == 764) {
+                orbit::draw(&fb, clock, t);
+                shot(f == 640 ? "charged" : f == 648 ? "beam" : f == 706 ? "bomb" : f == 764 ? "jump" : "play");
+            }
+            if (orbit::state() == orbit::OVER) {
+                for (int k = 0; k < 45; k++) {
+                    orbit::update(dt, orbit::Input());
+                }
+                orbit::draw(&fb, clock, t);
+                shot("over");
+                break;
+            }
         }
         return 0;
     }

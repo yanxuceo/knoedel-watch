@@ -164,7 +164,14 @@ void play_pcm(const int16_t *pcm, size_t count, uint32_t input_rate, bool stereo
     xSemaphoreGive(control);
     xTaskNotifyGive(audio_task);
 }
-void tone(uint16_t hz, uint16_t ms) {
+void play_sound(const int16_t *pcm, size_t samples, uint32_t rate, uint8_t channel, bool loop) {
+    (void)loop;
+    if (channel == 1) // one sound at a time: the music of other channels is left out
+        play_pcm(pcm, samples, rate, false);
+}
+void tone(uint16_t hz, uint16_t ms, uint8_t channel) {
+    if (!audio_task || channel != 1) // one tone at a time: the music of other channels is left out
+        return;
     if (!audio_task)
         return;
     xSemaphoreTake(control, portMAX_DELAY);

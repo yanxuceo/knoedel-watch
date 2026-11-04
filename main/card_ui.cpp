@@ -7,6 +7,7 @@
 
 #include "deck.h"
 #include "gfx_util.h"
+#include "orbit_game.h"
 #include "character.h"
 #include "scenery.h"
 #include "vec.h"
@@ -1304,6 +1305,11 @@ static void sentences_icon(G *g, const character::Stage &st, float clock)
 void draw_menu_stage(G *g, MenuIcon icon, float t, float clock)
 {
     character::Stage st = stage_at(CX, MENU_CY, MENU_R, icon == ICON_GEAR ? 0xE3E7EEu : COVER_BG, COVER_COLOR);
+    if (icon == ICON_GAME) {  // the game draws its own: the vortex, a ship going round
+        orbit::draw_icon(g, st.cx, st.cy, st.r, clock);
+        restore_ring(g);
+        return;
+    }
     if (icon == ICON_SENTENCES) {
         sentences_icon(g, st, clock);
         restore_ring(g);

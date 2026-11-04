@@ -47,6 +47,9 @@ bool touched();
 // Where the last SELECT or HOLD touched, in display pixels.
 void tap_point(int &x, int &y);
 
+// A key is down at the last update() (left: the one that goes back).
+bool key_down(bool right);
+
 // While a finger drags up or down: how far it moved since the last update(),
 // in pixels (down is positive); 0 otherwise.
 int scroll_dy();
@@ -69,8 +72,15 @@ void play_pcm(const int16_t *pcm, size_t samples, uint32_t rate, bool stereo);
 // Stops all sound, the one of play_pcm() and tones.
 void stop_sound();
 
-// A beep for the app's little tunes; it plays alongside play_pcm().
-void tone(uint16_t hz, uint16_t ms);
+// A sound of the app's own on `channel` (1..7), mixed with the other channels
+// where the board can (else only channel 1 plays, replacing what played);
+// `loop`: over and over until stop_sound(). `pcm` stays valid while it plays.
+void play_sound(const int16_t *pcm, size_t samples, uint32_t rate, uint8_t channel, bool loop);
+
+// A beep for the app's little tunes; it plays alongside play_pcm(). Tones on
+// different channels (1..3) play together where the board can mix them; a board
+// that cannot plays only channel 1.
+void tone(uint16_t hz, uint16_t ms, uint8_t channel = 1);
 
 // ---- vibration (optional) ------------------------------------------------------
 

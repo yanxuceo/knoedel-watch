@@ -35,6 +35,9 @@ struct UiText {
     const char *week_initials[7];                 // Monday first
     // The sentence book
     const char *sentences, *german, *pattern, *tap_german, *tap_pattern, *no_sentences, *add_on_site;
+    // Knödel Orbit, the game: main menu, title, after a game ("%u" score; "%d" hits, grazes, seconds), paused
+    const char *game, *game_start, *game_again, *game_best, *game_new_best, *game_stats, *game_paused;
+    const char *game_marble, *game_wheel;         // the steering, switched on the title
 };
 
 inline const UiText &ui_text(const char *locale)
@@ -60,7 +63,10 @@ inline const UiText &ui_text(const char *locale)
                               "速记上传", "省电", "立即",
                               "本周完成", "件", "连续 %d 天都有完成", "查看全部", "已完成", "撤销完成", "今天完成 %d 件",
                               {"一", "二", "三", "四", "五", "六", "日"},
-                              "句子本", "德语", "句式", "轻触看德语", "轻触看句式", "句子本还是空的", "在设置网页上添加句子"};
+                              "句子本", "德语", "句式", "轻触看德语", "轻触看句式", "句子本还是空的", "在设置网页上添加句子",
+                              "Knödel Orbit", "按右键开始", "按右键再来一局", "最高分 %u", "新纪录！", "消灭 %d · 擦弹 %d · %d 秒",
+                              "按右键继续 · 长按左键退出",
+                              "轻触切换 · 滚珠操控", "轻触切换 · 方向盘操控"};
     static const UiText EN = {"Words", "Review", "Settings", "Language", "English", "Volume", "Brightness", "Power off",
                               "Tap to change", "Tap to switch off", "Muted",
                               "Well done", "No cards yet",
@@ -89,6 +95,9 @@ inline const UiText &ui_text(const char *locale)
                               "%d done today",
                               {"M", "T", "W", "T", "F", "S", "S"},
                               "Sentences", "German", "Pattern", "Tap for the German", "Tap for the pattern",
-                              "No sentences yet", "Add them on the settings site"};
+                              "No sentences yet", "Add them on the settings site",
+                              "Knödel Orbit", "Right key: start", "Right key: play again", "Best %u", "New best!",
+                              "%d hit · %d grazed · %d s", "Right key: go on · hold left: quit",
+                              "Tap to switch · marble steering", "Tap to switch · wheel steering"};
     return strncmp(locale, "zh", 2) == 0 ? ZH : EN;
 }

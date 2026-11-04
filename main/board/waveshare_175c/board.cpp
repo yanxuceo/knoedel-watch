@@ -145,6 +145,7 @@ Event update() {
 }
 bool touched() { return boot.isPressed() || power_key.isPressed() || touch.getDetail().isPressed(); }
 int scroll_dy() { return scroll; }
+bool key_down(bool right) { return right ? power_pressed : boot.isPressed(); }
 void tap_point(int &x, int &y) {
     x = tap_x;
     y = tap_y;

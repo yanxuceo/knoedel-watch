@@ -80,6 +80,8 @@ Event update()
 
 int scroll_dy() { return scroll; }
 
+bool key_down(bool right) { return right ? M5.BtnB.isPressed() : M5.BtnA.isPressed(); }
+
 void tap_point(int &x, int &y)
 {
     x = tap_x;
@@ -116,7 +118,12 @@ void stop_sound()
     vTaskDelay(pdMS_TO_TICKS(20));  // let the mixer drop the old buffer before it is reused
 }
 
-void tone(uint16_t hz, uint16_t ms) { M5.Speaker.tone(hz, ms, 1); }
+void play_sound(const int16_t *pcm, size_t samples, uint32_t rate, uint8_t channel, bool loop)
+{
+    M5.Speaker.playRaw(pcm, samples, rate, false, loop ? ~0u : 1u, channel, true);
+}
+
+void tone(uint16_t hz, uint16_t ms, uint8_t channel) { M5.Speaker.tone(hz, ms, channel); }
 
 // ---- vibration ------------------------------------------------------------------
 // The motor hangs on the IO expander's PWM output; M5Unified sets it up.
