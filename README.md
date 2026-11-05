@@ -140,6 +140,8 @@ When a phase ends, the watch buzzes twice, without a sound (fine in an office), 
 
 A game for the round screen, which is the arena: your ship runs along its rim, and Sauerkraut pours out of the vortex in the middle, shooting outward.
 
+<p align="center"><img src="docs/img/orbit.png" width="1208" alt="Knödel Orbit: the title, Sauerkraut in a row, a charged beam, a Knödel bomb"><br><sub>From the web prototype the game was designed in.</sub></p>
+
 | | |
 |---|---|
 | Tilt the watch | fly round the rim |

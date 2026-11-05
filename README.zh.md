@@ -140,6 +140,8 @@
 
 为圆形屏幕做的小游戏，屏幕本身就是战场：你的飞船沿着屏幕边缘飞，德国酸菜（Sauerkraut）从中间的漩涡里涌出来，向外发射子弹。
 
+<p align="center"><img src="docs/img/orbit.png" width="1208" alt="Knödel Orbit：标题画面、成排的酸菜、蓄力光束、Knödel 炸弹"><br><sub>截图来自设计游戏时用的网页原型。</sub></p>
+
 | | |
 |---|---|
 | 倾斜手表 | 沿圆环飞行 |
