@@ -1,6 +1,8 @@
 dependencies:
   idf: ">=5.1"
   m5stack/m5unified: "^0.2.25"
+  # Held at 0.2: 0.3.0 wants esp_psram.h, which the Waveshare build does not reach
+  m5stack/m5gfx: "~0.2.36"
   # JSON for the OpenAI requests of the notes (no longer part of ESP-IDF 6)
   espressif/cjson: "^1.7.18"
   # The notes partition: memos waiting to go online, and the notes (power-loss safe)

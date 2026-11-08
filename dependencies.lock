@@ -37,7 +37,7 @@ dependencies:
     component_hash: e97781f48f14c6c65b90ba7cfe27deb3ff7eae8ec61a60040ab3615d166c82f4
     dependencies: []
     source:
-      registry_url: https://components.espressif.com
+      registry_url: https://components.espressif.com/
       type: service
     version: 0.2.36
   m5stack/m5unified:
@@ -56,7 +56,8 @@ direct_dependencies:
 - espressif/esp_audio_codec
 - idf
 - joltwallet/littlefs
+- m5stack/m5gfx
 - m5stack/m5unified
-manifest_hash: 90deeb4675b36d9f69654aed58caca4aa041c1479d6cffe676102006688262a8
+manifest_hash: 8107423ba90cfa32557e26f56af30fbaad9765c933fb382d8dd58d30975d55dc
 target: esp32s3
 version: 3.0.0
