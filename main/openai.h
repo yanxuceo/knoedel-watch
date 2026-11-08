@@ -22,11 +22,6 @@ std::string transcribe_ogg(const uint8_t *ogg, size_t size);
 // ("Today: Saturday, 2026-10-31"). Empty when it failed.
 std::string tidy(const std::string &transcript, const char *context);
 
-// Between these the requests share one connection: TLS's handshake, a second
-// or two on the watch, is done once for all the memos of a go.
-void begin_session();
-void end_session();
-
 // A tiny request, to see whether the key works: its HTTP status (200 good,
 // 401 a wrong key, 429 the limit reached or too fast, 0 no answer).
 int check_key();

@@ -90,6 +90,8 @@ static void handle(char *line)
         char hint[64];
         credentials::key_hint(hint, sizeof hint);
         reply("OK %s", hint);
+    } else if (strcmp(line, "net test") == 0 && notes_sync::busy()) {
+        reply("ERR busy sending notes, try again in a moment");  // its Wi-Fi off would cut the notes off
     } else if (strcmp(line, "net test") == 0) {
         const bool online = net::connect();
         const bool timed = online && net::sync_time();

@@ -1,5 +1,6 @@
 #include "orbit_sound.h"
 
+#include <esp_heap_caps.h>
 #include <math.h>
 #include <stdlib.h>
 
@@ -139,7 +140,9 @@ void noise(Buf &b, float at, float dur, float amp, float attack, float tau, floa
 
 bool keep(Id id, const Buf &b, float gain, float level = 1)
 {
-    int16_t *pcm = (int16_t *)malloc(b.s.size() * sizeof(int16_t));
+    // In PSRAM, small ones too: in internal RAM the short effects (under 16 KB
+    // each, 45 KB in all) left too little for Wi-Fi to send the memos.
+    int16_t *pcm = (int16_t *)heap_caps_malloc(b.s.size() * sizeof(int16_t), MALLOC_CAP_SPIRAM);
     if (pcm == nullptr) {
         return false;
     }

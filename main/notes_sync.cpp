@@ -135,6 +135,74 @@ static void count_days(cJSON *note, const std::string &id)
     cJSON_ReplaceItemInObject(note, "items", list);
 }
 
+// ---- a clock that lost its time ---------------------------------------------------
+// A clock that lost power starts again at 2000-01-01 (main.cpp), and memos said
+// meanwhile get ids from then. When the internet sets it, how far off it was is
+// kept, and those ids are moved by as much on their way to notes.
+
+static constexpr int VALID_YEAR = 2020;
+
+static time_t local_seconds(int y, int mo, int d, int h, int mi, int s)
+{
+    struct tm t = {};
+    t.tm_year = y - 1900, t.tm_mon = mo - 1, t.tm_mday = d, t.tm_hour = h, t.tm_min = mi, t.tm_sec = s;
+    t.tm_isdst = -1;
+    return mktime(&t);
+}
+
+static bool clock_valid()
+{
+    board::DateTime t;
+    return board::get_time(t) && t.year >= VALID_YEAR;
+}
+
+static bool sync_clock()
+{
+    board::DateTime before, after;
+    const bool had = board::get_time(before);
+    if (!net::sync_time()) {
+        return false;
+    }
+    if (!had || before.year >= VALID_YEAR || !board::get_time(after)) {
+        return true;
+    }
+    // Both counted now, in German time (set by sync_time).
+    const int64_t off = (int64_t)local_seconds(after.year, after.month, after.day, after.hour, after.minute, after.second) -
+                        local_seconds(before.year, before.month, before.day, before.hour, before.minute, before.second);
+    nvs_handle_t h;
+    if (nvs_open("notes", NVS_READWRITE, &h) == ESP_OK) {
+        nvs_set_i64(h, "clock_off", off);
+        nvs_commit(h);
+        nvs_close(h);
+    }
+    ESP_LOGI(TAG, "the clock was %lld s behind: memos said meanwhile are moved by that", (long long)off);
+    return true;
+}
+
+// A memo's id with the clock's error taken out ("20000101-003942" said while the
+// clock ran from 2000), or the id as it is.
+static std::string corrected(const std::string &id)
+{
+    int y, mo, d, h, mi, s;
+    int64_t off = 0;
+    nvs_handle_t nh;
+    if (sscanf(id.c_str(), "%4d%2d%2d-%2d%2d%2d", &y, &mo, &d, &h, &mi, &s) != 6 || y >= VALID_YEAR ||
+        !clock_valid() || nvs_open("notes", NVS_READONLY, &nh) != ESP_OK) {
+        return id;
+    }
+    const bool have = nvs_get_i64(nh, "clock_off", &off) == ESP_OK;
+    nvs_close(nh);
+    const time_t t = local_seconds(y, mo, d, h, mi, s) + (time_t)off;
+    struct tm r;
+    if (!have || t > time(nullptr) + 60 || localtime_r(&t, &r) == nullptr || r.tm_year + 1900 < VALID_YEAR) {
+        return id;
+    }
+    char buf[40];
+    snprintf(buf, sizeof buf, "%04d%02d%02d-%02d%02d%02d", r.tm_year + 1900, r.tm_mon + 1, r.tm_mday, r.tm_hour,
+             r.tm_min, r.tm_sec);
+    return buf;
+}
+
 // One go: online, every memo waiting, offline again.
 static Result go()
 {
@@ -149,15 +217,14 @@ static Result go()
         r.offline = true;
         return r;
     }
-    // The clock once a day is enough.
+    // The clock once a day is enough, but at once when it has lost its time.
     static int64_t synced_us = -1;
-    if (synced_us < 0 || esp_timer_get_time() - synced_us > 24LL * 3600 * 1000000) {
-        if (net::sync_time()) {
+    if (synced_us < 0 || !clock_valid() || esp_timer_get_time() - synced_us > 24LL * 3600 * 1000000) {
+        if (sync_clock()) {
             synced_us = esp_timer_get_time();
         }
     }
     const int64_t online_us = esp_timer_get_time();
-    openai::begin_session();
 
     for (const std::string &id : ids) {
         size_t size = 0;
@@ -165,6 +232,7 @@ static Result go()
         if (ogg == nullptr) {
             continue;
         }
+        const std::string real = corrected(id);
         const int64_t a = esp_timer_get_time();
         const std::string text = openai::transcribe_ogg(ogg, size);
         free(ogg);
@@ -174,11 +242,11 @@ static Result go()
             break;  // try again next time
         }
         // A tidying that fails leaves the transcript as an idea: nothing said is lost.
-        const std::string note = text.empty() ? "" : openai::tidy(text, context(id).c_str());
+        const std::string note = text.empty() ? "" : openai::tidy(text, context(real).c_str());
         const int64_t c = esp_timer_get_time();
         cJSON *n = note.empty() ? nullptr : cJSON_Parse(note.c_str());
         if (n != nullptr) {
-            count_days(n, id);
+            count_days(n, real);
         }
         if (n == nullptr) {
             n = cJSON_CreateObject();
@@ -187,12 +255,15 @@ static Result go()
             cJSON_AddStringToObject(n, "text", text.c_str());
         }
         cJSON *saved = cJSON_CreateObject();
-        cJSON_AddStringToObject(saved, "id", id.c_str());
+        cJSON_AddStringToObject(saved, "id", real.c_str());
         cJSON_AddStringToObject(saved, "transcript", text.c_str());
         cJSON_AddItemToObject(saved, "note", n);
         char *json = cJSON_PrintUnformatted(saved);
         cJSON_Delete(saved);
-        const bool ok = memos::finish(id, json);
+        const bool ok = real == id ? memos::finish(id, json) : memos::save_note(real, json);
+        if (ok && real != id) {
+            memos::remove_memo(id);
+        }
         ESP_LOGI(TAG, "%s: %u bytes, transcript in %lld ms, note in %lld ms%s: %s", id.c_str(), (unsigned)size,
                  (b - a) / 1000, (c - b) / 1000, ok ? "" : " (NOT WRITTEN)", json);
         if (ok) {
@@ -204,7 +275,6 @@ static Result go()
             break;
         }
     }
-    openai::end_session();
     net::disconnect();
     r.left = (int)memos::waiting().size();
     ESP_LOGI(TAG, "%d done, %d left; online in %lld ms, all in %lld ms", r.done, r.left, (online_us - t0) / 1000,

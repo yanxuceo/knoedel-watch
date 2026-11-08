@@ -158,15 +158,15 @@ bool sync_time(uint32_t timeout_ms)
     if (!up) {
         return false;
     }
-    static bool sntp_on;
-    if (!sntp_on) {
-        esp_sntp_config_t cfg = ESP_NETIF_SNTP_DEFAULT_CONFIG("pool.ntp.org");
-        if (esp_netif_sntp_init(&cfg) != ESP_OK) {
-            return false;
-        }
-        sntp_on = true;
+    // Started afresh each time: SNTP left running answers a second wait only at
+    // its next round, an hour on, so a second sync in the same boot timed out.
+    esp_sntp_config_t cfg = ESP_NETIF_SNTP_DEFAULT_CONFIG("pool.ntp.org");
+    if (esp_netif_sntp_init(&cfg) != ESP_OK) {
+        return false;
     }
-    if (esp_netif_sntp_sync_wait(pdMS_TO_TICKS(timeout_ms)) != ESP_OK) {
+    const bool synced = esp_netif_sntp_sync_wait(pdMS_TO_TICKS(timeout_ms)) == ESP_OK;
+    esp_netif_sntp_deinit();
+    if (!synced) {
         ESP_LOGW(TAG, "no time from the internet");
         return false;
     }
